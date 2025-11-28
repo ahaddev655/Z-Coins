@@ -19,7 +19,7 @@ function LoadingPage({ fade }) {
           </h1>
         </div>
 
-        <div className="sm:text-sm text-[13px] font-thin! text-charcoal-stone w-full text-center fixed bottom-2 left-1.5">
+        <div className="sm:text-sm text-[13px] font-thin! text-charcoal-stone w-full text-center fixed bottom-7 left-1.5">
           Pakistan's Highly Rated Cryptocurrency Exchange
         </div>
       </div>

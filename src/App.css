@@ -22,5 +22,5 @@
 }
 
 body {
-  @apply font-poppins px-2;
+  @apply font-poppins;
 }
