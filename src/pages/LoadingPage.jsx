@@ -10,7 +10,7 @@ function LoadingPage({ fade }) {
       <div>
         <div className="flex items-center justify-center w-full gap-3 relative">
           <img
-            src="/public/favicon.png"
+            src="/assets/favicon.png"
             alt="Favicon"
             className="w-[62px] h-[62px]"
           />
