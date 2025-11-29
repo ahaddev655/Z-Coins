@@ -3,10 +3,10 @@ import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import MainLayout from "./layouts/MainLayout";
-import MainDashboardPage from './pages/main/MainDashboardPage';
-import MainPortfolioPage from './pages/main/MainPortfolioPage';
-import MainMarketPage from './pages/main/MainMarketPage';
-import MainProfilePage from './pages/main/MainProfilePage';
+import MainDashboardPage from "./pages/main/MainDashboardPage";
+import MainPortfolioPage from "./pages/main/MainPortfolioPage";
+import MainMarketPage from "./pages/main/MainMarketPage";
+import MainProfilePage from "./pages/main/MainProfilePage";
 
 function App() {
   const router = createBrowserRouter([
@@ -20,21 +20,21 @@ function App() {
       children: [
         {
           index: true,
-          element: <MainDashboardPage />
+          element: <MainDashboardPage />,
         },
         {
           path: "portfolio",
-          element: <MainPortfolioPage />
+          element: <MainPortfolioPage />,
         },
         {
           path: "market",
-          element: <MainMarketPage />
-        },
-        {
-          path: "profile",
-          element: <MainProfilePage />
+          element: <MainMarketPage />,
         },
       ],
+    },
+    {
+      path: "/profile",
+      element: <MainProfilePage />,
     },
   ]);
   return <RouterProvider router={router} />;
