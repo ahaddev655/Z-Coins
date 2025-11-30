@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-function MainPortfolioPage() {
+function MainSearchPage() {
   const navigate = useNavigate();
-
-  // Load favorites from localStorage
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem("yourCoins");
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const coins = [
+  const [coins, setCoins] = useState([
     {
       img: "/assets/bitcoin.png",
       name: "Bitcoin",
@@ -39,7 +32,9 @@ function MainPortfolioPage() {
       pnl: -1.68,
       amount: "98.42",
     },
-  ];
+  ]);
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const userToken = localStorage.getItem("sessionToken");
@@ -49,51 +44,34 @@ function MainPortfolioPage() {
     }
   }, [navigate]);
 
-  // Filter only favorite coins
-  const yourCoins = coins.filter((c) => favorites.includes(c.shortForm));
+  // Filter coins based on search query
+  const filteredCoins = coins.filter(
+    (coin) =>
+      coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      coin.shortForm.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="lg:px-6 px-3 py-6 w-full">
-      {/* Banner */}
-      <div className="py-6 px-5 text-white shadow-sm bg-oceanic-blue rounded-xl">
-        <p className="font-medium sm:text-2xl text-xl">Portfolio</p>
-        <p className="font-light text-sm mt-[15px]">Holding Value</p>
-        <h1 className="mt-0.5 text-3xl font-semibold">$2,509.75</h1>
-
-        <div className="mt-[21px] flex items-center gap-[18px]">
-          <div>
-            <p className="text-sm font-light">Invested value</p>
-            <h1 className="text-2xl font-semibold">$1,618.75</h1>
-          </div>
-
-          <div className="bg-cloud-white/50 w-px h-[55px]" />
-
-          <div>
-            <p className="text-sm font-light">Available</p>
-            <h1 className="text-2xl font-semibold">$1589</h1>
-          </div>
-        </div>
+      <div className="flex items-center justify-between gap-4 mb-9">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border-2 placeholder-silver-fog text-midnight-gray border-silver-fog bg-white w-full py-2 px-2 rounded-sm"
+          placeholder="Search Cryptocurrency"
+        />
+        <Link to={"/main/market"} className="text-charcoal-stone font-medium">
+          Cancel
+        </Link>
       </div>
 
-      {/* Favorite Coins */}
-      <div className="mt-[33px]">
-        <h1 className="text-3xl font-semibold text-midnight-gray">
-          Your Coins
-        </h1>
-
-        {/* If no favorites */}
-        {yourCoins.length === 0 && (
-          <p className="text-center text-slate-mist text-lg font-medium py-10">
-            No coins added yet.
-          </p>
-        )}
-
-        <div className="mt-4 space-y-3">
-          {yourCoins.map((coin, i) => (
+      <div className="space-y-5">
+        {filteredCoins.length > 0 ? (
+          filteredCoins.map((coin, i) => (
             <div
               key={i}
-              className="shadow-[0px_2px_4px_#00000013] hover:shadow-lg transition-shadow 
-              bg-white rounded-lg p-4 flex items-center justify-between flex-wrap"
+              className="shadow-[0px_2px_4px_#00000013] hover:shadow-lg transition-shadow bg-white rounded-lg p-4 flex items-center justify-between flex-wrap"
             >
               <div className="flex items-center gap-3 flex-wrap">
                 <img src={coin.img} alt="IMG" />
@@ -109,13 +87,11 @@ function MainPortfolioPage() {
                 {coin.pnl > 0 ? (
                   <img
                     src="/assets/gain vector.svg"
-                    alt="IMG"
                     className="sm:w-16 sm:h-16"
                   />
                 ) : (
                   <img
                     src="/assets/loss vector.svg"
-                    alt="IMG"
                     className="sm:w-16 sm:h-16"
                   />
                 )}
@@ -137,11 +113,13 @@ function MainPortfolioPage() {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-400">No coins found</p>
+        )}
       </div>
     </div>
   );
 }
 
-export default MainPortfolioPage;
+export default MainSearchPage;

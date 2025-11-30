@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 function FormComponent() {
@@ -13,6 +14,7 @@ function FormComponent() {
     password: "",
     mobileNumber: "",
   });
+  const navigate = useNavigate();
 
   // handleInputChange
   const handleInputChange = (e) => {
@@ -65,6 +67,10 @@ function FormComponent() {
 
     console.log("FormData: ", formData);
     toast.success("Account created successfully");
+    localStorage.setItem("sessionToken", "allow him");
+    setTimeout(() => {
+      navigate("/main/")
+    }, 3500);
   };
 
   return (
@@ -80,8 +86,8 @@ function FormComponent() {
           id="fullName"
           value={formData.fullName}
           placeholder="Enter your full name"
-          className="py-2 px-2 shadow-sm focus:scale-101
-                  transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
+          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md 
+          focus:ring-2 focus:ring-royal-azure"
           onChange={handleInputChange}
         />
       </div>

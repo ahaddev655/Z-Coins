@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function MainProfilePage() {
-  return (
-    <div>
-      
-    </div>
-  )
+  return <div></div>;
 }
 
-export default MainProfilePage
+export default MainProfilePage;

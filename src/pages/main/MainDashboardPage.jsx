@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function MainDashboardPage() {
   const [userName, setUserName] = useState("Agilan");
+  const navigate = useNavigate();
   const [coins, setCoins] = useState({
     img: "/assets/bitcoin.png",
     name: "Bitcoin",
@@ -9,8 +11,17 @@ function MainDashboardPage() {
     pnl: 9.77,
     amount: "2,509.75",
   });
+
+  useEffect(() => {
+    const userToken = localStorage.getItem("sessionToken");
+
+    if (!userToken || userToken.length === 0) {
+      navigate("/");
+    }
+  }, [navigate]);
+
   return (
-    <div className="lg:px-6 md:px-3 sm:px-1.5 px-1 py-6">
+    <div className="lg:px-6 px-3 py-6 w-full">
       {/* Banner */}
       <div className="py-6 px-5 text-white shadow-sm bg-oceanic-blue rounded-xl">
         <p className="font-light">Welcome {userName},</p>
@@ -26,6 +37,7 @@ function MainDashboardPage() {
       </div>
       {/* Trending Coins */}
       <div className="mt-[33px]">
+        <h1 className="text-3xl font-semibold text-midnight-gray">Trending Coins</h1>
         <div className="mt-4 space-y-3">
           {Array(8)
             .fill()

@@ -7,6 +7,7 @@ import MainDashboardPage from "./pages/main/MainDashboardPage";
 import MainPortfolioPage from "./pages/main/MainPortfolioPage";
 import MainMarketPage from "./pages/main/MainMarketPage";
 import MainProfilePage from "./pages/main/MainProfilePage";
+import MainSearchPage from "./pages/main/MainSearchPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -30,11 +31,15 @@ function App() {
           path: "market",
           element: <MainMarketPage />,
         },
+        {
+          path: "profile",
+          element: <MainProfilePage />,
+        },
+        {
+          path: "search",
+          element: <MainSearchPage />,
+        },
       ],
-    },
-    {
-      path: "/profile",
-      element: <MainProfilePage />,
     },
   ]);
   return <RouterProvider router={router} />;
