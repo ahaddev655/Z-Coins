@@ -3,9 +3,13 @@ import { AiOutlineHome, AiOutlineLineChart } from "react-icons/ai";
 import { IoSettingsOutline } from "react-icons/io5";
 import { LuLogOut, LuUserRound } from "react-icons/lu";
 import { VscPieChart } from "react-icons/vsc";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function MainSidebarComponent() {
+  const logOutFunction = () => {
+    localStorage.removeItem("sessionToken");
+    window.location.reload();
+  };
   return (
     <div className="lg:w-[20%] min-h-screen border-r-2 border-silver-fog shadow-xl py-3 md:block hidden relative">
       {/* Logo */}
@@ -99,10 +103,13 @@ function MainSidebarComponent() {
               <IoSettingsOutline className="w-[25px] h-[25px]" /> Settings
             </NavLink>
           </li>
-          <li className="mt-auto">
-            <Link className="text-xl flex items-center mt-auto gap-2 p-3 rounded-md transition-colors bg-royal-azure text-white">
-              <LuLogOut className="w-[25px] h-[25px]" /> Log Out
-            </Link>
+          <li
+            onClick={logOutFunction}
+            className="mt-auto text-xl flex items-center gap-2 p-3 rounded-md transition-colors bg-royal-azure
+            text-white cursor-pointer"
+          >
+            <LuLogOut className="w-[25px] h-[25px]" />
+            Log Out
           </li>
         </ul>
       </div>

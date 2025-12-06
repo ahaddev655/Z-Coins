@@ -1,27 +1,30 @@
 import React, { useEffect, useState } from "react";
 import LoadingPage from "./LoadingPage";
-import { LuEye, LuEyeClosed } from "react-icons/lu";
 import FormComponent from "../components/FormComponent";
 import { Bounce, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const [loading, setLoading] = useState(true);
   const [fade, setFade] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setFade(true);
-    }, 3500);
-
-    const finishTimer = setTimeout(() => {
-      setLoading(false);
-    }, 4000);
+    const timer = setTimeout(() => setFade(true), 3500);
+    const finishTimer = setTimeout(() => setLoading(false), 4000);
 
     return () => {
       clearTimeout(timer);
       clearTimeout(finishTimer);
     };
   }, []);
+
+  useEffect(() => {
+    const userToken = localStorage.getItem("sessionToken");
+    if (userToken && userToken.length > 0) {
+      navigate("/main/");
+    }
+  }, [navigate]);
 
   return (
     <>
@@ -43,6 +46,7 @@ function LoginPage() {
           theme="light"
           transition={Bounce}
         />
+
         <div className="flex items-center justify-center h-screen px-3">
           <div className="sm:w-md w-sm shadow-xl bg-cloud-white border-2 border-silver-fog rounded-xl p-3">
             {/* Logo */}
@@ -61,6 +65,7 @@ function LoginPage() {
                 Create an account for investing in your future
               </p>
             </div>
+
             {/* Form */}
             <FormComponent />
           </div>

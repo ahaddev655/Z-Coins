@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 function MainSettingsPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -14,6 +16,20 @@ function MainSettingsPage() {
     email: "ahad97140@gmail.com",
     mobileNumber: "03165837272",
   });
+
+  // Delete Account
+  const deleteAccFunction = () => {
+    localStorage.removeItem("sessionToken");
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    const userToken = localStorage.getItem("sessionToken");
+
+    if (!userToken || userToken.length === 0) {
+      navigate("/");
+    }
+  }, [navigate]);
   return (
     <div className="flex flex-col page items-center justify-center">
       {/* Nav Tabs */}
@@ -161,6 +177,7 @@ function MainSettingsPage() {
             Want to delete your account?
           </p>
           <button
+            onClick={deleteAccFunction}
             type="button"
             className="bg-crimson-fire hover:scale-102 text-white rounded-md px-6 py-3 transition-all ease-linear
             duration-200 hover:shadow-md hover:shadow-crimson-fire/50"

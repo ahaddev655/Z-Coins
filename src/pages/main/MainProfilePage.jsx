@@ -1,6 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function MainProfilePage() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userToken = localStorage.getItem("sessionToken");
+
+    if (!userToken || userToken.length === 0) {
+      navigate("/");
+    }
+  }, [navigate]);
   return (
     <div className="flex items-center justify-center h-screen page">
       <div className="w-md bg-oceanic-blue rounded-xl py-6 text-center">
