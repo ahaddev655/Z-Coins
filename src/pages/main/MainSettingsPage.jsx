@@ -33,11 +33,11 @@ function MainSettingsPage() {
   return (
     <div className="flex flex-col page items-center justify-center">
       {/* Nav Tabs */}
-      <div className="w-xl rounded-t-2xl bg-white shadow-md p-3">
-        <ul className="flex items-center justify-between gap-6">
+      <div className="md:w-xl w-full rounded-t-2xl bg-white shadow-md p-3">
+        <ul className="flex items-center justify-between md:gap-6 gap-1">
           <li
             onClick={() => setSettingsToggle("account")}
-            className={`text-center font-medium cursor-pointer py-3 px-6 transition-colors ease-linear duration-150 ${
+            className={`text-center text-sm font-medium cursor-pointer py-3 px-4 transition-colors ease-linear duration-150 ${
               settingsToggle === "account"
                 ? "bg-royal-azure text-white rounded-4xl"
                 : "text-slate-mist"
@@ -47,7 +47,7 @@ function MainSettingsPage() {
           </li>
           <li
             onClick={() => setSettingsToggle("change-password")}
-            className={`text-center font-medium cursor-pointer py-3 px-6 transition-colors ease-linear duration-150 ${
+            className={`text-center text-sm font-medium cursor-pointer py-3 px-4 transition-colors ease-linear duration-150 ${
               settingsToggle === "change-password"
                 ? "bg-royal-azure text-white rounded-4xl"
                 : "text-slate-mist"
@@ -57,7 +57,7 @@ function MainSettingsPage() {
           </li>
           <li
             onClick={() => setSettingsToggle("delete-account")}
-            className={`text-center font-medium cursor-pointer py-3 px-6 transition-colors ease-linear duration-150 ${
+            className={`text-center text-sm font-medium cursor-pointer py-3 px-4 transition-colors ease-linear duration-150 ${
               settingsToggle === "delete-account"
                 ? "bg-royal-azure text-white rounded-4xl"
                 : "text-slate-mist"
@@ -69,7 +69,7 @@ function MainSettingsPage() {
       </div>
       {/* mainContent */}
       {settingsToggle === "account" && (
-        <div className="w-xl rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
+        <div className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
           {/* Edit Button */}
           <div className="text-end">
             <button
@@ -109,7 +109,7 @@ function MainSettingsPage() {
         </div>
       )}
       {settingsToggle === "change-password" && (
-        <div className="w-xl rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
+        <div className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
           {/* newPassword */}
           <div className="flex flex-col space-y-1.5 relative">
             <h4 className="text-charcoal-stone font-medium">New Password</h4>
@@ -172,7 +172,7 @@ function MainSettingsPage() {
         </div>
       )}
       {settingsToggle === "delete-account" && (
-        <div className="w-xl rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
+        <div className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
           <p className="text-xl font-medium text-charcoal-stone">
             Want to delete your account?
           </p>

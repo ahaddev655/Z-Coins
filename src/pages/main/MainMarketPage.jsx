@@ -91,16 +91,16 @@ function MainMarketPage() {
 
       <ul
         className="flex items-center border-2 border-royal-azure py-3 px-4 shadow-[0px_4px_5px_#005be3]
-        rounded-[48px] gap-6 w-[480px] flex-wrap"
+        rounded-[48px] md:gap-6 md:justify-center justify-between md:w-[480px] w-full flex-wrap"
       >
         <li>
           <button
             onClick={() => setTabToggle("all")}
-            className={`py-3 px-4 font-medium text-xl transition-colors ease-linear duration-150
+            className={`py-3 px-4 font-medium md:text-xl text-lg transition-colors ease-linear duration-150
               ${
                 tabToggle === "all"
                   ? "bg-royal-azure text-white rounded-4xl"
-                  : "text-slate-mis}t"
+                  : "text-slate-mist"
               }`}
           >
             All
@@ -110,7 +110,7 @@ function MainMarketPage() {
         <li>
           <button
             onClick={() => setTabToggle("gainer")}
-            className={`py-3 px-4 font-medium text-xl transition-colors ease-linear duration-150
+            className={`py-3 px-4 font-medium md:text-xl text-lg transition-colors ease-linear duration-150
               ${
                 tabToggle === "gainer"
                   ? "bg-royal-azure text-white rounded-4xl"
@@ -125,7 +125,7 @@ function MainMarketPage() {
         <li>
           <button
             onClick={() => setTabToggle("loser")}
-            className={`py-3 px-4 font-medium text-xl transition-colors ease-linear duration-150
+            className={`py-3 px-4 font-medium md:text-xl text-lg transition-colors ease-linear duration-150
               ${
                 tabToggle === "loser"
                   ? "bg-royal-azure text-white rounded-4xl"
@@ -140,7 +140,7 @@ function MainMarketPage() {
         <li>
           <button
             onClick={() => setTabToggle("favorites")}
-            className={`py-3 px-4 font-medium text-xl transition-colors ease-linear duration-150
+            className={`py-3 px-4 font-medium md:text-xl text-lg transition-colors ease-linear duration-150
               ${
                 tabToggle === "favorites"
                   ? "bg-royal-azure text-white rounded-4xl"
@@ -158,7 +158,7 @@ function MainMarketPage() {
         {/* No favorites message */}
         {tabToggle === "favorites" && filteredCoins.length === 0 && (
           <div className="flex items-center flex-col justify-center flex-wrap">
-            <div className="w-[438px] h-[400px]">
+            <div className="md:w-[438px] md:h-[400px]">
               <img
                 src="/assets/favorite section.svg"
                 alt="IMG"
