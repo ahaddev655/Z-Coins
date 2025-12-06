@@ -43,7 +43,7 @@ function LoginPage() {
           theme="light"
           transition={Bounce}
         />
-        <div className="flex items-center justify-center h-screen px-2">
+        <div className="flex items-center justify-center h-screen px-3">
           <div className="sm:w-md w-sm shadow-xl bg-cloud-white border-2 border-silver-fog rounded-xl p-3">
             {/* Logo */}
             <div className="space-y-2 text-center">

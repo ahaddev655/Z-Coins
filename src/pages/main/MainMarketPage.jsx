@@ -69,7 +69,7 @@ function MainMarketPage() {
   });
 
   return (
-    <div className="lg:px-6 px-3 py-6 w-full">
+    <div className="page">
       {/* Title */}
       <div className="items-center justify-between flex w-full">
         <div>
@@ -96,11 +96,12 @@ function MainMarketPage() {
         <li>
           <button
             onClick={() => setTabToggle("all")}
-            className={`py-3 px-4 font-medium text-xl transition-all ${
-              tabToggle === "all"
-                ? "bg-royal-azure text-white rounded-4xl"
-                : "text-slate-mist"
-            }`}
+            className={`py-3 px-4 font-medium text-xl transition-colors ease-linear duration-150
+              ${
+                tabToggle === "all"
+                  ? "bg-royal-azure text-white rounded-4xl"
+                  : "text-slate-mis}t"
+              }`}
           >
             All
           </button>
@@ -109,10 +110,12 @@ function MainMarketPage() {
         <li>
           <button
             onClick={() => setTabToggle("gainer")}
-            className={`py-3 px-4 font-medium text-xl transition-all ${
-              tabToggle === "gainer"
-                ? "bg-royal-azure text-white rounded-4xl"
-                : "text-slate-mist"
+            className={`py-3 px-4 font-medium text-xl transition-colors ease-linear duration-150
+              ${
+                tabToggle === "gainer"
+                  ? "bg-royal-azure text-white rounded-4xl"
+                  : "text-slate-mist"
+              }
             }`}
           >
             Gainer
@@ -122,10 +125,12 @@ function MainMarketPage() {
         <li>
           <button
             onClick={() => setTabToggle("loser")}
-            className={`py-3 px-4 font-medium text-xl transition-all ${
-              tabToggle === "loser"
-                ? "bg-royal-azure text-white rounded-4xl"
-                : "text-slate-mist"
+            className={`py-3 px-4 font-medium text-xl transition-colors ease-linear duration-150
+              ${
+                tabToggle === "loser"
+                  ? "bg-royal-azure text-white rounded-4xl"
+                  : "text-slate-mist"
+              }
             }`}
           >
             Loser
@@ -135,10 +140,12 @@ function MainMarketPage() {
         <li>
           <button
             onClick={() => setTabToggle("favorites")}
-            className={`py-3 px-4 font-medium text-xl transition-all ${
-              tabToggle === "favorites"
-                ? "bg-royal-azure text-white rounded-4xl"
-                : "text-slate-mist"
+            className={`py-3 px-4 font-medium text-xl transition-colors ease-linear duration-150
+              ${
+                tabToggle === "favorites"
+                  ? "bg-royal-azure text-white rounded-4xl"
+                  : "text-slate-mist"
+              }
             }`}
           >
             Favorites
@@ -202,9 +209,9 @@ function MainMarketPage() {
                 <div className="text-end">
                   <button onClick={() => toggleFavorite(coin.shortForm)}>
                     {favorites.includes(coin.shortForm) ? (
-                      <GoHeartFill className="w-6 h-6" />
+                      <GoHeartFill className="w-6 h-6 text-crimson-fire hover:scale-105 transition-transform ease-in-out duration-300" />
                     ) : (
-                      <GoHeart className="w-6 h-6" />
+                      <GoHeart className="w-6 h-6 text-crimson-fire hover:scale-105 transition-transform ease-in-out duration-300" />
                     )}
                   </button>
                 </div>

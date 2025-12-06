@@ -8,6 +8,7 @@ import MainPortfolioPage from "./pages/main/MainPortfolioPage";
 import MainMarketPage from "./pages/main/MainMarketPage";
 import MainProfilePage from "./pages/main/MainProfilePage";
 import MainSearchPage from "./pages/main/MainSearchPage";
+import MainSettingsPage from "./pages/main/MainSettingsPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -38,6 +39,10 @@ function App() {
         {
           path: "search",
           element: <MainSearchPage />,
+        },
+        {
+          path: "settings",
+          element: <MainSettingsPage />,
         },
       ],
     },

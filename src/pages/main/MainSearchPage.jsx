@@ -48,11 +48,11 @@ function MainSearchPage() {
   const filteredCoins = coins.filter(
     (coin) =>
       coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      coin.shortForm.toLowerCase().includes(searchQuery.toLowerCase())
+      coin.shortForm.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
-    <div className="lg:px-6 px-3 py-6 w-full">
+    <div className="page">
       <div className="flex items-center justify-between gap-4 mb-9">
         <input
           type="text"

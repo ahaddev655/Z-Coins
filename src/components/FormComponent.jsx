@@ -69,7 +69,7 @@ function FormComponent() {
     toast.success("Account created successfully");
     localStorage.setItem("sessionToken", "allow him");
     setTimeout(() => {
-      navigate("/main/")
+      navigate("/main/");
     }, 3500);
   };
 

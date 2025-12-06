@@ -6,7 +6,7 @@ function MainPortfolioPage() {
 
   // Load favorites from localStorage
   const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem("yourCoins");
+    const saved = localStorage.getItem("favoriteCoins");
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -53,7 +53,7 @@ function MainPortfolioPage() {
   const yourCoins = coins.filter((c) => favorites.includes(c.shortForm));
 
   return (
-    <div className="lg:px-6 px-3 py-6 w-full">
+    <div className="page">
       {/* Banner */}
       <div className="py-6 px-5 text-white shadow-sm bg-oceanic-blue rounded-xl">
         <p className="font-medium sm:text-2xl text-xl">Portfolio</p>

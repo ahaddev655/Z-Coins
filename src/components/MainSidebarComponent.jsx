@@ -1,12 +1,13 @@
 import React from "react";
 import { AiOutlineHome, AiOutlineLineChart } from "react-icons/ai";
+import { IoSettingsOutline } from "react-icons/io5";
 import { LuLogOut, LuUserRound } from "react-icons/lu";
 import { VscPieChart } from "react-icons/vsc";
 import { Link, NavLink } from "react-router-dom";
 
 function MainSidebarComponent() {
   return (
-    <div className="lg:w-[20%] min-h-screen border-r-2 border-silver-fog shadow-xl py-3 md:block hidden">
+    <div className="lg:w-[20%] min-h-screen border-r-2 border-silver-fog shadow-xl py-3 md:block hidden relative">
       {/* Logo */}
       <NavLink end to={"/main/"} className="space-y-2 text-center">
         <div className="flex items-center justify-center gap-3">
@@ -22,7 +23,7 @@ function MainSidebarComponent() {
       </NavLink>
       <hr className="my-3 border border-silver-fog" />
       <div className="px-3 flex flex-col">
-        <ul className="space-y-3">
+        <ul className="space-y-3 flex flex-col">
           <li>
             <NavLink
               end
@@ -82,6 +83,26 @@ function MainSidebarComponent() {
             >
               <LuUserRound className="w-[25px] h-[25px]" /> Profile
             </NavLink>
+          </li>
+          <li>
+            <NavLink
+              end
+              to="/main/settings"
+              className={({ isActive }) =>
+                `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
+                  isActive
+                    ? "bg-royal-azure text-white"
+                    : "hover:bg-royal-azure hover:text-white"
+                }`
+              }
+            >
+              <IoSettingsOutline className="w-[25px] h-[25px]" /> Settings
+            </NavLink>
+          </li>
+          <li className="mt-auto">
+            <Link className="text-xl flex items-center mt-auto gap-2 p-3 rounded-md transition-colors bg-royal-azure text-white">
+              <LuLogOut className="w-[25px] h-[25px]" /> Log Out
+            </Link>
           </li>
         </ul>
       </div>

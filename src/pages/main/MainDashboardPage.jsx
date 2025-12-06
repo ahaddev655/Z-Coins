@@ -21,7 +21,7 @@ function MainDashboardPage() {
   }, [navigate]);
 
   return (
-    <div className="lg:px-6 px-3 py-6 w-full">
+    <div className="page">
       {/* Banner */}
       <div className="py-6 px-5 text-white shadow-sm bg-oceanic-blue rounded-xl">
         <p className="font-light">Welcome {userName},</p>
@@ -37,7 +37,9 @@ function MainDashboardPage() {
       </div>
       {/* Trending Coins */}
       <div className="mt-[33px]">
-        <h1 className="text-3xl font-semibold text-midnight-gray">Trending Coins</h1>
+        <h1 className="text-3xl font-semibold text-midnight-gray">
+          Trending Coins
+        </h1>
         <div className="mt-4 space-y-3">
           {Array(8)
             .fill()
