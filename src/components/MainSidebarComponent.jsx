@@ -7,7 +7,7 @@ import { NavLink } from "react-router-dom";
 
 function MainSidebarComponent() {
   const logOutFunction = () => {
-    localStorage.removeItem("sessionToken");
+    localStorage.setItem("loginAuthority", 0);
     window.location.reload();
   };
   return (
