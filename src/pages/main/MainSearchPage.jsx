@@ -37,9 +37,8 @@ function MainSearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const userToken = localStorage.getItem("sessionToken");
-
-    if (!userToken || userToken.length === 0) {
+    const loginAuthority = localStorage.getItem("loginAuthority");
+    if (loginAuthority === 0) {
       navigate("/");
     }
   }, [navigate]);

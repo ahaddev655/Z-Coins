@@ -4,7 +4,7 @@ import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-function FormComponent() {
+function SignUpFormComponent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -75,22 +75,6 @@ function FormComponent() {
 
   return (
     <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
-      {/* fullName */}
-      <div className="flex gap-.5 flex-col">
-        <label htmlFor="fullName" className="text-charcoal-stone">
-          Full Name
-        </label>
-        <input
-          type="text"
-          name="fullName"
-          id="fullName"
-          value={formData.fullName}
-          placeholder="Enter your full name"
-          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md 
-          focus:ring-2 focus:ring-royal-azure"
-          onChange={handleInputChange}
-        />
-      </div>
       {/* email */}
       <div className="flex gap-.5 flex-col">
         <label htmlFor="email" className="text-charcoal-stone">
@@ -134,49 +118,6 @@ function FormComponent() {
           />
         )}
       </div>
-      {/* confirmPassword */}
-      <div className="flex gap-.5 flex-col relative">
-        <label htmlFor="confirmPassword" className="text-charcoal-stone">
-          Confirm Password
-        </label>
-        <input
-          type={showConfirmPassword ? "text" : "password"}
-          placeholder="Enter your password"
-          name="confirmPassword"
-          id="confirmPassword"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="py-2 px-2 shadow-sm focus:scale-101 
-                  transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
-        />
-        {showConfirmPassword ? (
-          <LuEyeClosed
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="w-6 h-6 text-royal-azure hover:text-indigo-wave cursor-pointer absolute top-[35px] right-2"
-          />
-        ) : (
-          <LuEye
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="w-6 h-6 text-royal-azure hover:text-indigo-wave cursor-pointer absolute top-[35px] right-2"
-          />
-        )}
-      </div>
-      {/* mobileNumber */}
-      <div className="flex gap-.5 flex-col">
-        <label htmlFor="mobileNumber" className="text-charcoal-stone">
-          Mobile Number
-        </label>
-        <input
-          value={formData.mobileNumber}
-          type="tel"
-          placeholder="Enter your mobile number"
-          name="mobileNumber"
-          id="mobileNumber"
-          className="py-2 px-2 shadow-sm focus:scale-101
-                  transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
-          onChange={handleInputChange}
-        />
-      </div>
       {/* continueWith */}
       <div className="justify-center items-center gap-1.5 sm:flex hidden">
         <div className="w-[33%] h-0.5 bg-slate-mist rounded-md" />
@@ -186,7 +127,7 @@ function FormComponent() {
       {/* continue with google */}
       <div className="flex h-14 gap-2 rounded-sm text-crimson-fire items-center justify-center cursor-pointer shadow-md hover:shadow-lg transition-shadow">
         <FaGoogle className="w-5 h-5" />
-        <p className="text-lg">Continue with google</p>
+        <p className="text-lg font-medium">Continue with google</p>
       </div>
       <div className="w-full">
         <button
@@ -194,11 +135,11 @@ function FormComponent() {
           className="w-full bg-oceanic-blue text-cloud-white h-12 rounded-sm text-lg font-medium hover:shadow-lg ease-linear
                   hover:scale-101 transition-all"
         >
-          Create Account
+          Login
         </button>
       </div>
     </form>
   );
 }
 
-export default FormComponent;
+export default SignUpFormComponent;

@@ -4,18 +4,44 @@ import { useNavigate } from "react-router-dom";
 function MainDashboardPage() {
   const [userName, setUserName] = useState("Agilan");
   const navigate = useNavigate();
-  const [coins, setCoins] = useState({
-    img: "/assets/bitcoin.png",
-    name: "Bitcoin",
-    shortForm: "BTC",
-    pnl: 9.77,
-    amount: "2,509.75",
-  });
+  const [popUpToggle, setPopUpToggle] = useState(false);
+
+  const [coins, setCoins] = useState([
+    {
+      img: "/assets/bitcoin.png",
+      name: "Bitcoin",
+      shortForm: "BTC",
+      pnl: 9.77,
+      amount: "2,509.75",
+    },
+    {
+      img: "/assets/bitcoin.png",
+      name: "Ethereum",
+      shortForm: "ETH",
+      pnl: -3.12,
+      amount: "1,842.20",
+    },
+    {
+      img: "/assets/bitcoin.png",
+      name: "Cardano",
+      shortForm: "ADA",
+      pnl: 4.21,
+      amount: "0.52",
+    },
+    {
+      img: "/assets/bitcoin.png",
+      name: "Solana",
+      shortForm: "SOL",
+      pnl: -1.68,
+      amount: "98.42",
+    },
+  ]);
+
+  const [selectedCoin, setSelectedCoin] = useState(null);
 
   useEffect(() => {
-    const userToken = localStorage.getItem("sessionToken");
-
-    if (!userToken || userToken.length === 0) {
+    const loginAuthority = localStorage.getItem("loginAuthority");
+    if (loginAuthority === 0) {
       navigate("/");
     }
   }, [navigate]);
@@ -25,69 +51,149 @@ function MainDashboardPage() {
       {/* Banner */}
       <div className="py-6 px-5 text-white shadow-sm bg-oceanic-blue rounded-xl">
         <p className="font-light">Welcome {userName},</p>
-        <h1 className="mt-2 mb-4 sm:text-2xl text-xl font-medium">
-          Make you first Investment today
+        <h1 className="my-2 sm:text-2xl text-xl font-medium">
+          To Your Private Trading Hub
         </h1>
-        <button
-          type="button"
-          className="py-2 px-3 rounded-sm bg-cloud-white text-oceanic-blue font-medium shadow-sm hover:shadow-md transition-all hover:bg-white"
-        >
-          Invest Today
-        </button>
+        <p className="font-light">Practice trading here before real-time trading</p>
       </div>
+
       {/* Trending Coins */}
       <div className="mt-[33px]">
         <h1 className="text-3xl font-semibold text-midnight-gray">
           Trending Coins
         </h1>
+
         <div className="mt-4 space-y-3">
-          {Array(8)
-            .fill()
-            .map((_, i) => (
-              <div
-                key={i}
-                className="shadow-[0px_2px_4px_#00000013] hover:shadow-lg transition-shadow bg-white rounded-lg p-4 flex items-center justify-between flex-wrap"
-              >
-                <div className="flex items-center gap-3 flex-wrap">
-                  <img src={coins.img} alt="IMG" />
-                  <div className="space-y-[3px]">
-                    <h1 className="font-medium">{coins.name}</h1>
-                    <p className="text-slate-mist font-medium sm:text-base text-sm">
-                      {coins.shortForm}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6 flex-wrap">
-                  {coins.pnl > 0 ? (
-                    <img
-                      src="/assets/gain vector.svg"
-                      alt="IMG"
-                      className="sm:w-16 sm:h-16"
-                    />
-                  ) : (
-                    <img
-                      src="/assets/loss vector.svg"
-                      alt="IMG"
-                      className="sm:w-16 sm:h-16"
-                    />
-                  )}
-                  <div className="space-y-[5px]">
-                    <h1 className="sm:text-2xl text-lg font-medium">
-                      ${coins.amount}
-                    </h1>
-                    {coins.pnl > 0 ? (
-                      <p className="text-end text-emerald-leaf font-medium sm:text-lg text-sm">
-                        +{coins.pnl}%
-                      </p>
-                    ) : (
-                      <p className="text-end text-crimson-fire font-medium sm:text-lg text-sm">
-                        {coins.pnl}%
-                      </p>
-                    )}
-                  </div>
+          {coins.map((c, i) => (
+            <div
+              onClick={() => {
+                setSelectedCoin(c);
+                setPopUpToggle(true);
+              }}
+              key={i}
+              className="cursor-pointer shadow-[0px_2px_4px_#00000013] hover:shadow-lg transition-shadow bg-white rounded-lg p-4 flex items-center justify-between flex-wrap"
+            >
+              <div className="flex items-center gap-3 flex-wrap">
+                <img src={c.img} alt="coin" />
+                <div className="space-y-[3px]">
+                  <h1 className="font-medium">{c.name}</h1>
+                  <p className="text-slate-mist font-medium sm:text-base text-sm">
+                    {c.shortForm}
+                  </p>
                 </div>
               </div>
-            ))}
+
+              <div className="flex items-center gap-6 flex-wrap">
+                {c.pnl > 0 ? (
+                  <img
+                    src="/assets/gain vector.svg"
+                    alt="gain"
+                    className="sm:w-16 sm:h-16"
+                  />
+                ) : (
+                  <img
+                    src="/assets/loss vector.svg"
+                    alt="loss"
+                    className="sm:w-16 sm:h-16"
+                  />
+                )}
+
+                <div className="space-y-[5px]">
+                  <h1 className="sm:text-2xl text-lg font-medium">
+                    ${c.amount}
+                  </h1>
+                  {c.pnl > 0 ? (
+                    <p className="text-end text-emerald-leaf font-medium sm:text-lg text-sm">
+                      +{c.pnl}%
+                    </p>
+                  ) : (
+                    <p className="text-end text-crimson-fire font-medium sm:text-lg text-sm">
+                      {c.pnl}%
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Popup */}
+      <div
+        className={`fixed top-0 left-0 w-full h-full bg-black/50 backdrop-blur-md flex justify-center items-center transition-opacity duration-300 ease-in-out ${
+          popUpToggle ? "opacity-100 z-50" : "opacity-0 -z-50"
+        }`}
+        onClick={() => {
+          setPopUpToggle(false);
+          setSelectedCoin(null);
+        }}
+      >
+        <div
+          className={`md:w-[450px] w-[320px] bg-white rounded-md transition-all duration-300 ease-in-out p-6 border-2 border-slate-mist shadow-2xl ${
+            popUpToggle
+              ? "translate-y-0 opacity-100"
+              : "translate-y-5 opacity-0"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {selectedCoin && (
+            <>
+              <div className="flex justify-center">
+                <img
+                  src={selectedCoin.img}
+                  className="w-20"
+                  alt={selectedCoin.name}
+                />
+              </div>
+
+              <h1 className="text-2xl text-center font-semibold mt-2">
+                {selectedCoin.name} ({selectedCoin.shortForm})
+              </h1>
+
+              <div className="flex justify-between items-center gap-3 mt-4">
+                <h4 className="text-slate-mist font-medium">Amount</h4>
+                <h5 className="font-semibold text-lg text-charcoal-stone">
+                  {selectedCoin.amount}
+                </h5>
+              </div>
+
+              <div className="flex justify-between items-center gap-3 mt-2">
+                <h4 className="text-slate-mist font-medium">PNL</h4>
+                <h5
+                  className={`text-lg font-medium flex items-center gap-1 ${
+                    selectedCoin.pnl > 0
+                      ? "text-emerald-leaf"
+                      : "text-crimson-fire"
+                  }`}
+                >
+                  {selectedCoin.pnl > 0 && "+"}
+                  {selectedCoin.pnl}%
+                </h5>
+              </div>
+
+              <div className="flex justify-center mt-6 gap-3">
+                <button
+                  onClick={() => {
+                    setPopUpToggle(false);
+                    setSelectedCoin(null);
+                  }}
+                  className="bg-green-600 hover:scale-105 text-white rounded-md px-6 py-3 transition-all duration-200 hover:shadow-md w-full"
+                >
+                  Buy
+                </button>
+
+                <button
+                  onClick={() => {
+                    setPopUpToggle(false);
+                    setSelectedCoin(null);
+                  }}
+                  className="bg-crimson-fire hover:scale-105 text-white rounded-md px-6 py-3 transition-all duration-200 hover:shadow-md w-full"
+                >
+                  Sell
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

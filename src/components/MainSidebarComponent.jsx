@@ -116,7 +116,7 @@ function MainSidebarComponent() {
         </div>
       </div>
       <div
-        className="md:hidden fixed bottom-0 h-[100px] bg-cloud-white shadow-[0px_0px_20px_#343a40] border-2 border-silver-fog z-50
+        className="md:hidden fixed bottom-0 py-2 bg-cloud-white shadow-[0px_0px_20px_#343a40] border-2 border-silver-fog z-50
       w-full flex items-center justify-center"
       >
         <ul className="space-x-3 flex items-center justify-center">

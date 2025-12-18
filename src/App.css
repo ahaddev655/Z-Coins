@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 @theme {
+  /* Fonts */
   --font-poppins: "Poppins", sans-serif;
   --font-montserrat: "Montserrat", sans-serif;
+  /* Colors */
   --color-oceanic-blue: #0063f5;
   --color-midnight-gray: #212529;
   --color-charcoal-stone: #343a40;
@@ -20,5 +22,5 @@
 }
 
 .page {
-  @apply lg:w-[80%] w-full lg:px-6 px-4 py-6;
+  @apply lg:w-[80%] w-full lg:px-6 px-4 py-6 md:mb-0 mb-17;
 }

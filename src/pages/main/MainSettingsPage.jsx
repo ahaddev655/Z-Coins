@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import EditProfileComponent from './../../components/EditProfileComponent';
 
 function MainSettingsPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +17,21 @@ function MainSettingsPage() {
     email: "ahad97140@gmail.com",
     mobileNumber: "03165837272",
   });
+  const [editProfile, setEditProfile] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    fullName: "",
+    email: "",
+    mobileNumber: "",
+  });
+
+  // Initialize edit form data when userData changes
+  useEffect(() => {
+    setEditFormData({
+      fullName: userData.fullName,
+      email: userData.email,
+      mobileNumber: userData.mobileNumber,
+    });
+  }, [userData]);
 
   // Delete Account
   const deleteAccFunction = () => {
@@ -23,13 +39,38 @@ function MainSettingsPage() {
     window.location.reload();
   };
 
-  useEffect(() => {
-    const userToken = localStorage.getItem("sessionToken");
+  // Handle password change
+  const handleChangePassword = () => {
+    if (!newPassword || !confirmPassword) {
+      toast.error("Please fill in both password fields");
+      return;
+    }
 
-    if (!userToken || userToken.length === 0) {
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
+    // In a real app, you would make an API call here
+    toast.success("Password changed successfully!");
+
+    // Reset password fields
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
+  useEffect(() => {
+    const loginAuthority = localStorage.getItem("loginAuthority");
+    if (loginAuthority === 0) {
       navigate("/");
     }
   }, [navigate]);
+
   return (
     <div className="flex flex-col page items-center justify-center">
       {/* Nav Tabs */}
@@ -67,47 +108,12 @@ function MainSettingsPage() {
           </li>
         </ul>
       </div>
+
       {/* mainContent */}
       {settingsToggle === "account" && (
-        <div className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
-          {/* Edit Button */}
-          <div className="text-end">
-            <button
-              type="button"
-              className="bg-royal-azure hover:scale-102 text-white rounded-md px-6 py-3 transition-all ease-linear
-            duration-200 hover:shadow-md hover:shadow-royal-azure/50"
-            >
-              Edit Profile
-            </button>
-          </div>
-          {/* profileImage */}
-          <div className="flex justify-between items-center gap-3">
-            <h4 className="text-charcoal-stone font-medium">Profile Image</h4>
-            <h5 className="font-medium text-royal-azure">
-              <img src={userImage} alt="IMG" />
-            </h5>
-          </div>
-          {/* fullName */}
-          <div className="flex justify-between items-center gap-3">
-            <h4 className="text-charcoal-stone font-medium">Full name</h4>
-            <h5 className="font-medium text-royal-azure">
-              {userData.fullName}
-            </h5>
-          </div>
-          {/* email */}
-          <div className="flex justify-between items-center gap-3">
-            <h4 className="text-charcoal-stone font-medium">Email</h4>
-            <h5 className="font-medium text-royal-azure">{userData.email}</h5>
-          </div>
-          {/* mobileNumber */}
-          <div className="flex justify-between items-center gap-3">
-            <h4 className="text-charcoal-stone font-medium">Mobile Number</h4>
-            <h5 className="font-medium text-royal-azure">
-              {userData.mobileNumber}
-            </h5>
-          </div>
-        </div>
+        <EditProfileComponent />
       )}
+
       {settingsToggle === "change-password" && (
         <div className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
           {/* newPassword */}
@@ -115,7 +121,7 @@ function MainSettingsPage() {
             <h4 className="text-charcoal-stone font-medium">New Password</h4>
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
+              placeholder="Enter your new password"
               value={newPassword}
               name="newPassword"
               id="newPassword"
@@ -142,7 +148,7 @@ function MainSettingsPage() {
             </h4>
             <input
               type={showConfirmPassword ? "text" : "password"}
-              placeholder="Enter your password"
+              placeholder="Confirm your new password"
               name="confirmPassword"
               id="confirmPassword"
               value={confirmPassword}
@@ -163,6 +169,7 @@ function MainSettingsPage() {
             )}
           </div>
           <button
+            onClick={handleChangePassword}
             type="button"
             className="bg-green-600 hover:scale-102 text-white rounded-md px-6 py-3 transition-all ease-linear
             duration-200 hover:shadow-md hover:shadow-emerald-leaf"
@@ -171,10 +178,15 @@ function MainSettingsPage() {
           </button>
         </div>
       )}
+
       {settingsToggle === "delete-account" && (
         <div className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
           <p className="text-xl font-medium text-charcoal-stone">
-            Want to delete your account?
+            Are you sure you want to delete your account? This action cannot be
+            undone.
+          </p>
+          <p className="text-slate-mist text-sm">
+            All your data will be permanently removed from our servers.
           </p>
           <button
             onClick={deleteAccFunction}

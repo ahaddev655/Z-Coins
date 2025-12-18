@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import LoadingPage from "./LoadingPage";
-import FormComponent from "../components/FormComponent";
 import { Bounce, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import SignUpFormComponent from "../components/SignUpFormComponent";
+import LoginFormComponent from "../components/LoginFormComponent";
 
 function LoginPage() {
   const [loading, setLoading] = useState(true);
   const [fade, setFade] = useState(false);
+  const [formTabs, setFormTabs] = useState("signUp");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,8 +22,8 @@ function LoginPage() {
   }, []);
 
   useEffect(() => {
-    const userToken = localStorage.getItem("sessionToken");
-    if (userToken && userToken.length > 0) {
+    const loginAuthority = localStorage.getItem("loginAuthority");
+    if (loginAuthority === 1) {
       navigate("/main/");
     }
   }, [navigate]);
@@ -48,7 +50,11 @@ function LoginPage() {
         />
 
         <div className="flex items-center justify-center h-screen px-3">
-          <div className="sm:w-md w-sm shadow-xl bg-cloud-white border-2 border-silver-fog rounded-xl p-3">
+          <div
+            className={`sm:w-md w-sm shadow-xl bg-cloud-white border-2 border-silver-fog rounded-xl p-3 ${
+              formTabs === "signUp" ? " overflow-y-auto h-[650px]" : ""
+            }`}
+          >
             {/* Logo */}
             <div className="space-y-2 text-center">
               <div className="flex items-center justify-center gap-3">
@@ -66,8 +72,36 @@ function LoginPage() {
               </p>
             </div>
 
+            {/* NavTabs */}
+            <div className="gap-3 w-full p-1.5 bg-gray-200 rounded-md flex items-center justify-center mt-4">
+              <div
+                className={`py-3 px-6 w-full text-center font-medium rounded-md cursor-pointer transition-colors ${
+                  formTabs === "signUp"
+                    ? "bg-royal-azure text-white"
+                    : "text-charcoal-stone hover:bg-royal-azure/50"
+                }`}
+                onClick={() => setFormTabs("signUp")}
+              >
+                Signup
+              </div>
+              <div
+                className={`py-3 px-6 w-full text-center font-medium rounded-md cursor-pointer transition-colors ${
+                  formTabs === "login"
+                    ? "bg-royal-azure text-white"
+                    : "text-charcoal-stone hover:bg-royal-azure/50"
+                }`}
+                onClick={() => setFormTabs("login")}
+              >
+                Login
+              </div>
+            </div>
+
             {/* Form */}
-            <FormComponent />
+            {formTabs === "signUp" ? (
+              <SignUpFormComponent />
+            ) : (
+              <LoginFormComponent />
+            )}
           </div>
         </div>
       </div>
