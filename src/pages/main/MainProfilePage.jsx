@@ -6,7 +6,7 @@ function MainProfilePage() {
 
   useEffect(() => {
     const loginAuthority = localStorage.getItem("loginAuthority");
-    if (loginAuthority === 0) {
+    if (loginAuthority === "0") {
       navigate("/");
     }
   }, [navigate]);
