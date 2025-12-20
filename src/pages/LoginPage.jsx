@@ -22,8 +22,8 @@ function LoginPage() {
   }, []);
 
   useEffect(() => {
-    const loginAuthority = localStorage.getItem("loginAuthority");
-    if (loginAuthority === 1) {
+    const userToken = localStorage.getItem("sessionToken");
+    if (userToken) {
       navigate("/main/");
     }
   }, [navigate]);

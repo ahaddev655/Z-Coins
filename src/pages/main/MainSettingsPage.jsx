@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import EditProfileComponent from './../../components/EditProfileComponent';
+import EditProfileComponent from "./../../components/EditProfileComponent";
 
 function MainSettingsPage() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(null);
+  const [newPassword, setNewPassword] = useState(null);
   const [settingsToggle, setSettingsToggle] = useState("account");
   const [userImage, setUserImage] = useState("/assets/dummy user img.png");
   const [userData, setUserData] = useState({
@@ -60,13 +60,13 @@ function MainSettingsPage() {
     toast.success("Password changed successfully!");
 
     // Reset password fields
-    setNewPassword("");
-    setConfirmPassword("");
+    setNewPassword(null);
+    setConfirmPassword(null);
   };
 
   useEffect(() => {
-    const loginAuthority = localStorage.getItem("loginAuthority");
-    if (loginAuthority === "0") {
+    const userToken = localStorage.getItem("sessionToken");
+    if (!userToken) {
       navigate("/");
     }
   }, [navigate]);
@@ -110,9 +110,7 @@ function MainSettingsPage() {
       </div>
 
       {/* mainContent */}
-      {settingsToggle === "account" && (
-        <EditProfileComponent />
-      )}
+      {settingsToggle === "account" && <EditProfileComponent />}
 
       {settingsToggle === "change-password" && (
         <div className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">

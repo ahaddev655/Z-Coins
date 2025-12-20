@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 function SignUpFormComponent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -68,7 +68,6 @@ function SignUpFormComponent() {
     console.log("FormData: ", formData);
     toast.success("Account created successfully");
     localStorage.setItem("sessionToken", "allow him");
-    localStorage.setItem("loginAuthority", 1);
     setTimeout(() => {
       navigate("/main/");
     }, 3500);

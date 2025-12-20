@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function ChangePasswordComponent() {
-  return (
-    <div>
-      
-    </div>
-  )
+  return <div></div>;
 }
 
-export default ChangePasswordComponent
+export default ChangePasswordComponent;

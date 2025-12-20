@@ -74,8 +74,8 @@ function MainMarketPage() {
   ]);
 
   useEffect(() => {
-    const loginAuthority = localStorage.getItem("loginAuthority");
-    if (loginAuthority === "0") {
+    const userToken = localStorage.getItem("sessionToken");
+    if (!userToken) {
       navigate("/");
     }
   }, [navigate]);
@@ -93,10 +93,10 @@ function MainMarketPage() {
     tabToggle === "gainer"
       ? c.pnl > 0
       : tabToggle === "loser"
-      ? c.pnl < 0
-      : tabToggle === "favorites"
-      ? favorites.includes(c.shortForm)
-      : true
+        ? c.pnl < 0
+        : tabToggle === "favorites"
+          ? favorites.includes(c.shortForm)
+          : true,
   );
 
   return (

@@ -6,7 +6,6 @@ import MainLayout from "./layouts/MainLayout";
 import MainDashboardPage from "./pages/main/MainDashboardPage";
 import MainPortfolioPage from "./pages/main/MainPortfolioPage";
 import MainMarketPage from "./pages/main/MainMarketPage";
-import MainProfilePage from "./pages/main/MainProfilePage";
 import MainSearchPage from "./pages/main/MainSearchPage";
 import MainSettingsPage from "./pages/main/MainSettingsPage";
 
@@ -31,10 +30,6 @@ function App() {
         {
           path: "market",
           element: <MainMarketPage />,
-        },
-        {
-          path: "profile",
-          element: <MainProfilePage />,
         },
         {
           path: "search",

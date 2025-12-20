@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function DeleteAccountComponent() {
-  return (
-    <div>
-      
-    </div>
-  )
+  return <div></div>;
 }
 
-export default DeleteAccountComponent
+export default DeleteAccountComponent;

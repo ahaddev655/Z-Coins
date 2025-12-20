@@ -34,11 +34,11 @@ function MainSearchPage() {
     },
   ]);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(null);
 
   useEffect(() => {
-    const loginAuthority = localStorage.getItem("loginAuthority");
-    if (loginAuthority === "0") {
+    const userToken = localStorage.getItem("sessionToken");
+    if (!userToken) {
       navigate("/");
     }
   }, [navigate]);

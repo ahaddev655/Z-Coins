@@ -40,8 +40,8 @@ function MainDashboardPage() {
   const [selectedCoin, setSelectedCoin] = useState(null);
 
   useEffect(() => {
-    const loginAuthority = localStorage.getItem("loginAuthority");
-    if (loginAuthority === "0") {
+    const userToken = localStorage.getItem("sessionToken");
+    if (!userToken) {
       navigate("/");
     }
   }, [navigate]);
@@ -54,7 +54,9 @@ function MainDashboardPage() {
         <h1 className="my-2 sm:text-2xl text-xl font-medium">
           To Your Private Trading Hub
         </h1>
-        <p className="font-light">Practice trading here before real-time trading</p>
+        <p className="font-light">
+          Practice trading here before real-time trading
+        </p>
       </div>
 
       {/* Trending Coins */}

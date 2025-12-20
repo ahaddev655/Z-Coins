@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 function SignUpFormComponent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
