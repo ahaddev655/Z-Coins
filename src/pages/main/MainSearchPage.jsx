@@ -44,11 +44,13 @@ function MainSearchPage() {
   }, [navigate]);
 
   // Filter coins based on search query
-  const filteredCoins = coins.filter(
-    (coin) =>
-      coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      coin.shortForm.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+const filteredCoins = coins.filter((coin) => {
+  const query = (searchQuery || "").toLowerCase();
+  const coinName = (coin?.name || "").toLowerCase();
+  const coinShortForm = (coin?.shortForm || "").toLowerCase();
+
+  return coinName.includes(query) || coinShortForm.includes(query);
+});
 
   return (
     <div className="page">

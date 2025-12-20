@@ -8,6 +8,7 @@ import MainPortfolioPage from "./pages/main/MainPortfolioPage";
 import MainMarketPage from "./pages/main/MainMarketPage";
 import MainSearchPage from "./pages/main/MainSearchPage";
 import MainSettingsPage from "./pages/main/MainSettingsPage";
+import AdminLayout from "./layouts/AdminLayout";
 
 function App() {
   const router = createBrowserRouter([
@@ -40,6 +41,10 @@ function App() {
           element: <MainSettingsPage />,
         },
       ],
+    },
+    {
+      path: "/66e5753c/",
+      element: <AdminLayout />,
     },
   ]);
   return <RouterProvider router={router} />;

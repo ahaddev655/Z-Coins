@@ -18,7 +18,6 @@ function EditProfileComponent() {
     userImage: "",
   });
 
-  // FIX: Sync form data when the modal opens
   useEffect(() => {
     if (editProfile) {
       setEditFormData({

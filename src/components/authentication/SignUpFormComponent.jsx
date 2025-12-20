@@ -68,6 +68,7 @@ function SignUpFormComponent() {
     console.log("FormData: ", formData);
     toast.success("Account created successfully");
     localStorage.setItem("sessionToken", "allow him");
+    localStorage.setItem("userRole", "admin");
     setTimeout(() => {
       navigate("/main/");
     }, 3500);

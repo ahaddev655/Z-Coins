@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import EditProfileComponent from "./../../components/main/EditProfileComponent";
 import ChangePasswordComponent from "../../components/main/ChangePasswordComponent";
 import DeleteAccountComponent from "../../components/main/DeleteAccountComponent";
 
 function MainSettingsPage() {
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState(null);
-  const [newPassword, setNewPassword] = useState(null);
   const [settingsToggle, setSettingsToggle] = useState("account");
+  const [userData, setUserData] = useState({
+    fullName: "Muhammad Ahad",
+    email: "ahad97140@gmail.com",
+    mobileNumber: "03165837272",
+    userImage: "/assets/dummy user img.png",
+  });
 
-  // Initialize edit form data when userData changes
+  const [editFormData, setEditFormData] = useState({
+    fullName: "",
+    email: "",
+    mobileNumber: "",
+    userImage: "",
+  });
   useEffect(() => {
     setEditFormData({
       fullName: userData.fullName,

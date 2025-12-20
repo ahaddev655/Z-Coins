@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { LuEye, LuEyeClosed } from "react-icons/lu";
 
 function ChangePasswordComponent() {
   const [showPassword, setShowPassword] = useState(false);
@@ -54,6 +55,7 @@ function ChangePasswordComponent() {
           />
         ) : (
           <LuEye
+          
             onClick={() => setShowPassword(!showPassword)}
             className="w-6 h-6 text-royal-azure hover:text-indigo-wave cursor-pointer absolute top-10 right-2"
           />

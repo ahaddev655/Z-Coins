@@ -41,8 +41,13 @@ function SignUpFormComponent() {
     console.log("FormData: ", formData);
     toast.success("Welcome Back!");
     localStorage.setItem("sessionToken", "allow him");
+    const userRole = localStorage.getItem("userRole");
     setTimeout(() => {
-      navigate("/main/");
+      if (userRole === "admin") {
+        navigate("/66e5753c/");
+      } else {
+        navigate("/main/");
+      }
     }, 3500);
   };
 
