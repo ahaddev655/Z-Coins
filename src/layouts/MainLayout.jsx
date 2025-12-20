@@ -1,6 +1,6 @@
 import React from "react";
-import MainSidebarComponent from "../components/MainSidebarComponent";
 import { Outlet } from "react-router-dom";
+import MainSidebarComponent from './../components/main/MainSidebarComponent';
 
 function MainLayout() {
   return (

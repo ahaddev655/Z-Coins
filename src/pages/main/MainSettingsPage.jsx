@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import EditProfileComponent from "./../../components/EditProfileComponent";
-import ChangePasswordComponent from "../../components/ChangePasswordComponent";
-import DeleteAccountComponent from "../../components/DeleteAccountComponent";
+import EditProfileComponent from "./../../components/main/EditProfileComponent";
+import ChangePasswordComponent from "../../components/main/ChangePasswordComponent";
+import DeleteAccountComponent from "../../components/main/DeleteAccountComponent";
 
 function MainSettingsPage() {
   const [showPassword, setShowPassword] = useState(false);

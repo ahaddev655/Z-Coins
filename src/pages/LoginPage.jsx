@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import LoadingPage from "./LoadingPage";
 import { Bounce, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import SignUpFormComponent from "../components/SignUpFormComponent";
-import LoginFormComponent from "../components/LoginFormComponent";
+import SignUpFormComponent from "../components/authentication/SignUpFormComponent";
+import LoginFormComponent from "../components/authentication/LoginFormComponent";
 
 function LoginPage() {
   const [loading, setLoading] = useState(true);
