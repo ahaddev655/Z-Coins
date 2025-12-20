@@ -37,7 +37,7 @@ function AdminSidebarComponent() {
             <li>
               <NavLink
                 end
-                to="/main/"
+                to="/66e5753c/"
                 className={({ isActive }) =>
                   `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
                     isActive
@@ -52,7 +52,7 @@ function AdminSidebarComponent() {
             <li>
               <NavLink
                 end
-                to="/main/portfolio"
+                to="/66e5753c/users"
                 className={({ isActive }) =>
                   `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
                     isActive
@@ -74,7 +74,7 @@ function AdminSidebarComponent() {
             <li>
               <NavLink
                 end
-                to="/main/settings"
+                to="/66e5753c/settings"
                 className={({ isActive }) =>
                   `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
                     isActive
