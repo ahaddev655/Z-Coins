@@ -9,10 +9,8 @@ function SignUpFormComponent() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState(null);
   const [formData, setFormData] = useState({
-    fullName: "",
     email: "",
     password: "",
-    mobileNumber: "",
   });
   const navigate = useNavigate();
 
@@ -30,12 +28,7 @@ function SignUpFormComponent() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (
-      !formData.fullName ||
-      !formData.email ||
-      !formData.password ||
-      !formData.mobileNumber
-    ) {
+    if (!formData.email || !formData.password) {
       toast.error("All fields are required...");
       return;
     }
@@ -45,28 +38,8 @@ function SignUpFormComponent() {
       return;
     }
 
-    if (/[a-zA-Z]/.test(formData.mobileNumber)) {
-      toast.error("Phone Number cannot contain alphabets");
-      return;
-    }
-
-    if (formData.mobileNumber.length !== 11) {
-      toast.error("Phone Number length is invalid");
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      toast.error("Password should be 8 characters long");
-      return;
-    }
-
-    if (formData.password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
     console.log("FormData: ", formData);
-    toast.success("Account created successfully");
+    toast.success("Welcome Back!");
     localStorage.setItem("sessionToken", "allow him");
     setTimeout(() => {
       navigate("/main/");

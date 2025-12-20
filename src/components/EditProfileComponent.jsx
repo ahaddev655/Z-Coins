@@ -78,9 +78,24 @@ function EditProfileComponent() {
 
   return (
     <>
-      <ToastContainer transition={Bounce} />
+      <ToastContainer
+        position="top-right"
+        autoClose={2500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
 
-      <div className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
+      <form
+        className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3"
+        onSubmit={handleSaveProfile}
+      >
         <div className="text-end">
           <button
             onClick={() => setEditProfile(true)}
@@ -110,7 +125,7 @@ function EditProfileComponent() {
           <h4 className="font-medium">Email</h4>
           <h5 className="text-royal-azure">{userData.email}</h5>
         </div>
-      </div>
+      </form>
 
       {/* Modal */}
       <div
@@ -181,7 +196,7 @@ function EditProfileComponent() {
               Cancel
             </button>
             <button
-              onClick={handleSaveProfile}
+              type="submit"
               className="px-4 py-2 bg-royal-azure text-white rounded-md"
             >
               Save Changes
