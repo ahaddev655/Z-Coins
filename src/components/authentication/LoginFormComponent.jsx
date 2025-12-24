@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
@@ -6,8 +7,6 @@ import { toast } from "react-toastify";
 
 function SignUpFormComponent() {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -38,17 +37,27 @@ function SignUpFormComponent() {
       return;
     }
 
-    console.log("FormData: ", formData);
-    toast.success("Welcome Back!");
-    localStorage.setItem("sessionToken", "allow him");
-    const userRole = localStorage.getItem("userRole");
-    setTimeout(() => {
-      if (userRole === "admin") {
-        navigate("/66e5753c/");
-      } else {
-        navigate("/main/");
-      }
-    }, 3500);
+    axios
+      .post("https://z-coins-backend.vercel.app/api/auth/login", formData)
+      .then((res) => {
+        toast.success(res?.data?.message);
+        localStorage.setItem("sessionToken", res.data.token);
+        setTimeout(() => {
+          if (res.data.role === "admin") {
+            navigate("/66e5753c/");
+          } else {
+            navigate("/main/");
+          }
+        }, 3500);
+      })
+      .catch((err) => {
+        console.error("Error in Login API: ", err);
+        toast.error(
+          err?.response?.data?.error ||
+            err?.response?.data?.message ||
+            "Something went wrong"
+        );
+      });
   };
 
   return (

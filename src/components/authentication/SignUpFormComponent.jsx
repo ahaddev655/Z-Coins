@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
@@ -12,17 +13,18 @@ function SignUpFormComponent() {
     fullName: "",
     email: "",
     password: "",
+    userImage: "",
     mobileNumber: "",
   });
   const navigate = useNavigate();
 
   // handleInputChange
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files, type } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "file" ? files[0] : value,
     }));
   };
 
@@ -65,17 +67,51 @@ function SignUpFormComponent() {
       return;
     }
 
-    console.log("FormData: ", formData);
-    toast.success("Account created successfully");
-    localStorage.setItem("sessionToken", "allow him");
-    localStorage.setItem("userRole", "admin");
-    setTimeout(() => {
-      navigate("/main/");
-    }, 3500);
+    const newUserData = new FormData();
+    newUserData.append("fullName", formData.fullName);
+    newUserData.append("email", formData.email);
+    newUserData.append("password", formData.password);
+    newUserData.append("userImage", formData.userImage);
+    newUserData.append("mobileNumber", formData.mobileNumber);
+
+    axios
+      .post("https://z-coins-backend.vercel.app/api/auth/register", newUserData)
+      .then((res) => {
+        toast.success(res?.data?.message);
+        localStorage.setItem("sessionToken", res.data.token);
+        localStorage.setItem("userRole", res.data.role);
+        setTimeout(() => {
+          navigate("/main/");
+        }, 3500);
+      })
+      .catch((err) => {
+        console.error("Error in Sign-Up API: ", err);
+
+        toast.error(
+          err?.response?.data?.error ||
+            err?.response?.data?.message ||
+            "Something went wrong"
+        );
+      });
   };
 
   return (
     <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
+      {/* userImage */}
+      <div className="flex gap-.5 flex-col">
+        <label htmlFor="userImage" className="text-charcoal-stone">
+          Profile Image
+        </label>
+        <input
+          type="file"
+          name="userImage"
+          id="userImage"
+          placeholder="Enter your profile image"
+          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md 
+  focus:ring-2 focus:ring-royal-azure"
+          onChange={handleInputChange}
+        />
+      </div>
       {/* fullName */}
       <div className="flex gap-.5 flex-col">
         <label htmlFor="fullName" className="text-charcoal-stone">

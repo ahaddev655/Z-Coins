@@ -10,6 +10,7 @@ function MainSidebarComponent() {
   const [profilePopUp, setProfilePopUp] = useState(false);
   const logOutFunction = () => {
     localStorage.removeItem("sessionToken");
+    localStorage.removeItem("userRole");
     window.location.reload();
   };
   return (
