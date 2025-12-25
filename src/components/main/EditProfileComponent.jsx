@@ -1,23 +1,46 @@
-import React, { useState, useEffect } from "react";
-import { Bounce, toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Ensure CSS is imported
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function EditProfileComponent() {
-  const [userData, setUserData] = useState({
-    fullName: "Muhammad Ahad",
-    email: "ahad97140@gmail.com",
-    mobileNumber: "03165837272",
-    userImage: "/assets/dummy user img.png",
-  });
+  const userId = localStorage.getItem("userId");
 
-  const [editProfile, setEditProfile] = useState(false);
-  const [editFormData, setEditFormData] = useState({
+  const [userData, setUserData] = useState({
     fullName: "",
     email: "",
     mobileNumber: "",
     userImage: "",
   });
 
+  const [editProfile, setEditProfile] = useState(false);
+
+  const [editFormData, setEditFormData] = useState({
+    fullName: "",
+    email: "",
+    mobileNumber: "",
+    userImage: "",
+    imageFile: null,
+  });
+
+  /* ================= FETCH USER ================= */
+  const getUserDetails = async () => {
+    try {
+      const res = await axios.get(
+        `https://z-coins-backend.vercel.app/api/users/one-user/${userId}`
+      );
+      setUserData(res.data.user);
+    } catch (error) {
+      console.error("Fetch user error:", error);
+      toast.error("Failed to load profile");
+    }
+  };
+
+  useEffect(() => {
+    if (userId) getUserDetails();
+  }, [userId]);
+
+  /* =============== OPEN EDIT MODAL =============== */
   useEffect(() => {
     if (editProfile) {
       setEditFormData({
@@ -25,53 +48,49 @@ function EditProfileComponent() {
         email: userData.email,
         mobileNumber: userData.mobileNumber,
         userImage: userData.userImage,
+        imageFile: null,
       });
     }
   }, [editProfile, userData]);
 
-  const handleEditInputChange = (e) => {
+  /* =============== INPUT HANDLERS =============== */
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
+    setEditFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
     setEditFormData((prev) => ({
       ...prev,
-      [name]: value,
+      imageFile: file,
+      userImage: URL.createObjectURL(file),
     }));
   };
 
-  // FIX: Handle Image Upload correctly
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file); // Create a temporary preview URL
-      setEditFormData((prev) => ({
-        ...prev,
-        userImage: imageUrl,
-      }));
-    }
-  };
+  /* ================= SAVE PROFILE ================= */
+  const handleSaveProfile = (e) => {
+    e.preventDefault();
 
-  const handleSaveProfile = () => {
-    // Basic validation
-    if (!editFormData.fullName.trim())
-      return toast.error("Full name is required");
-    if (!editFormData.email.trim()) return toast.error("Email is required");
-    if (!editFormData.mobileNumber.trim())
-      return toast.error("Mobile number is required");
+    const { fullName, email, mobileNumber } = editFormData;
 
-    // Email validation
+    if (!fullName.trim()) return toast.error("Full name is required");
+    if (!email.trim()) return toast.error("Email is required");
+    if (!mobileNumber.trim()) return toast.error("Mobile number is required");
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(editFormData.email)) {
-      return toast.error("Please enter a valid email address");
-    }
+    if (!emailRegex.test(email)) return toast.error("Invalid email address");
 
-    // Mobile number validation
     const mobileRegex = /^[0-9]{11}$/;
-    if (!mobileRegex.test(editFormData.mobileNumber)) {
-      return toast.error("Please enter a valid 11-digit mobile number");
-    }
+    if (!mobileRegex.test(mobileNumber))
+      return toast.error("Mobile number must be 11 digits");
 
-    // Save changes
-    setUserData({ ...editFormData });
-    toast.success("Profile updated successfully!");
+    // ⚠️ API call should go here (PUT / PATCH)
+    setUserData(editFormData);
+
+    toast.success("Profile updated successfully");
     setEditProfile(false);
   };
 
@@ -80,115 +99,98 @@ function EditProfileComponent() {
       <ToastContainer
         position="top-right"
         autoClose={2500}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
         theme="light"
         transition={Bounce}
       />
 
-      <form
-        className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3"
-        onSubmit={handleSaveProfile}
-      >
+      {/* ================= PROFILE VIEW ================= */}
+      <form className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
         <div className="text-end">
           <button
+            type="button"
             onClick={() => setEditProfile(true)}
-            className="bg-royal-azure text-white rounded-md px-6 py-3 hover:shadow-lg transition-all"
+            className="bg-royal-azure text-white rounded-md px-6 py-3 hover:shadow-lg"
           >
             Edit Profile
           </button>
         </div>
 
-        <div className="flex justify-between items-center gap-3">
+        <div className="flex justify-between items-center">
           <h4 className="font-medium">Profile Image</h4>
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-royal-azure">
+          <div className="w-16 h-16 rounded-full overflow-hidden border">
             <img
-              src={userData.userImage}
+              src={userData.userImage || "/avatar.png"}
               alt="Profile"
               className="w-full h-full object-cover"
             />
           </div>
         </div>
 
-        <div className="flex justify-between items-center gap-3">
-          <h4 className="font-medium">Full name</h4>
-          <h5 className="text-royal-azure">{userData.fullName}</h5>
+        <div className="flex justify-between">
+          <h4 className="font-medium">Full Name</h4>
+          <span className="text-royal-azure">{userData.fullName}</span>
         </div>
 
-        <div className="flex justify-between items-center gap-3">
+        <div className="flex justify-between">
           <h4 className="font-medium">Email</h4>
-          <h5 className="text-royal-azure">{userData.email}</h5>
+          <span className="text-royal-azure">{userData.email}</span>
         </div>
       </form>
 
-      {/* Modal */}
+      {/* ================= EDIT MODAL ================= */}
       <div
-        className={`fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center transition-all ${
+        className={`fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center transition ${
           editProfile ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onClick={() => setEditProfile(false)}
       >
-        <div
+        <form
           className="md:w-md w-sm bg-white rounded-md p-6 shadow-2xl"
           onClick={(e) => e.stopPropagation()}
+          onSubmit={handleSaveProfile}
         >
           <h2 className="text-2xl font-semibold mb-4">Edit Profile</h2>
 
           <div className="flex flex-col items-center mb-6">
-            <div className="w-20 h-20 rounded-full overflow-hidden mb-2 border">
+            <div className="w-20 h-20 rounded-full overflow-hidden border mb-2">
               <img
-                src={editFormData.userImage}
+                src={editFormData.userImage || "/avatar.png"}
                 alt="Preview"
                 className="w-full h-full object-cover"
               />
             </div>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="text-sm"
-            />
+            <input type="file" accept="image/*" onChange={handleImageChange} />
           </div>
 
           <div className="space-y-4">
-            <div className="flex flex-col">
-              <label className="font-medium">Full Name</label>
-              <input
-                name="fullName"
-                value={editFormData.fullName}
-                onChange={handleEditInputChange}
-                className="py-2 px-3 border rounded-md"
-              />
-            </div>
+            <input
+              name="fullName"
+              value={editFormData.fullName}
+              onChange={handleInputChange}
+              placeholder="Full Name"
+              className="w-full py-2 px-3 border rounded-md"
+            />
 
-            <div className="flex flex-col">
-              <label className="font-medium">Email Address</label>
-              <input
-                name="email"
-                value={editFormData.email}
-                onChange={handleEditInputChange}
-                className="py-2 px-3 border rounded-md"
-              />
-            </div>
+            <input
+              name="email"
+              value={editFormData.email}
+              onChange={handleInputChange}
+              placeholder="Email"
+              className="w-full py-2 px-3 border rounded-md"
+            />
 
-            <div className="flex flex-col">
-              <label className="font-medium">Mobile Number</label>
-              <input
-                name="mobileNumber"
-                value={editFormData.mobileNumber}
-                onChange={handleEditInputChange}
-                className="py-2 px-3 border rounded-md"
-              />
-            </div>
+            <input
+              name="mobileNumber"
+              value={editFormData.mobileNumber}
+              onChange={handleInputChange}
+              placeholder="Mobile Number"
+              className="w-full py-2 px-3 border rounded-md"
+            />
           </div>
 
           <div className="flex justify-end gap-3 mt-6">
             <button
+              type="button"
               onClick={() => setEditProfile(false)}
               className="px-4 py-2 border rounded-md"
             >
@@ -201,7 +203,7 @@ function EditProfileComponent() {
               Save Changes
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </>
   );

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { AiOutlineHome, AiOutlineLineChart } from "react-icons/ai";
 import { IoSettingsOutline } from "react-icons/io5";
 import { LuLogOut, LuUserRound } from "react-icons/lu";
@@ -8,11 +9,39 @@ import { NavLink } from "react-router-dom";
 
 function MainSidebarComponent() {
   const [profilePopUp, setProfilePopUp] = useState(false);
+  const [userProfile, setUserProfile] = useState({
+    userImage: "",
+    fullName: "",
+    email: "",
+    mobileNumber: "",
+  });
+  const userId = localStorage.getItem("userId");
+
+  const getUserDetails = async () => {
+    axios
+      .get(`https://z-coins-backend.vercel.app/api/users/one-user/${userId}`)
+      .then((res) => {
+        console.log("User Data Details: ", res.data.user);
+        setUserProfile(res.data.user);
+      })
+      .catch((err) => {
+        console.error("User Details API Error One: ", err);
+      });
+  };
+
   const logOutFunction = () => {
     localStorage.removeItem("sessionToken");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("userId");
     window.location.reload();
   };
+
+  useEffect(() => {
+    if (userId) {
+      getUserDetails();
+    }
+  }, [userId]);
+
   return (
     <>
       {/* Sidebar */}
@@ -163,7 +192,7 @@ function MainSidebarComponent() {
             </NavLink>
           </li>
           <li
-            onClick={() => setProfilePopUp(TbRulerMeasure2)}
+            onClick={() => setProfilePopUp(true)}
             to="/main/profile"
             className="text-xl flex hover:bg-royal-azure hover:text-white items-center gap-2 p-3 rounded-md transition-colors"
           >
@@ -207,24 +236,24 @@ function MainSidebarComponent() {
               : "translate-y-full opacity-0"
           }`}
         >
-          {/* profileImage */}
           <div className="flex justify-center">
             <img
-              src="/assets/dummy user img.png"
-              className="w-30 h-30"
-              alt="IMG"
+              src={userProfile?.userImage || "/assets/default-user.png"}
+              className="w-30 h-30 rounded-full"
+              alt={userProfile?.fullName || "User"}
             />
           </div>
-          {/* fullName */}
           <h1 className="md:text-3xl text-xl mt-3 text-white font-semibold">
-            Agilan Senthil
+            {userProfile?.fullName}
           </h1>
-          {/* email */}
+
           <p className="text-white text-sm md:text-base mt-2">
-            agilansenthilkumar@gmail.com
+            {userProfile?.email}
           </p>
-          {/* mobileNumber */}
-          <p className="text-white text-sm md:text-base mt-1">+91 9444977118</p>
+
+          <p className="text-white text-sm md:text-base mt-1">
+            {userProfile?.mobileNumber}
+          </p>
         </div>
       </div>
     </>

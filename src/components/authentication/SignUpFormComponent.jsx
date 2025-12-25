@@ -79,7 +79,7 @@ function SignUpFormComponent() {
       .then((res) => {
         toast.success(res?.data?.message);
         localStorage.setItem("sessionToken", res.data.token);
-        localStorage.setItem("userRole", res.data.role);
+        localStorage.setItem("userId", res.data.id);
         setTimeout(() => {
           navigate("/main/");
         }, 3500);
