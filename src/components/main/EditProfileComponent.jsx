@@ -20,14 +20,13 @@ function EditProfileComponent() {
     email: "",
     mobileNumber: "",
     userImage: "",
-    imageFile: null,
   });
 
   /* ================= FETCH USER ================= */
   const getUserDetails = async () => {
     try {
       const res = await axios.get(
-        `https://z-coins-backend.vercel.app/api/users/one-user/${userId}`
+        `https://z-coins-backend.vercel.app/api/users/one-user/${userId}`,
       );
       setUserData(res.data.user);
     } catch (error) {
@@ -48,7 +47,6 @@ function EditProfileComponent() {
         email: userData.email,
         mobileNumber: userData.mobileNumber,
         userImage: userData.userImage,
-        imageFile: null,
       });
     }
   }, [editProfile, userData]);
@@ -74,24 +72,44 @@ function EditProfileComponent() {
   const handleSaveProfile = (e) => {
     e.preventDefault();
 
-    const { fullName, email, mobileNumber } = editFormData;
+    const { fullName, email, mobileNumber, imageFile } = editFormData;
 
-    if (!fullName.trim()) return toast.error("Full name is required");
-    if (!email.trim()) return toast.error("Email is required");
-    if (!mobileNumber.trim()) return toast.error("Mobile number is required");
+    if (!fullName || !email || !mobileNumber) {
+      return toast.error("All fields are required");
+    }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return toast.error("Invalid email address");
+    if (!email.includes("@")) {
+      return toast.error("Invalid email address");
+    }
 
-    const mobileRegex = /^[0-9]{11}$/;
-    if (!mobileRegex.test(mobileNumber))
+    if (!/^[0-9]{11}$/.test(mobileNumber)) {
       return toast.error("Mobile number must be 11 digits");
+    }
 
-    // ⚠️ API call should go here (PUT / PATCH)
-    setUserData(editFormData);
+    // Prepare FormData
+    const formData = new FormData();
+    formData.append("fullName", fullName);
+    formData.append("email", email);
+    formData.append("mobileNumber", mobileNumber);
 
-    toast.success("Profile updated successfully");
-    setEditProfile(false);
+    if (imageFile) {
+      formData.append("userImage", imageFile);
+    }
+
+    axios
+      .put(`https://z-coins-backend.vercel.app/api/users/edit-user/${userId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => {
+        setUserData(res.data.user);
+        console.log(userData);
+        toast.success(res?.data?.message || "Profile updated");
+        setEditProfile(false);
+      })
+      .catch((err) => {
+        console.error("Edit user error:", err);
+        toast.error(err?.response?.data?.message || "Failed to update profile");
+      });
   };
 
   return (
@@ -104,7 +122,7 @@ function EditProfileComponent() {
       />
 
       {/* ================= PROFILE VIEW ================= */}
-      <form className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
+      <div className="md:w-xl w-full rounded-b-2xl border-t-2 border-silver-fog bg-white shadow-md p-3 space-y-3">
         <div className="text-end">
           <button
             type="button"
@@ -114,32 +132,41 @@ function EditProfileComponent() {
             Edit Profile
           </button>
         </div>
-
-        <div className="flex justify-between items-center">
-          <h4 className="font-medium">Profile Image</h4>
-          <div className="w-16 h-16 rounded-full overflow-hidden border">
-            <img
-              src={userData.userImage || "/avatar.png"}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-between">
-          <h4 className="font-medium">Full Name</h4>
-          <span className="text-royal-azure">{userData.fullName}</span>
-        </div>
-
-        <div className="flex justify-between">
-          <h4 className="font-medium">Email</h4>
-          <span className="text-royal-azure">{userData.email}</span>
-        </div>
-      </form>
+        {userData ? (
+          <>
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">Profile Image</h4>
+              {userData.userImage ? (
+                <div className="w-16 h-16 rounded-full overflow-hidden border">
+                  <img
+                    src={userData.userImage}
+                    className="w-30 h-30 rounded-full"
+                    alt={userData?.fullName || "User"}
+                  />
+                </div>
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl font-semibold uppercase">
+                  {userData?.fullName?.charAt(0) || "U"}
+                </div>
+              )}
+            </div>
+            <div className="flex justify-between">
+              <h4 className="font-medium">Full Name</h4>
+              <span className="text-royal-azure">{userData.fullName}</span>
+            </div>
+            <div className="flex justify-between">
+              <h4 className="font-medium">Email</h4>
+              <span className="text-royal-azure">{userData.email}</span>
+            </div>
+          </>
+        ) : (
+          <p className="text-white text-lg">Loading...</p>
+        )}
+      </div>
 
       {/* ================= EDIT MODAL ================= */}
       <div
-        className={`fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center transition ${
+        className={`fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center transition-all duration-300 ${
           editProfile ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onClick={() => setEditProfile(false)}
@@ -151,17 +178,31 @@ function EditProfileComponent() {
         >
           <h2 className="text-2xl font-semibold mb-4">Edit Profile</h2>
 
+          {/* Avatar Preview */}
           <div className="flex flex-col items-center mb-6">
-            <div className="w-20 h-20 rounded-full overflow-hidden border mb-2">
-              <img
-                src={editFormData.userImage || "/avatar.png"}
-                alt="Preview"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <input type="file" accept="image/*" onChange={handleImageChange} />
+            {editFormData.userImage ? (
+              <div className="w-20 h-20 rounded-full overflow-hidden border mb-2">
+                <img
+                  src={editFormData.userImage}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl font-semibold uppercase mb-2">
+                {editFormData.fullName?.charAt(0) || "U"}
+              </div>
+            )}
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full py-2 px-3 border rounded-md"
+            />
           </div>
 
+          {/* Inputs */}
           <div className="space-y-4">
             <input
               name="fullName"
@@ -172,6 +213,7 @@ function EditProfileComponent() {
             />
 
             <input
+              type="email"
               name="email"
               value={editFormData.email}
               onChange={handleInputChange}
@@ -180,6 +222,7 @@ function EditProfileComponent() {
             />
 
             <input
+              type="tel"
               name="mobileNumber"
               value={editFormData.mobileNumber}
               onChange={handleInputChange}
@@ -188,6 +231,7 @@ function EditProfileComponent() {
             />
           </div>
 
+          {/* Buttons */}
           <div className="flex justify-end gap-3 mt-6">
             <button
               type="button"

@@ -13,7 +13,7 @@ function RecentActivitiesComponent() {
 
   const deleteActivity = (indexToDelete) => {
     setRecentActivities((prevActivities) =>
-      prevActivities.filter((_, index) => index !== indexToDelete)
+      prevActivities.filter((_, index) => index !== indexToDelete),
     );
   };
 

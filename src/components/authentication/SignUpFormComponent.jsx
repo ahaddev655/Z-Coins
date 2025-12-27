@@ -53,7 +53,7 @@ function SignUpFormComponent() {
     }
 
     if (formData.mobileNumber.length !== 11) {
-      toast.error("Phone Number length is invalid");
+      toast.error("Please remove zero or check the number again...");
       return;
     }
 
@@ -71,7 +71,9 @@ function SignUpFormComponent() {
     newUserData.append("fullName", formData.fullName);
     newUserData.append("email", formData.email);
     newUserData.append("password", formData.password);
-    newUserData.append("userImage", formData.userImage);
+    if (formData.userImage) {
+      newUserData.append("userImage", formData.userImage);
+    }
     newUserData.append("mobileNumber", formData.mobileNumber);
 
     axios
@@ -80,6 +82,14 @@ function SignUpFormComponent() {
         toast.success(res?.data?.message);
         localStorage.setItem("sessionToken", res.data.token);
         localStorage.setItem("userId", res.data.id);
+        setFormData({
+          fullName: "",
+          email: "",
+          password: "",
+          userImage: "",
+          mobileNumber: "",
+        });
+        setConfirmPassword("");
         setTimeout(() => {
           navigate("/main/");
         }, 3500);

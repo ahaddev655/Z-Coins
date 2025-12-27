@@ -107,8 +107,8 @@ const AdminUsers = () => {
               isActive: parseInt(currentUser.isActive),
               isBlocked: parseInt(currentUser.isBlocked),
             }
-          : user
-      )
+          : user,
+      ),
     );
     setShowEditPopup(false);
   };
@@ -123,8 +123,8 @@ const AdminUsers = () => {
       users.map((user) =>
         user.id === currentUser.id
           ? { ...user, isBlocked: user.isBlocked === 1 ? 0 : 1 }
-          : user
-      )
+          : user,
+      ),
     );
     setShowBlockPopup(false);
   };

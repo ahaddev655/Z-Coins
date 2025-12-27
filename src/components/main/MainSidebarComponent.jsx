@@ -21,7 +21,6 @@ function MainSidebarComponent() {
     axios
       .get(`https://z-coins-backend.vercel.app/api/users/one-user/${userId}`)
       .then((res) => {
-        console.log("User Data Details: ", res.data.user);
         setUserProfile(res.data.user);
       })
       .catch((err) => {
@@ -31,7 +30,6 @@ function MainSidebarComponent() {
 
   const logOutFunction = () => {
     localStorage.removeItem("sessionToken");
-    localStorage.removeItem("userRole");
     localStorage.removeItem("userId");
     window.location.reload();
   };
@@ -230,30 +228,42 @@ function MainSidebarComponent() {
         }`}
       >
         <div
-          className={`w-md bg-oceanic-blue rounded-xl py-6 text-center transition-all ease-in-out duration-500 ${
+          className={`w-md bg-cloud-white shadow-2xl rounded-xl py-6 text-center transition-all ease-in-out duration-500 ${
             profilePopUp
               ? "opacity-100 translate-y-0"
               : "translate-y-full opacity-0"
           }`}
         >
-          <div className="flex justify-center">
-            <img
-              src={userProfile?.userImage || "/assets/default-user.png"}
-              className="w-30 h-30 rounded-full"
-              alt={userProfile?.fullName || "User"}
-            />
-          </div>
-          <h1 className="md:text-3xl text-xl mt-3 text-white font-semibold">
-            {userProfile?.fullName}
-          </h1>
-
-          <p className="text-white text-sm md:text-base mt-2">
-            {userProfile?.email}
-          </p>
-
-          <p className="text-white text-sm md:text-base mt-1">
-            {userProfile?.mobileNumber}
-          </p>
+          {userProfile ? (
+            <>
+              <div className="flex justify-center">
+                {userProfile.userImage ? (
+                  <div className="w-16 h-16 rounded-full overflow-hidden border">
+                    <img
+                      src={userProfile.userImage}
+                      className="w-30 h-30 rounded-full"
+                      alt={userProfile?.fullName || "User"}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl font-semibold uppercase">
+                    {userProfile?.fullName?.charAt(0) || "U"}
+                  </div>
+                )}
+              </div>
+              <h1 className="md:text-3xl text-xl mt-3 text-charcoal-stone font-semibold">
+                {userProfile?.fullName}
+              </h1>
+              <p className="text-charcoal-stone font-semibold text-sm md:text-base mt-2">
+                {userProfile?.email}
+              </p>
+              <p className="text-charcoal-stone font-semibold text-sm md:text-base mt-1">
+                {userProfile?.mobileNumber}
+              </p>
+            </>
+          ) : (
+            <p className="text-white text-lg">Loading...</p>
+          )}
         </div>
       </div>
     </>

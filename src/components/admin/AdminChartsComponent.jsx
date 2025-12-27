@@ -27,7 +27,7 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler,
-  RadialLinearScale
+  RadialLinearScale,
 );
 
 const AdminChartsComponent = () => {
@@ -119,12 +119,11 @@ const AdminChartsComponent = () => {
         pointBorderWidth: 2,
       },
     ],
-    };
-    
+  };
+
   return (
     <div className="p-4 md:p-6 bg-white rounded-lg shadow-lg md:col-span-2">
       <div>
-
         {/* Line Chart */}
         <div
           className="bg-white p-4 rounded-xl border"

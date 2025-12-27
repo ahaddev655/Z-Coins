@@ -38,17 +38,9 @@ function LoginPage() {
         <ToastContainer
           position="top-right"
           autoClose={2500}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
           theme="light"
           transition={Bounce}
         />
-
         <div className="flex items-center justify-center h-screen px-3">
           <div
             className={`w-full max-w-md shadow-xl bg-cloud-white border-2 border-silver-fog rounded-xl p-4 min-h-[420px] max-h-[90vh]

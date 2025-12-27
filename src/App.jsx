@@ -11,7 +11,7 @@ import MainSettingsPage from "./pages/main/MainSettingsPage";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 
 function App() {
   const router = createBrowserRouter([

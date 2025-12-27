@@ -43,6 +43,10 @@ function SignUpFormComponent() {
         toast.success(res?.data?.message);
         localStorage.setItem("sessionToken", res.data.token);
         localStorage.setItem("userId", res.data.id);
+        setFormData({
+          email: "",
+          password: "",
+        });
         setTimeout(() => {
           if (res.data.role === "admin") {
             navigate("/66e5753c/");
