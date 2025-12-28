@@ -7,11 +7,14 @@ function DeleteAccountComponent() {
   // Delete Account
   const deleteAccFunction = () => {
     axios
-      .delete(`https://z-coins-backend.vercel.app/api/users/delete-user/${userId}`)
+      .delete(
+        `https://z-coins-backend.vercel.app/api/users/delete-user/${userId}`
+      )
       .then((res) => {
         toast.success(res?.data?.message);
         localStorage.removeItem("sessionToken");
         localStorage.removeItem("userId");
+        localStorage.removeItem("userRole");
         localStorage.removeItem("favoriteCoins");
         setTimeout(() => {
           window.location.reload();

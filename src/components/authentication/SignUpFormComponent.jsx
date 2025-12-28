@@ -82,6 +82,7 @@ function SignUpFormComponent() {
         toast.success(res?.data?.message);
         localStorage.setItem("sessionToken", res.data.token);
         localStorage.setItem("userId", res.data.id);
+        localStorage.setItem("userRole", res.data.role);
         setFormData({
           fullName: "",
           email: "",
@@ -100,7 +101,7 @@ function SignUpFormComponent() {
         toast.error(
           err?.response?.data?.error ||
             err?.response?.data?.message ||
-            "Something went wrong"
+            "Something went wrong",
         );
       });
   };

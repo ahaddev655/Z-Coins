@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaUser } from "react-icons/fa";
 import AdminChartsComponent from "../../components/admin/AdminChartsComponent";
 import RecentActivitiesComponent from "../../components/admin/RecentActivitiesComponent";
+import { useNavigate } from "react-router-dom";
 
 function AdminDashboard() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const userToken = localStorage.getItem("sessionToken");
+    const userRole = localStorage.getItem("userRole");
+    if (!userToken && !userRole) {
+      navigate("/");
+      return;
+    }
+    if (userRole !== "admin" && userToken) {
+      navigate("/main");
+    }
+  }, [navigate]);
   return (
     <div className="page w-full space-y-8">
       {/* Cards */}

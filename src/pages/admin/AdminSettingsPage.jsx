@@ -30,8 +30,13 @@ function AdminSettingsPage() {
 
   useEffect(() => {
     const userToken = localStorage.getItem("sessionToken");
-    if (!userToken) {
+    const userRole = localStorage.getItem("userRole");
+    if (!userToken && !userRole) {
       navigate("/");
+      return;
+    }
+    if (userRole !== "admin" && userToken) {
+      navigate("/main");
     }
   }, [navigate]);
 

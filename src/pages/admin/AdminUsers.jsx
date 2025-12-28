@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AdminUsers = () => {
   // Initial mock data
@@ -52,6 +53,7 @@ const AdminUsers = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showBlockPopup, setShowBlockPopup] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+    const navigate = useNavigate();
   const [newUser, setNewUser] = useState({
     fullName: "",
     email: "",
@@ -158,6 +160,17 @@ const AdminUsers = () => {
     );
   };
 
+  useEffect(() => {
+    const userToken = localStorage.getItem("sessionToken");
+    const userRole = localStorage.getItem("userRole");
+    if (!userToken && !userRole) {
+      navigate("/");
+      return;
+    }
+    if (userRole !== "admin" && userToken) {
+      navigate("/main");
+    }
+  }, [navigate]);
   return (
     <div className="bg-cloud-white page">
       <div>

@@ -28,9 +28,12 @@ function ChangePasswordComponent() {
     }
 
     axios
-      .put(`https://z-coins-backend.vercel.app/api/users/change-password/${userId}`, {
-        password,
-      })
+      .put(
+        `https://z-coins-backend.vercel.app/api/users/change-password/${userId}`,
+        {
+          password,
+        },
+      )
       .then((res) => {
         console.log(res.data);
         toast.success(res?.data?.message);

@@ -12,6 +12,8 @@ function AdminSidebarComponent() {
   const [profilePopUp, setProfilePopUp] = useState(false);
   const logOutFunction = () => {
     localStorage.removeItem("sessionToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userRole");
     window.location.reload();
   };
   return (

@@ -97,9 +97,13 @@ function EditProfileComponent() {
     }
 
     axios
-      .put(`https://z-coins-backend.vercel.app/api/users/edit-user/${userId}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
+      .put(
+        `https://z-coins-backend.vercel.app/api/users/edit-user/${userId}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      )
       .then((res) => {
         setUserData(res.data.user);
         console.log(userData);
