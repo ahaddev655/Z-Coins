@@ -1,5 +1,6 @@
+import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
@@ -8,24 +9,35 @@ import { toast } from "react-toastify";
 function SignUpFormComponent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [profilePreview, setProfilePreview] = useState(""); // <-- preview URL
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
-    userImage: "",
+    userImage: null, // File object
     mobileNumber: "",
   });
+
   const navigate = useNavigate();
+
+  const fetchGoogleImageAsFile = async (url) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new File([blob], "google-profile.jpg", { type: blob.type });
+  };
 
   // handleInputChange
   const handleInputChange = (e) => {
     const { name, value, files, type } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "file" ? files[0] : value,
-    }));
+    if (type === "file" && files[0]) {
+      setFormData((prev) => ({ ...prev, [name]: files[0] }));
+      setProfilePreview(URL.createObjectURL(files[0])); // Show preview
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   // handleSubmit
@@ -87,41 +99,78 @@ function SignUpFormComponent() {
           fullName: "",
           email: "",
           password: "",
-          userImage: "",
+          userImage: null,
           mobileNumber: "",
         });
         setConfirmPassword("");
+        setProfilePreview("");
         setTimeout(() => {
           navigate("/main/");
         }, 3500);
       })
       .catch((err) => {
         console.error("Error in Sign-Up API: ", err);
-
         toast.error(
           err?.response?.data?.error ||
             err?.response?.data?.message ||
-            "Something went wrong",
+            "Something went wrong"
         );
       });
   };
 
+  // handleGoogleSubmit
+  const handleGoogleSubmit = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      axios
+        .get(
+          `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenResponse.access_token}`
+        )
+        .then((googleRes) => {
+          return fetchGoogleImageAsFile(googleRes.data.picture).then(
+            (googleFile) => {
+              setFormData({
+                fullName: googleRes.data.name,
+                email: googleRes.data.email,
+                userImage: googleFile,
+              });
+
+              setProfilePreview(URL.createObjectURL(googleFile));
+              toast.info("Please fill the other details...");
+            }
+          );
+        })
+        .catch((err) => {
+          console.error("Google register error:", err);
+          toast.error("Google register failed");
+        });
+    },
+    onError: () => {
+      toast.error("Google Sign-In Failed");
+    },
+  });
+
   return (
     <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
-      {/* userImage */}
+      {/* Profile Image */}
       <div className="flex gap-.5 flex-col">
-        <label htmlFor="userImage" className="text-charcoal-stone">
-          Profile Image
-        </label>
-        <input
-          type="file"
-          name="userImage"
-          id="userImage"
-          placeholder="Enter your profile image"
-          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md 
-  focus:ring-2 focus:ring-royal-azure"
-          onChange={handleInputChange}
-        />
+        {profilePreview ? (
+          <img
+            src={profilePreview}
+            alt="Profile Preview"
+            className="w-24 h-24 rounded-full object-cover mb-2 mx-auto"
+          />
+        ) : (
+          <>
+            <label className="text-charcoal-stone">Profile Image</label>
+            <input
+              type="file"
+              name="userImage"
+              accept="image/*"
+              onChange={handleInputChange}
+              className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
+            />
+          </>
+        )}
       </div>
       {/* fullName */}
       <div className="flex gap-.5 flex-col">
@@ -134,8 +183,7 @@ function SignUpFormComponent() {
           id="fullName"
           value={formData.fullName}
           placeholder="Enter your full name"
-          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md 
-          focus:ring-2 focus:ring-royal-azure"
+          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
           onChange={handleInputChange}
         />
       </div>
@@ -150,8 +198,7 @@ function SignUpFormComponent() {
           name="email"
           id="email"
           value={formData.email}
-          className="py-2 px-2 shadow-sm focus:scale-101 transition-all
-                  border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
+          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
           onChange={handleInputChange}
         />
       </div>
@@ -166,8 +213,7 @@ function SignUpFormComponent() {
           value={formData.password}
           name="password"
           id="password"
-          className="py-2 px-2 shadow-sm focus:scale-101 
-                  transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
+          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
           onChange={handleInputChange}
         />
         {showPassword ? (
@@ -194,8 +240,7 @@ function SignUpFormComponent() {
           id="confirmPassword"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className="py-2 px-2 shadow-sm focus:scale-101 
-                  transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
+          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
         />
         {showConfirmPassword ? (
           <LuEyeClosed
@@ -220,27 +265,23 @@ function SignUpFormComponent() {
           placeholder="Enter your mobile number"
           name="mobileNumber"
           id="mobileNumber"
-          className="py-2 px-2 shadow-sm focus:scale-101
-                  transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
+          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
           onChange={handleInputChange}
         />
       </div>
-      {/* continueWith */}
-      <div className="justify-center items-center gap-1.5 sm:flex hidden">
-        <div className="w-[33%] h-0.5 bg-slate-mist rounded-md" />
-        <p className="text-sm text-slate-mist font-medium">Or continue with</p>
-        <div className="w-[33%] h-0.5 bg-slate-mist rounded-md" />
-      </div>
-      {/* continue with google */}
-      <div className="flex h-14 gap-2 rounded-sm text-crimson-fire items-center justify-center cursor-pointer shadow-md hover:shadow-lg transition-shadow">
+      {/* Google login button */}
+      <button
+        type="button"
+        onClick={handleGoogleSubmit}
+        className="flex h-14 gap-2 px-4 w-full rounded-sm text-crimson-fire items-center justify-center cursor-pointer shadow-md hover:shadow-lg transition-shadow"
+      >
         <FaGoogle className="w-5 h-5" />
-        <p className="text-lg font-medium">Continue with google</p>
-      </div>
+        <p className="text-lg font-medium">Continue with Google</p>
+      </button>
       <div className="w-full">
         <button
           type="submit"
-          className="w-full bg-oceanic-blue text-cloud-white h-12 rounded-sm text-lg font-medium hover:shadow-lg ease-linear
-                  hover:scale-101 transition-all"
+          className="w-full bg-oceanic-blue text-cloud-white h-12 rounded-sm text-lg font-medium hover:shadow-lg ease-linear hover:scale-101 transition-all"
         >
           Create Account
         </button>

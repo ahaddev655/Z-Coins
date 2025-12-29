@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function MainDashboardPage() {
-  const [userName, setUserName] = useState("Agilan");
   const navigate = useNavigate();
   const [popUpToggle, setPopUpToggle] = useState(false);
 
@@ -50,9 +49,8 @@ function MainDashboardPage() {
     <div className="page">
       {/* Banner */}
       <div className="py-6 px-5 text-white shadow-sm bg-oceanic-blue rounded-xl">
-        <p className="font-light">Welcome {userName},</p>
         <h1 className="my-2 sm:text-2xl text-xl font-medium">
-          To Your Private Trading Hub
+          Welcome To Your Private Trading Hub
         </h1>
         <p className="font-light">
           Practice trading here before real-time trading

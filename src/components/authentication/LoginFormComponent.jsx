@@ -111,17 +111,6 @@ function SignUpFormComponent() {
           />
         )}
       </div>
-      {/* continueWith */}
-      <div className="justify-center items-center gap-1.5 sm:flex hidden">
-        <div className="w-[33%] h-0.5 bg-slate-mist rounded-md" />
-        <p className="text-sm text-slate-mist font-medium">Or continue with</p>
-        <div className="w-[33%] h-0.5 bg-slate-mist rounded-md" />
-      </div>
-      {/* continue with google */}
-      <div className="flex h-14 gap-2 rounded-sm text-crimson-fire items-center justify-center cursor-pointer shadow-md hover:shadow-lg transition-shadow">
-        <FaGoogle className="w-5 h-5" />
-        <p className="text-lg font-medium">Continue with google</p>
-      </div>
       <div className="w-full">
         <button
           type="submit"

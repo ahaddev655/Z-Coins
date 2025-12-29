@@ -141,10 +141,10 @@ function EditProfileComponent() {
             <div className="flex justify-between items-center">
               <h4 className="font-medium">Profile Image</h4>
               {userData.userImage ? (
-                <div className="w-16 h-16 rounded-full overflow-hidden border">
+                <div className="w-20 h-20 rounded-full overflow-hidden border">
                   <img
                     src={userData.userImage}
-                    className="w-30 h-30 rounded-full"
+                    className="w-full h-full"
                     alt={userData?.fullName || "User"}
                   />
                 </div>
@@ -164,7 +164,7 @@ function EditProfileComponent() {
             </div>
           </>
         ) : (
-          <p className="text-white text-lg">Loading...</p>
+          <p className="text-white text-lg">No data found</p>
         )}
       </div>
 

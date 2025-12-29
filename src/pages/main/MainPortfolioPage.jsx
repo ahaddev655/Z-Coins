@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PnlChartComponent from "../../components/main/PnlChartComponent";
 
 function MainPortfolioPage() {
   const navigate = useNavigate();
-
-  // Load favorites from localStorage
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem("favoriteCoins");
-    return saved ? JSON.parse(saved) : [];
-  });
 
   const coins = [
     {
@@ -48,11 +43,8 @@ function MainPortfolioPage() {
     }
   }, [navigate]);
 
-  // Filter only favorite coins
-  const yourCoins = coins.filter((c) => favorites.includes(c.shortForm));
-
   return (
-    <div className="page">
+    <div className="page space-y-8">
       {/* Banner */}
       <div className="py-6 px-5 text-white shadow-sm bg-oceanic-blue rounded-xl">
         <p className="font-medium sm:text-2xl text-xl">Portfolio</p>
@@ -60,70 +52,9 @@ function MainPortfolioPage() {
         <h1 className="mt-0.5 text-3xl font-semibold">$10,000.00</h1>
       </div>
 
-      {/* Favorite Coins */}
-      <div className="mt-[33px]">
-        <h1 className="text-3xl font-semibold text-midnight-gray">
-          Your Coins
-        </h1>
-
-        {/* If no favorites */}
-        {yourCoins.length === 0 && (
-          <p className="text-center text-slate-mist text-lg font-medium py-10">
-            No coins added yet.
-          </p>
-        )}
-
-        <div className="mt-4 space-y-3">
-          {yourCoins.map((coin, i) => (
-            <div
-              key={i}
-              className="shadow-[0px_2px_4px_#00000013] hover:shadow-lg transition-shadow 
-              bg-white rounded-lg p-4 flex items-center justify-between flex-wrap"
-            >
-              <div className="flex items-center gap-3 flex-wrap">
-                <img src={coin.img} alt="IMG" />
-                <div className="space-y-[3px]">
-                  <h1 className="font-medium">{coin.name}</h1>
-                  <p className="text-slate-mist font-medium sm:text-base text-sm">
-                    {coin.shortForm}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-6 flex-wrap">
-                {coin.pnl > 0 ? (
-                  <img
-                    src="/assets/gain vector.svg"
-                    alt="IMG"
-                    className="sm:w-16 sm:h-16"
-                  />
-                ) : (
-                  <img
-                    src="/assets/loss vector.svg"
-                    alt="IMG"
-                    className="sm:w-16 sm:h-16"
-                  />
-                )}
-
-                <div className="space-y-[5px]">
-                  <h1 className="sm:text-2xl text-lg font-medium">
-                    ${coin.amount}
-                  </h1>
-
-                  {coin.pnl > 0 ? (
-                    <p className="text-end text-emerald-leaf font-medium sm:text-lg text-sm">
-                      +{coin.pnl}%
-                    </p>
-                  ) : (
-                    <p className="text-end text-crimson-fire font-medium sm:text-lg text-sm">
-                      {coin.pnl}%
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Charts */}
+      <div className="grid md:grid-cols-3 grid-cols-1">
+      <PnlChartComponent />
       </div>
     </div>
   );

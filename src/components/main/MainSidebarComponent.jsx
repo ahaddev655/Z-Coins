@@ -143,7 +143,7 @@ function MainSidebarComponent() {
         className="md:hidden fixed bottom-0 py-2 bg-cloud-white shadow-[0px_0px_20px_#343a40] border-2 border-silver-fog z-50
       w-full flex items-center justify-center"
       >
-        <ul className="space-x-3 flex items-center justify-center">
+        <ul className="sm:space-x-3 space-x-1 flex items-center justify-center">
           <li>
             <NavLink
               end
@@ -238,10 +238,10 @@ function MainSidebarComponent() {
             <>
               <div className="flex justify-center">
                 {userProfile.userImage ? (
-                  <div className="w-16 h-16 rounded-full overflow-hidden border">
+                  <div className="w-20 h-20 rounded-full border">
                     <img
                       src={userProfile.userImage}
-                      className="w-30 h-30 rounded-full"
+                      className="w-full h-full rounded-full"
                       alt={userProfile?.fullName || "User"}
                     />
                   </div>
@@ -262,7 +262,7 @@ function MainSidebarComponent() {
               </p>
             </>
           ) : (
-            <p className="text-white text-lg">Loading...</p>
+            <p className="text-white text-lg">No data found</p>
           )}
         </div>
       </div>
