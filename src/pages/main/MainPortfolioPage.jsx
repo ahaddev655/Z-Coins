@@ -1,40 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PnlChartComponent from "../../components/main/PnlChartComponent";
+import RecentActivitesComponent from "./../../components/main/RecentActivitesComponent";
 
 function MainPortfolioPage() {
   const navigate = useNavigate();
-
-  const coins = [
-    {
-      img: "/assets/bitcoin.png",
-      name: "Bitcoin",
-      shortForm: "BTC",
-      pnl: 9.77,
-      amount: "2,509.75",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Ethereum",
-      shortForm: "ETH",
-      pnl: -3.12,
-      amount: "1,842.20",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Cardano",
-      shortForm: "ADA",
-      pnl: 4.21,
-      amount: "0.52",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Solana",
-      shortForm: "SOL",
-      pnl: -1.68,
-      amount: "98.42",
-    },
-  ];
 
   useEffect(() => {
     const userToken = localStorage.getItem("sessionToken");
@@ -53,8 +23,9 @@ function MainPortfolioPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid md:grid-cols-3 grid-cols-1">
-      <PnlChartComponent />
+      <div className="grid md:grid-cols-3 grid-cols-1 gap-3">
+        <PnlChartComponent />
+        <RecentActivitesComponent />
       </div>
     </div>
   );

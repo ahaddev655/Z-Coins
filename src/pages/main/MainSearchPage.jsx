@@ -1,38 +1,35 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 function MainSearchPage() {
   const navigate = useNavigate();
-  const [coins, setCoins] = useState([
-    {
-      img: "/assets/bitcoin.png",
-      name: "Bitcoin",
-      shortForm: "BTC",
-      pnl: 9.77,
-      amount: "2,509.75",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Ethereum",
-      shortForm: "ETH",
-      pnl: -3.12,
-      amount: "1,842.20",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Cardano",
-      shortForm: "ADA",
-      pnl: 4.21,
-      amount: "0.52",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Solana",
-      shortForm: "SOL",
-      pnl: -1.68,
-      amount: "98.42",
-    },
-  ]);
+  const [coins, setCoins] = useState([]);
+
+  const coinsDetails = () => {
+    axios
+      .get(
+        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&sparkline=false"
+      )
+      .then((res) => {
+        const formattedCoins = res.data.map((coin) => ({
+          name: coin.name,
+          shortForm: coin.symbol.toUpperCase(),
+          img: coin.image,
+          amount: coin.current_price,
+          pnl: coin.price_change_percentage_24h,
+        }));
+
+        setCoins(formattedCoins);
+      })
+      .catch((err) => {
+        console.error("Error fetching coins:", err);
+      });
+  };
+
+  useEffect(() => {
+    coinsDetails();
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState(null);
 
@@ -75,7 +72,11 @@ function MainSearchPage() {
               className="shadow-[0px_2px_4px_#00000013] hover:shadow-lg transition-shadow bg-white rounded-lg p-4 flex items-center justify-between flex-wrap"
             >
               <div className="flex items-center gap-3 flex-wrap">
-                <img src={coin.img} alt="IMG" />
+                <img
+                  src={coin.img}
+                  alt="IMG"
+                  className="w-10 h-10 rounded-full"
+                />
                 <div className="space-y-[3px]">
                   <h1 className="font-medium">{coin.name}</h1>
                   <p className="text-slate-mist font-medium sm:text-base text-sm">

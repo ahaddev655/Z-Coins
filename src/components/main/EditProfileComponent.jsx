@@ -162,6 +162,10 @@ function EditProfileComponent() {
               <h4 className="font-medium">Email</h4>
               <span className="text-royal-azure">{userData.email}</span>
             </div>
+            <div className="flex justify-between">
+              <h4 className="font-medium">Mobile Number</h4>
+              <span className="text-royal-azure">{userData.mobileNumber}</span>
+            </div>
           </>
         ) : (
           <p className="text-white text-lg">No data found</p>

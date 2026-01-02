@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { GoHeart, GoHeartFill } from "react-icons/go";
 import { IoSearch } from "react-icons/io5";
@@ -14,71 +15,32 @@ function MainMarketPage() {
     return JSON.parse(localStorage.getItem("favoriteCoins")) || [];
   });
 
-  const [coins, setCoins] = useState([
-    {
-      img: "/assets/bitcoin.png",
-      name: "Bitcoin",
-      shortForm: "BTC",
-      pnl: 9.77,
-      amount: "2,509.75",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Ethereum",
-      shortForm: "ETH",
-      pnl: -3.12,
-      amount: "1,842.20",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Cardano",
-      shortForm: "ADA",
-      pnl: 4.21,
-      amount: "0.52",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Solana",
-      shortForm: "SOL",
-      pnl: -1.68,
-      amount: "98.42",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Bitcoin",
-      shortForm: "BTC",
-      pnl: 9.77,
-      amount: "2,509.75",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Ethereum",
-      shortForm: "ETH",
-      pnl: -3.12,
-      amount: "1,842.20",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Cardano",
-      shortForm: "ADA",
-      pnl: 4.21,
-      amount: "0.52",
-    },
-    {
-      img: "/assets/bitcoin.png",
-      name: "Solana",
-      shortForm: "SOL",
-      pnl: -1.68,
-      amount: "98.42",
-    },
-  ]);
+  const [coins, setCoins] = useState([]);
+
+  const coinsDetails = () => {
+    axios
+      .get(
+        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&sparkline=false"
+      )
+      .then((res) => {
+        const formattedCoins = res.data.map((coin) => ({
+          name: coin.name,
+          shortForm: coin.symbol.toUpperCase(),
+          img: coin.image,
+          amount: coin.current_price,
+          pnl: coin.price_change_percentage_24h,
+        }));
+
+        setCoins(formattedCoins);
+      })
+      .catch((err) => {
+        console.error("Error fetching coins:", err);
+      });
+  };
 
   useEffect(() => {
-    const userToken = localStorage.getItem("sessionToken");
-    if (!userToken) {
-      navigate("/");
-    }
-  }, [navigate]);
+    coinsDetails();
+  }, []);
 
   const toggleFavorite = (short) => {
     const updated = favorites.includes(short)
@@ -93,11 +55,18 @@ function MainMarketPage() {
     tabToggle === "gainer"
       ? c.pnl > 0
       : tabToggle === "loser"
-        ? c.pnl < 0
-        : tabToggle === "favorites"
-          ? favorites.includes(c.shortForm)
-          : true,
+      ? c.pnl < 0
+      : tabToggle === "favorites"
+      ? favorites.includes(c.shortForm)
+      : true
   );
+
+  useEffect(() => {
+    const userToken = localStorage.getItem("sessionToken");
+    if (!userToken) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   return (
     <div className="page relative">
@@ -163,7 +132,7 @@ function MainMarketPage() {
           >
             {/* Left */}
             <div className="flex items-center gap-3">
-              <img src={coin.img} alt="" />
+              <img src={coin.img} alt="" className="w-10 h-10 rounded-full" />
               <div>
                 <h1 className="font-medium">{coin.name}</h1>
                 <p className="text-slate-mist font-medium">{coin.shortForm}</p>
