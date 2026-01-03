@@ -156,15 +156,15 @@ function EditProfileComponent() {
             </div>
             <div className="flex justify-between">
               <h4 className="font-medium">Full Name</h4>
-              <span className="text-royal-azure">{userData.fullName}</span>
+              <span className="text-royal-azure font-medium">{userData.fullName}</span>
             </div>
             <div className="flex justify-between">
               <h4 className="font-medium">Email</h4>
-              <span className="text-royal-azure">{userData.email}</span>
+              <span className="text-royal-azure font-medium">{userData.email}</span>
             </div>
             <div className="flex justify-between">
               <h4 className="font-medium">Mobile Number</h4>
-              <span className="text-royal-azure">{userData.mobileNumber}</span>
+              <span className="text-royal-azure font-medium">{userData.mobileNumber}</span>
             </div>
           </>
         ) : (

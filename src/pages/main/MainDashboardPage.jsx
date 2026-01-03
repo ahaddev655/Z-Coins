@@ -5,37 +5,45 @@ import { useNavigate } from "react-router-dom";
 function MainDashboardPage() {
   const navigate = useNavigate();
   const [popUpToggle, setPopUpToggle] = useState(false);
-
   const [coins, setCoins] = useState([]);
+  const [selectedCoin, setSelectedCoin] = useState(null);
 
-const coinsDetails = () => {
-  axios
-    .get(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=5&sparkline=false"
-    )
-    .then((res) => {
-      const formattedCoins = res.data.map((coin) => ({
-        name: coin.name,
-        shortForm: coin.symbol.toUpperCase(),
-        img: coin.image,
-        amount: coin.current_price,
-        pnl: coin.price_change_percentage_24h,
-      }));
+  const coinsDetails = () => {
+    axios
+      .get("https://api.coingecko.com/api/v3/coins/markets", {
+        params: {
+          vs_currency: "usd",
+          order: "market_cap_desc",
+          per_page: 5,
+          page: 1,
+          sparkline: false,
+        },
+      })
+      .then((res) => {
+        const formattedCoins = res.data.map((coin) => ({
+          name: coin.name,
+          shortForm: coin.symbol.toUpperCase(),
+          img: coin.image,
+          amount: Number(coin.current_price),
+          pnl: Number(coin.price_change_percentage_24h),
+        }));
 
-      setCoins(formattedCoins);
-    })
-    .catch((err) => {
-      console.error("Error fetching coins:", err);
-    });
-};
-
-
+        setCoins(formattedCoins);
+      })
+      .catch((err) => {
+        console.error("Error fetching coins:", err);
+      });
+  };
 
   useEffect(() => {
     coinsDetails();
-  }, []);
 
-  const [selectedCoin, setSelectedCoin] = useState(null);
+    const interval = setInterval(() => {
+      coinsDetails();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const userToken = localStorage.getItem("sessionToken");
@@ -85,35 +93,38 @@ const coinsDetails = () => {
                   </p>
                 </div>
               </div>
+              <div>
+                <div className="flex items-center gap-6 flex-wrap">
+                  <div className="sm:block hidden">
+                    {c.pnl > 0 ? (
+                      <img
+                        src="/assets/gain vector.svg"
+                        alt="gain"
+                        className="sm:w-16 sm:h-16"
+                      />
+                    ) : (
+                      <img
+                        src="/assets/loss vector.svg"
+                        alt="loss"
+                        className="sm:w-16 sm:h-16"
+                      />
+                    )}
+                  </div>
 
-              <div className="flex items-center gap-6 flex-wrap">
-                {c.pnl > 0 ? (
-                  <img
-                    src="/assets/gain vector.svg"
-                    alt="gain"
-                    className="sm:w-16 sm:h-16"
-                  />
-                ) : (
-                  <img
-                    src="/assets/loss vector.svg"
-                    alt="loss"
-                    className="sm:w-16 sm:h-16"
-                  />
-                )}
-
-                <div className="space-y-[5px]">
-                  <h1 className="sm:text-2xl text-lg font-medium">
-                    ${c.amount}
-                  </h1>
-                  {c.pnl > 0 ? (
-                    <p className="text-end text-emerald-leaf font-medium sm:text-lg text-sm">
-                      +{c.pnl}%
-                    </p>
-                  ) : (
-                    <p className="text-end text-crimson-fire font-medium sm:text-lg text-sm">
-                      {c.pnl}%
-                    </p>
-                  )}
+                  <div className="space-y-[5px]">
+                    <h1 className="sm:text-2xl text-lg font-medium">
+                      ${c.amount.toFixed(2)}
+                    </h1>
+                    {c.pnl > 0 ? (
+                      <p className="text-end text-emerald-leaf font-medium sm:text-lg text-sm">
+                        +{c.pnl.toFixed(2)}%
+                      </p>
+                    ) : (
+                      <p className="text-end text-crimson-fire font-medium sm:text-lg text-sm">
+                        {c.pnl.toFixed(2)}%
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

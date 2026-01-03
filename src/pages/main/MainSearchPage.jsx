@@ -9,7 +9,7 @@ function MainSearchPage() {
   const coinsDetails = () => {
     axios
       .get(
-        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&sparkline=false"
+        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&sparkline=false",
       )
       .then((res) => {
         const formattedCoins = res.data.map((coin) => ({

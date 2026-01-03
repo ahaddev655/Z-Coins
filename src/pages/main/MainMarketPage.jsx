@@ -10,47 +10,64 @@ function MainMarketPage() {
   const [tabToggle, setTabToggle] = useState("all");
   const [popUpToggle, setPopUpToggle] = useState(false);
   const [selectedCoin, setSelectedCoin] = useState(null);
-
-  const [favorites, setFavorites] = useState(() => {
-    return JSON.parse(localStorage.getItem("favoriteCoins")) || [];
-  });
+  const [buySellPopUp, setBuySellPopUp] = useState("");
+  const [lots, setLots] = useState("");
 
   const [coins, setCoins] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const coinsPerPage = 10;
 
-  const coinsDetails = () => {
+  const [favorites, setFavorites] = useState(
+    () => JSON.parse(localStorage.getItem("favoriteCoins")) || []
+  );
+
+  /* ================= FETCH COINS ================= */
+  const fetchCoins = () => {
     axios
-      .get(
-        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&sparkline=false"
-      )
-      .then((res) => {
-        const formattedCoins = res.data.map((coin) => ({
-          name: coin.name,
-          shortForm: coin.symbol.toUpperCase(),
-          img: coin.image,
-          amount: coin.current_price,
-          pnl: coin.price_change_percentage_24h,
-        }));
-
-        setCoins(formattedCoins);
+      .get("https://api.coingecko.com/api/v3/coins/markets", {
+        params: {
+          vs_currency: "usd",
+          order: "market_cap_desc",
+          per_page: 50,
+          page: 1,
+          sparkline: false,
+        },
       })
-      .catch((err) => {
-        console.error("Error fetching coins:", err);
-      });
+      .then((res) => {
+        setCoins(
+          res.data.map((coin) => ({
+            name: coin.name,
+            shortForm: coin.symbol.toUpperCase(),
+            img: coin.image,
+            amount: Number(coin.current_price),
+            pnl: Number(coin.price_change_percentage_24h),
+          }))
+        );
+      })
+      .catch(console.error);
   };
 
   useEffect(() => {
-    coinsDetails();
+    fetchCoins();
+    const i = setInterval(fetchCoins, 8000);
+    return () => clearInterval(i);
   }, []);
 
+  /* ================= AUTH ================= */
+  useEffect(() => {
+    if (!localStorage.getItem("sessionToken")) navigate("/");
+  }, [navigate]);
+
+  /* ================= FAVORITES ================= */
   const toggleFavorite = (short) => {
     const updated = favorites.includes(short)
       ? favorites.filter((f) => f !== short)
       : [...favorites, short];
-
     setFavorites(updated);
     localStorage.setItem("favoriteCoins", JSON.stringify(updated));
   };
 
+  /* ================= FILTER ================= */
   const filteredCoins = coins.filter((c) =>
     tabToggle === "gainer"
       ? c.pnl > 0
@@ -61,136 +78,158 @@ function MainMarketPage() {
       : true
   );
 
-  useEffect(() => {
-    const userToken = localStorage.getItem("sessionToken");
-    if (!userToken) {
-      navigate("/");
+  useEffect(() => setCurrentPage(1), [tabToggle]);
+
+  const paginatedCoins = filteredCoins.slice(
+    (currentPage - 1) * coinsPerPage,
+    currentPage * coinsPerPage
+  );
+
+  /* ================= BUY / SELL LOGIC ================= */
+  const totalCost =
+    lots && selectedCoin ? Number(lots) * selectedCoin.amount : 0;
+
+  const handleConfirm = () => {
+    if (!lots || Number(lots) <= 0) return;
+
+    const yourCoins = JSON.parse(localStorage.getItem("yourCoins")) || [];
+    const PNL = JSON.parse(localStorage.getItem("PNL")) || [];
+
+    if (buySellPopUp === "buy") {
+      const existing = yourCoins.find(
+        (c) => c.shortForm === selectedCoin.shortForm
+      );
+
+      if (existing) {
+        existing.lots += Number(lots);
+      } else {
+        yourCoins.push({
+          ...selectedCoin,
+          lots: Number(lots),
+          buyPrice: selectedCoin.amount,
+        });
+      }
+
+      localStorage.setItem("yourCoins", JSON.stringify(yourCoins));
     }
-  }, [navigate]);
+
+    if (buySellPopUp === "sell") {
+      const coin = yourCoins.find(
+        (c) => c.shortForm === selectedCoin.shortForm
+      );
+
+      if (!coin || coin.lots < Number(lots)) return;
+
+      coin.lots -= Number(lots);
+
+      PNL.push({
+        name: selectedCoin.name,
+        shortForm: selectedCoin.shortForm,
+        lots: Number(lots),
+        pnl: (selectedCoin.amount - coin.buyPrice) * Number(lots),
+        soldAt: selectedCoin.amount,
+      });
+
+      localStorage.setItem("PNL", JSON.stringify(PNL));
+      localStorage.setItem(
+        "yourCoins",
+        JSON.stringify(yourCoins.filter((c) => c.lots > 0))
+      );
+    }
+
+    setBuySellPopUp("");
+    setLots("");
+  };
 
   return (
     <div className="page relative">
       {/* Header */}
-      <div className="flex items-center justify-between w-full">
-        <div>
-          <h1 className="text-3xl font-semibold text-midnight-gray">Market</h1>
-          <p className="text-slate-mist text-lg font-medium">
-            In the past 24 hours
-          </p>
-        </div>
-
-        <Link to={"/main/search"}>
+      <div className="flex justify-between">
+        <h1 className="text-3xl font-semibold">Market</h1>
+        <Link to="/main/search">
           <IoSearch className="text-2xl text-slate-mist" />
         </Link>
       </div>
 
-      <h1 className="mt-8 text-2xl font-semibold mb-5">Coins</h1>
-
-      {/* Tabs */}
-      <ul className="flex items-center flex-wrap justify-center px-3 border-2 border-royal-azure py-3 shadow-[0px_4px_5px_#005be3] rounded-[48px] gap-4 w-full md:w-[480px] md:justify-between">
-        {["all", "gainer", "loser", "favorites"].map((t) => (
-          <li key={t}>
-            <button
-              onClick={() => setTabToggle(t)}
-              className={`py-3 px-4 font-medium text-lg md:text-xl transition ${
-                tabToggle === t
-                  ? "bg-royal-azure text-white rounded-4xl"
-                  : "text-slate-mist"
-              }`}
-            >
-              {t.charAt(0).toUpperCase() + t.slice(1)}
-            </button>
-          </li>
-        ))}
-      </ul>
-
       {/* Coin List */}
       <div className="mt-7 space-y-5">
-        {tabToggle === "favorites" && filteredCoins.length === 0 && (
-          <div className="flex flex-col items-center">
-            <img src="/assets/favorite section.svg" className="md:w-[438px]" />
-            <h1 className="text-3xl font-medium text-charcoal-stone sm:block hidden">
-              Special place for Favorite coins
-            </h1>
-            <p className="mt-1 text-slate-mist font-medium text-lg sm:block hidden">
-              Add your favorite coins and check here easily
-            </p>
-            <p className="text-slate-mist text-center mt-2 font-medium text-lg sm:hidden block">
-              Add your favorite coins here
-            </p>
-          </div>
-        )}
-
-        {filteredCoins.map((coin, i) => (
+        {paginatedCoins.map((coin, i) => (
           <div
             key={i}
             onClick={() => {
               setSelectedCoin(coin);
               setPopUpToggle(true);
             }}
-            className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition cursor-pointer flex items-center justify-between"
+            className="bg-white p-4 rounded-lg cursor-pointer flex justify-between items-center shadow-[0px_2px_4px_#00000013] hover:shadow-lg transition-shadow"
           >
-            {/* Left */}
-            <div className="flex items-center gap-3">
-              <img src={coin.img} alt="" className="w-10 h-10 rounded-full" />
+            <div className="flex gap-3">
+              <img src={coin.img} className="w-10 h-10" alt="" />
               <div>
-                <h1 className="font-medium">{coin.name}</h1>
-                <p className="text-slate-mist font-medium">{coin.shortForm}</p>
+                <h1>{coin.name}</h1>
+                <p className="text-slate-mist">{coin.shortForm}</p>
               </div>
             </div>
 
-            {/* Right */}
-            <div className="flex items-center gap-6">
-              <img
-                src={
-                  coin.pnl > 0
-                    ? "/assets/gain vector.svg"
-                    : "/assets/loss vector.svg"
-                }
-                className="w-14"
-              />
-
-              <div className="text-end">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(coin.shortForm);
-                  }}
-                >
-                  {favorites.includes(coin.shortForm) ? (
-                    <GoHeartFill className="w-6 h-6 text-crimson-fire" />
+            <div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorite(coin.shortForm);
+                }}
+                className="w-full flex justify-end mb-2"
+              >
+                {favorites.includes(coin.shortForm) ? (
+                  <GoHeartFill className="w-6 h-6 text-crimson-fire" />
+                ) : (
+                  <GoHeart className="w-6 h-6 text-crimson-fire" />
+                )}
+              </button>
+              <div className="flex items-center gap-6 flex-wrap">
+                <div className="sm:block hidden">
+                  {coin.pnl > 0 ? (
+                    <img
+                      src="/assets/gain vector.svg"
+                      alt="gain"
+                      className="sm:w-16 sm:h-16"
+                    />
                   ) : (
-                    <GoHeart className="w-6 h-6 text-crimson-fire" />
+                    <img
+                      src="/assets/loss vector.svg"
+                      alt="loss"
+                      className="sm:w-16 sm:h-16"
+                    />
                   )}
-                </button>
+                </div>
 
-                <h1 className="text-xl font-medium">${coin.amount}</h1>
-                <p
-                  className={`font-medium text-right ${
-                    coin.pnl > 0 ? "text-emerald-leaf" : "text-crimson-fire"
-                  }`}
-                >
-                  {coin.pnl > 0 && "+"}
-                  {coin.pnl}%
-                </p>
+                <div className="space-y-[5px]">
+                  <h1 className="sm:text-2xl text-lg font-medium">
+                    ${coin.amount.toFixed(2)}
+                  </h1>
+                  {coin.pnl > 0 ? (
+                    <p className="text-end text-emerald-leaf font-medium sm:text-lg text-sm">
+                      +{coin.pnl.toFixed(2)}%
+                    </p>
+                  ) : (
+                    <p className="text-end text-crimson-fire font-medium sm:text-lg text-sm">
+                      {coin.pnl.toFixed(2)}%
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Popup */}
+      {/* ================= SELECT COIN POPUP ================= */}
       <div
-        className={`fixed top-0 left-0 w-full h-full bg-black/50 backdrop-blur-md flex justify-center items-center transition-opacity duration-300 ease-in-out ${
+        className={`fixed flex justify-center inset-0 bg-black/50 items-center transition-opacity duration-300 ease-in-out ${
           popUpToggle ? "opacity-100 z-50" : "opacity-0 -z-50"
         }`}
-        onClick={() => {
-          setPopUpToggle(false);
-          setSelectedCoin(null);
-        }}
+        onClick={() => setPopUpToggle(false)}
       >
         <div
-          className={`md:w-md w-sm bg-white rounded-md transition-all duration-300 ease-in-out p-6 border-2 border-slate-mist shadow-2xl ${
+          className={`bg-white rounded-md transition-all duration-300 ease-in-out p-6 border-2 border-slate-mist shadow-2xl md:w-[450px] w-[320px] ${
             popUpToggle
               ? "translate-y-0 opacity-100"
               : "translate-y-5 opacity-0"
@@ -199,60 +238,27 @@ function MainMarketPage() {
         >
           {selectedCoin && (
             <>
-              {/* Coin Image */}
-              <div className="flex justify-center">
-                <img
-                  src={selectedCoin.img}
-                  className="w-20"
-                  alt={selectedCoin.name}
-                />
-              </div>
-
-              {/* Coin Name */}
-              <h1 className="text-2xl text-center font-semibold mt-2">
+              <img src={selectedCoin.img} className="w-20 mx-auto" alt="" />
+              <h1 className="text-center text-xl font-semibold mt-2">
                 {selectedCoin.name} ({selectedCoin.shortForm})
               </h1>
 
-              {/* Amount */}
-              <div className="flex justify-between items-center gap-3 mt-4">
-                <h4 className="text-slate-mist font-medium">Amount</h4>
-                <h5 className="font-semibold text-lg text-charcoal-stone">
-                  {selectedCoin.amount}
-                </h5>
-              </div>
-
-              {/* PNL */}
-              <div className="flex justify-between items-center gap-3 mt-2">
-                <h4 className="text-slate-mist font-medium">PNL</h4>
-                <h5
-                  className={`text-lg font-medium flex items-center gap-1 ${
-                    selectedCoin.pnl > 0
-                      ? "text-emerald-leaf"
-                      : "text-crimson-fire"
-                  }`}
-                >
-                  {selectedCoin.pnl > 0 && "+"}
-                  {selectedCoin.pnl}%
-                </h5>
-              </div>
-
-              {/* Buy / Sell Buttons */}
-              <div className="flex justify-center mt-6 gap-3">
+              <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => {
+                    setBuySellPopUp("buy");
                     setPopUpToggle(false);
-                    setSelectedCoin(null);
                   }}
-                  className="bg-green-600 hover:scale-105 text-white rounded-md px-6 py-3 transition-all duration-200 hover:shadow-md hover:shadow-emerald-leaf w-full"
+                  className="bg-emerald-leaf text-white w-full py-3 rounded-md"
                 >
                   Buy
                 </button>
                 <button
                   onClick={() => {
+                    setBuySellPopUp("sell");
                     setPopUpToggle(false);
-                    setSelectedCoin(null);
                   }}
-                  className="bg-crimson-fire hover:scale-105 text-white rounded-md px-6 py-3 transition-all duration-200 hover:shadow-md hover:shadow-crimson-fire/50 w-full"
+                  className="bg-crimson-fire text-white w-full py-3 rounded-md"
                 >
                   Sell
                 </button>
@@ -261,6 +267,44 @@ function MainMarketPage() {
           )}
         </div>
       </div>
+
+      {/* ================= BUY / SELL POPUP ================= */}
+      {(buySellPopUp === "buy" || buySellPopUp === "sell") && selectedCoin && (
+        <div
+          className="fixed inset-0 bg-black/50 flex justify-center items-center"
+          onClick={() => setBuySellPopUp("")}
+        >
+          <div
+            className="bg-white p-6 rounded-md w-[320px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h1 className="text-center font-semibold text-xl mb-4">
+              {buySellPopUp.toUpperCase()} {selectedCoin.shortForm}
+            </h1>
+
+            <input
+              type="number"
+              min="1"
+              value={lots}
+              onChange={(e) => setLots(e.target.value)}
+              className="w-full border p-2 rounded"
+            />
+
+            <p className="text-center mt-2 font-medium">
+              Total: ${totalCost.toFixed(2)}
+            </p>
+
+            <button
+              onClick={handleConfirm}
+              className={`w-full mt-4 py-3 rounded-md text-white ${
+                buySellPopUp === "buy" ? "bg-emerald-leaf" : "bg-crimson-fire"
+              }`}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

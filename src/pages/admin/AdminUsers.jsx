@@ -53,7 +53,7 @@ const AdminUsers = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showBlockPopup, setShowBlockPopup] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [newUser, setNewUser] = useState({
     fullName: "",
     email: "",

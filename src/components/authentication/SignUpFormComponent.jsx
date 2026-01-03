@@ -113,7 +113,7 @@ function SignUpFormComponent() {
         toast.error(
           err?.response?.data?.error ||
             err?.response?.data?.message ||
-            "Something went wrong"
+            "Something went wrong",
         );
       });
   };
@@ -123,7 +123,7 @@ function SignUpFormComponent() {
     onSuccess: (tokenResponse) => {
       axios
         .get(
-          `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenResponse.access_token}`
+          `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenResponse.access_token}`,
         )
         .then((googleRes) => {
           return fetchGoogleImageAsFile(googleRes.data.picture).then(
@@ -136,7 +136,7 @@ function SignUpFormComponent() {
 
               setProfilePreview(URL.createObjectURL(googleFile));
               toast.info("Please fill the other details...");
-            }
+            },
           );
         })
         .catch((err) => {

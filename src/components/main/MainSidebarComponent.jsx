@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineHome, AiOutlineLineChart } from "react-icons/ai";
 import { IoSettingsOutline } from "react-icons/io5";
 import { LuLogOut, LuUserRound } from "react-icons/lu";
-import { TbRulerMeasure2 } from "react-icons/tb";
 import { VscPieChart } from "react-icons/vsc";
 import { NavLink } from "react-router-dom";
 
@@ -14,6 +13,7 @@ function MainSidebarComponent() {
     fullName: "",
     email: "",
     mobileNumber: "",
+    pnl: "-13.0",
   });
   const userId = localStorage.getItem("userId");
 
@@ -108,7 +108,7 @@ function MainSidebarComponent() {
             <li
               onClick={() => setProfilePopUp(true)}
               to="/main/profile"
-              className="text-xl flex items-center gap-2 p-3 hover:bg-royal-azure hover:text-white rounded-md transition-colors"
+              className="text-xl flex items-center gap-2 p-3 cursor-pointer hover:bg-royal-azure hover:text-white rounded-md transition-colors"
             >
               <LuUserRound className="w-[25px] h-[25px]" /> Profile
             </li>
@@ -192,7 +192,7 @@ function MainSidebarComponent() {
           <li
             onClick={() => setProfilePopUp(true)}
             to="/main/profile"
-            className="text-xl flex hover:bg-royal-azure hover:text-white items-center gap-2 p-3 rounded-md transition-colors"
+            className="text-xl flex hover:bg-royal-azure cursor-pointer hover:text-white items-center gap-2 p-3 rounded-md transition-colors"
           >
             <LuUserRound className="w-[25px] h-[25px]" />
           </li>
@@ -228,7 +228,7 @@ function MainSidebarComponent() {
         }`}
       >
         <div
-          className={`w-md bg-cloud-white shadow-2xl rounded-xl py-6 text-center transition-all ease-in-out duration-500 ${
+          className={`w-md bg-cloud-white shadow-2xl rounded-xl py-6 text-center transition-all ease-in-out duration-500 p-4 ${
             profilePopUp
               ? "opacity-100 translate-y-0"
               : "translate-y-full opacity-0"
@@ -236,7 +236,8 @@ function MainSidebarComponent() {
         >
           {userProfile ? (
             <>
-              <div className="flex justify-center">
+              <div className="flex justify-between items-center">
+                <h4 className="font-medium">Profile Picture</h4>
                 {userProfile.userImage ? (
                   <div className="w-20 h-20 rounded-full border">
                     <img
@@ -251,15 +252,38 @@ function MainSidebarComponent() {
                   </div>
                 )}
               </div>
-              <h1 className="md:text-3xl text-xl mt-3 text-charcoal-stone font-semibold">
-                {userProfile?.fullName}
-              </h1>
-              <p className="text-charcoal-stone font-semibold text-sm md:text-base mt-2">
-                {userProfile?.email}
-              </p>
-              <p className="text-charcoal-stone font-semibold text-sm md:text-base mt-1">
-                {userProfile?.mobileNumber}
-              </p>
+              <div className="mt-5 space-y-1">
+                <div className="flex justify-between">
+                  <h4 className="font-medium">Full Name</h4>
+                  <span className="text-royal-azure font-medium">
+                    {userProfile.fullName}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <h4 className="font-medium">Email</h4>
+                  <span className="text-royal-azure font-medium">{userProfile.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <h4 className="font-medium">Mobile Number</h4>
+                  <span className="text-royal-azure font-medium">
+                    {userProfile.mobileNumber}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <h4 className="font-medium">PNL</h4>
+                  <span
+                    className={`font-medium flex items-center gap-0.5 ${
+                      userProfile.pnl < 0
+                        ? "text-crimson-fire"
+                        : "text-emerald-leaf"
+                    }`}
+                  >
+                    {userProfile.pnl < 0 ? "-" : "+"}
+                    {userProfile.pnl}
+                    130
+                  </span>
+                </div>
+              </div>
             </>
           ) : (
             <p className="text-white text-lg">No data found</p>

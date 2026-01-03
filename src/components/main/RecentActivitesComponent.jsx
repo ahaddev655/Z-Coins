@@ -3,17 +3,17 @@ import { FaXmark } from "react-icons/fa6";
 
 function RecentActivitesComponent() {
   const initialActivities = [
-    "Ahad logged in",
-    "ahad.dev.eng@gmail.com signed in",
-    "User (Ahad) blocked",
-    "User (Ahad) deleted",
+    "You sold BTC",
+    "You bought ETH",
+    "You sold BTC",
+    "You bought ETH",
   ];
 
   const [recentActivities, setRecentActivities] = useState(initialActivities);
 
   const deleteActivity = (indexToDelete) => {
     setRecentActivities((prevActivities) =>
-      prevActivities.filter((_, index) => index !== indexToDelete)
+      prevActivities.filter((_, index) => index !== indexToDelete),
     );
   };
 
