@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function MainCoinsHoldingHistory() {
   const [holdingData, setHoldingData] = useState([]);
+    const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = () => {

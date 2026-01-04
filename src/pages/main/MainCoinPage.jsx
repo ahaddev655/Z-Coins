@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Line } from "react-chartjs-2";
 import {
@@ -30,6 +30,7 @@ function MainCoinPage() {
   const [lots, setLots] = useState(1);
   const [totalCost, setTotalCost] = useState(0);
   const intervalRef = useRef(null);
+    const navigate = useNavigate();
 
   // Fetch coin and chart data
   const fetchData = async (signal) => {
