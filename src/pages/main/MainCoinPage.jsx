@@ -1,101 +1,103 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bounce, toast, ToastContainer } from "react-toastify";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-);
+import { Bounce, toast } from "react-toastify";
 
 function MainCoinPage() {
   const { coinId } = useParams();
   const [coinData, setCoinData] = useState(null);
   const [chartData, setChartData] = useState(null);
-  const [popupType, setPopupType] = useState(""); // "buy" or "sell"
+  const [popupType, setPopupType] = useState("");
   const [lots, setLots] = useState(1);
   const [totalCost, setTotalCost] = useState(0);
   const intervalRef = useRef(null);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // Fetch coin and chart data
-  const fetchData = async (signal) => {
-    try {
-      const [coinRes, chartRes] = await Promise.all([
-        axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`, {
-          signal,
-        }),
-        axios.get(
-          `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`,
-          {
-            params: { vs_currency: "usd", days: 7 },
-            signal,
-          },
-        ),
-      ]);
-
-      setCoinData(coinRes.data);
-
-      const labels = chartRes.data.prices.map((p) => {
-        const date = new Date(p[0]);
-        return `${date.getMonth() + 1}/${date.getDate()}`;
-      });
-      const prices = chartRes.data.prices.map((p) => p[1]);
-
-      setChartData({
-        labels,
-        datasets: [
-          {
-            label: `${coinId.toUpperCase()} Price`,
-            data: prices,
-            borderColor: "#0063f5",
-            backgroundColor: "rgba(0, 99, 245, 0.2)",
-            tension: 0.3,
-          },
-        ],
-      });
-    } catch (error) {
-      if (!axios.isCancel(error)) console.error("Fetch error:", error);
-    }
-  };
-
+  // -----------------------------
+  // Fetch coin & chart data safely
+  // -----------------------------
   useEffect(() => {
     if (!coinId) return;
+
     const controller = new AbortController();
-    fetchData(controller.signal);
-    intervalRef.current = setInterval(
-      () => fetchData(controller.signal),
-      20000,
-    );
+    let isMounted = true; // flag to prevent state update after unmount
+
+    const fetchDataSafe = async () => {
+      try {
+        const [coinRes, chartRes] = await Promise.all([
+          axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`, {
+            signal: controller.signal,
+          }),
+          axios.get(
+            `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`,
+            {
+              params: { vs_currency: "usd", days: 7 },
+              signal: controller.signal,
+            }
+          ),
+        ]);
+
+        if (!isMounted) return; // do not update state if unmounted
+
+        setCoinData(coinRes.data);
+
+        const labels = chartRes.data.prices.map((p) => {
+          const date = new Date(p[0]);
+          return `${date.getMonth() + 1}/${date.getDate()}`;
+        });
+
+        const prices = chartRes.data.prices.map((p) => p[1]);
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: `${coinId.toUpperCase()} Price`,
+              data: prices,
+              borderColor: "#0063f5",
+              backgroundColor: "rgba(0, 99, 245, 0.2)",
+              tension: 0.3,
+            },
+          ],
+        });
+      } catch (error) {
+        if (!axios.isCancel(error)) console.error("Fetch error:", error);
+      }
+    };
+
+    fetchDataSafe();
+    intervalRef.current = setInterval(fetchDataSafe, 20000);
+
     return () => {
+      isMounted = false;
       controller.abort();
       clearInterval(intervalRef.current);
     };
   }, [coinId]);
 
+  // -----------------------------
   // Update total cost when lots or price changes
+  // -----------------------------
   useEffect(() => {
-    if (coinData) setTotalCost(lots * coinData.market_data.current_price.usd);
+    if (coinData) {
+      const price = coinData?.market_data?.current_price?.usd || 0;
+      setTotalCost(lots * price);
+    }
   }, [lots, coinData]);
 
-  // Buy/Sell logic
+  // -----------------------------
+  // Redirect if not logged in
+  // -----------------------------
+  useEffect(() => {
+    if (!localStorage.getItem("sessionToken")) navigate("/");
+  }, [navigate]);
+
+  // -----------------------------
+  // Buy/Sell confirmation logic
+  // -----------------------------
   const handleConfirm = () => {
     const nLots = Number(lots);
-    if (!nLots || nLots <= 0) return;
+    if (!nLots || nLots <= 0) return toast.error("Invalid lot value.");
 
     const selectedCoin = {
       name: coinData.name,
@@ -111,22 +113,30 @@ function MainCoinPage() {
 
     if (popupType === "buy") {
       if (holdingValue < totalTrade) return toast.error("Not enough funds.");
+
       const existing = yourCoins.find(
-        (c) => c.shortForm === selectedCoin.shortForm,
+        (c) => c.shortForm === selectedCoin.shortForm
       );
-      existing
-        ? (existing.lots += nLots)
-        : yourCoins.push({
-            ...selectedCoin,
-            lots: nLots,
-            buyPrice: selectedCoin.amount,
-          });
+
+      if (existing) {
+        existing.lots += nLots;
+      } else {
+        yourCoins.push({
+          ...selectedCoin,
+          lots: nLots,
+          buyPrice: selectedCoin.amount,
+        });
+      }
+
       holdingValue -= totalTrade;
     } else if (popupType === "sell") {
       const coin = yourCoins.find(
-        (c) => c.shortForm === selectedCoin.shortForm,
+        (c) => c.shortForm === selectedCoin.shortForm
       );
-      if (!coin || coin.lots < nLots) return toast.error("Not enough coins.");
+
+      if (!coin || coin.lots < nLots)
+        return toast.error("Not enough coins to sell.");
+
       coin.lots -= nLots;
       PNL.push({
         name: coin.name,
@@ -136,11 +146,12 @@ function MainCoinPage() {
         soldAt: selectedCoin.amount,
         date: today,
       });
+
       holdingValue += totalTrade;
-      localStorage.setItem(
-        "yourCoins",
-        JSON.stringify(yourCoins.filter((c) => c.lots > 0)),
-      );
+
+      // Remove coins with 0 lots
+      const filteredCoins = yourCoins.filter((c) => c.lots > 0);
+      localStorage.setItem("yourCoins", JSON.stringify(filteredCoins));
     }
 
     localStorage.setItem("PNL", JSON.stringify(PNL));
@@ -150,18 +161,12 @@ function MainCoinPage() {
     toast.success(
       `${popupType.toUpperCase()} ${nLots} ${
         selectedCoin.shortForm
-      } for $${totalTrade.toFixed(2)}`,
+      } for $${totalTrade.toFixed(2)}`
     );
+
     setPopupType("");
     setLots(1);
   };
-
-  if (!coinData || !chartData)
-    return <p className="text-center mt-10">Loading coin data...</p>;
-
-  useEffect(() => {
-    if (!localStorage.getItem("sessionToken")) navigate("/");
-  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-cloud-white p-6">
