@@ -5,7 +5,7 @@ function HoldedTradesComponent() {
 
   useEffect(() => {
     const fetchData = () => {
-      const data = JSON.parse(localStorage.getItem("yourCoins"));
+      const data = JSON.parse(localStorage.getItem("yourCoins")) || [];
       setHoldingData(data);
     };
 

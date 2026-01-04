@@ -22,5 +22,5 @@
 }
 
 .page {
-  @apply lg:w-[80%] w-full lg:px-6 px-4 py-6 md:mb-0 mb-17;
+  @apply lg:w-[80%] w-full lg:px-6 px-4 py-6;
 }

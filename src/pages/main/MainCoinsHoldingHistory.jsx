@@ -5,7 +5,7 @@ function MainCoinsHoldingHistory() {
 
   useEffect(() => {
     const fetchData = () => {
-      const data = JSON.parse(localStorage.getItem("PNL"));
+      const data = JSON.parse(localStorage.getItem("PNL")) || [];
       setHoldingData(data);
       console.log(data);
     };

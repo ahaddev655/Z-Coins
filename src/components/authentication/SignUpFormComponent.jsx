@@ -114,7 +114,7 @@ function SignUpFormComponent() {
     onSuccess: (tokenResponse) => {
       axios
         .get(
-          `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenResponse.access_token}`
+          `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenResponse.access_token}`,
         )
         .then((googleRes) => {
           return fetchGoogleImageAsFile(googleRes.data.picture).then(
@@ -128,7 +128,7 @@ function SignUpFormComponent() {
 
               setProfilePreview(URL.createObjectURL(googleFile));
               toast.info("Please fill the other details...");
-            }
+            },
           );
         })
         .catch((err) => {

@@ -16,6 +16,8 @@ function DeleteAccountComponent() {
         localStorage.removeItem("userId");
         localStorage.removeItem("userRole");
         localStorage.removeItem("favoriteCoins");
+        localStorage.removeItem("yourCoins");
+        localStorage.removeItem("PNL");
         setTimeout(() => {
           window.location.reload();
         }, 3500);

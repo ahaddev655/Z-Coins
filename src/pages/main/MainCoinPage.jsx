@@ -19,7 +19,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Tooltip,
-  Legend
+  Legend,
 );
 
 function MainCoinPage() {
@@ -38,7 +38,7 @@ function MainCoinPage() {
     try {
       const res = await axios.get(
         `https://api.coingecko.com/api/v3/coins/${coinId}`,
-        { signal }
+        { signal },
       );
       setCoinData(res.data);
     } catch (error) {
@@ -52,7 +52,7 @@ function MainCoinPage() {
     try {
       const res = await axios.get(
         `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`,
-        { params: { vs_currency: "usd", days: 7 }, signal }
+        { params: { vs_currency: "usd", days: 7 }, signal },
       );
 
       const labels = res.data.prices.map((p) => {
@@ -124,6 +124,9 @@ function MainCoinPage() {
 
     const totalTradeValue = nLots * selectedCoin.amount;
 
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().slice(0, 10);
+
     if (buySellPopUp === "buy") {
       if (holdingValue < totalTradeValue) {
         toast.error("Not enough funds to complete this purchase.");
@@ -131,7 +134,7 @@ function MainCoinPage() {
       }
 
       const existing = yourCoins.find(
-        (c) => c.shortForm === selectedCoin.shortForm
+        (c) => c.shortForm === selectedCoin.shortForm,
       );
       existing
         ? (existing.lots += nLots)
@@ -148,7 +151,7 @@ function MainCoinPage() {
 
     if (buySellPopUp === "sell") {
       const coin = yourCoins.find(
-        (c) => c.shortForm === selectedCoin.shortForm
+        (c) => c.shortForm === selectedCoin.shortForm,
       );
       if (!coin || coin.lots < nLots) {
         toast.error("You do not have enough coins to sell.");
@@ -164,13 +167,14 @@ function MainCoinPage() {
         lots: nLots,
         pnl,
         soldAt: selectedCoin.amount,
+        date: today, // ✅ Add the date here
       });
 
       holdingValue += nLots * selectedCoin.amount;
       localStorage.setItem("PNL", JSON.stringify(PNL));
       localStorage.setItem(
         "yourCoins",
-        JSON.stringify(yourCoins.filter((c) => c.lots > 0))
+        JSON.stringify(yourCoins.filter((c) => c.lots > 0)),
       );
       localStorage.setItem("holdingValue", holdingValue.toFixed(2));
     }
@@ -178,7 +182,7 @@ function MainCoinPage() {
     toast.success(
       `${buySellPopUp.toUpperCase()} ${nLots} ${
         selectedCoin.shortForm
-      } for $${totalTradeValue.toFixed(2)}`
+      } for $${totalTradeValue.toFixed(2)}`,
     );
     setBuySellPopUp("");
     setLots(1);

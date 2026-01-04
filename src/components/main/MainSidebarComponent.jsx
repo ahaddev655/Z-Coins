@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiOutlineHome, AiOutlineLineChart } from "react-icons/ai";
+import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { IoSettingsOutline } from "react-icons/io5";
 import { LuLogOut, LuUserRound } from "react-icons/lu";
 import { MdHistory } from "react-icons/md";
@@ -9,6 +10,7 @@ import { NavLink } from "react-router-dom";
 
 function MainSidebarComponent() {
   const [profilePopUp, setProfilePopUp] = useState(false);
+  const [canvasToggle, setCanvasToggle] = useState(false);
 
   const [userProfile, setUserProfile] = useState({
     userImage: "",
@@ -25,7 +27,7 @@ function MainSidebarComponent() {
         setUserProfile(res.data.user);
         const totalPnl = JSON.parse(localStorage.getItem("PNL")).reduce(
           (sum, item) => sum + item.pnl,
-          0
+          0,
         );
         setUserProfile((prevProfile) => ({
           ...prevProfile,
@@ -51,10 +53,22 @@ function MainSidebarComponent() {
 
   return (
     <>
+      {/* Toggle Icon */}
+      {canvasToggle ? (
+        ""
+      ) : (
+        <button
+          type="button"
+          onClick={() => setCanvasToggle(true)}
+          className="fixed bg-white left-0 shadow-xl top-15 w-10 h-10 grid place-items-center rounded-r-full z-10 lg:hidden"
+        >
+          <FaArrowRightLong />
+        </button>
+      )}
       {/* Sidebar */}
-      <div className="lg:w-[20%] min-h-screen border-r-2 border-silver-fog shadow-xl py-3 md:block hidden relative">
+      <div className="lg:w-[20%] min-h-screen border-r-2 border-silver-fog lg:flex hidden shadow-xl py-3 flex-col">
         {/* Logo */}
-        <NavLink end to={"/main/"} className="space-y-2 text-center">
+        <NavLink end to="/main/" className="space-y-2 text-center">
           <div className="flex items-center justify-center gap-3">
             <img
               src="/assets/favicon.png"
@@ -66,9 +80,11 @@ function MainSidebarComponent() {
             </h1>
           </div>
         </NavLink>
+
         <hr className="my-3 border border-silver-fog" />
-        <div className="px-3 flex flex-col">
-          <ul className="space-y-3 flex flex-col">
+
+        <div className="px-3 flex flex-col flex-1">
+          <ul className="space-y-3 flex flex-col flex-1">
             <li>
               <NavLink
                 end
@@ -116,7 +132,6 @@ function MainSidebarComponent() {
             </li>
             <li
               onClick={() => setProfilePopUp(true)}
-              to="/main/profile"
               className="text-xl flex items-center gap-2 p-3 cursor-pointer hover:bg-royal-azure hover:text-white rounded-md transition-colors"
             >
               <LuUserRound className="w-[25px] h-[25px]" /> Profile
@@ -153,97 +168,147 @@ function MainSidebarComponent() {
             </li>
             <li
               onClick={logOutFunction}
-              className="mt-auto text-xl flex items-center gap-2 p-3 rounded-md transition-colors bg-royal-azure
-            text-white cursor-pointer"
+              className="mt-auto text-xl flex items-center gap-2 p-3 rounded-md transition-colors bg-royal-azure text-white cursor-pointer"
             >
-              <LuLogOut className="w-[25px] h-[25px]" />
-              Log Out
+              <LuLogOut className="w-[25px] h-[25px]" /> Log Out
             </li>
           </ul>
         </div>
       </div>
+
       {/* Mobile Canvas */}
       <div
-        className="md:hidden fixed bottom-0 py-2 bg-cloud-white shadow-[0px_0px_20px_#343a40] border-2 border-silver-fog z-50
-      w-full flex items-center justify-center"
+        className={`fixed left-0 top-0 transition-opacity duration-300 ease-in-out w-full h-full bg-black/50 backdrop-blur-md lg:hidden block ${
+          canvasToggle ? "opacity-100 z-50" : "opacity-0 -z-50"
+        }`}
       >
-        <ul className="sm:space-x-3 space-x-1 flex items-center justify-center">
-          <li>
-            <NavLink
-              end
-              to="/main/"
-              className={({ isActive }) =>
-                `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
-                  isActive
-                    ? "bg-royal-azure text-white"
-                    : "hover:bg-royal-azure hover:text-white"
-                }`
-              }
+        <div
+          className={`sm:w-[40%] min-h-screen transition-transform duration-150 ease-in-out bg-white border-r-2 border-silver-fog shadow-xl py-3 flex flex-col ${
+            canvasToggle ? "translate-y-0" : "-translate-x-5"
+          }`}
+        >
+          {/* Toggle Icon */}
+          {canvasToggle ? (
+            <button
+              type="button"
+              onClick={() => setCanvasToggle(false)}
+              className="fixed bg-white right-0 shadow-xl top-4 w-10 h-10 grid place-items-center rounded-l-full z-10"
             >
-              <AiOutlineHome className="w-[25px] h-[25px]" />
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              end
-              to="/main/portfolio"
-              className={({ isActive }) =>
-                `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
-                  isActive
-                    ? "bg-royal-azure text-white"
-                    : "hover:bg-royal-azure hover:text-white"
-                }`
-              }
-            >
-              <VscPieChart className="w-[25px] h-[25px]" />
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              end
-              to="/main/market"
-              className={({ isActive }) =>
-                `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
-                  isActive
-                    ? "bg-royal-azure text-white"
-                    : "hover:bg-royal-azure hover:text-white"
-                }`
-              }
-            >
-              <AiOutlineLineChart className="w-[25px] h-[25px]" />
-            </NavLink>
-          </li>
-          <li
-            onClick={() => setProfilePopUp(true)}
-            to="/main/profile"
-            className="text-xl flex hover:bg-royal-azure cursor-pointer hover:text-white items-center gap-2 p-3 rounded-md transition-colors"
-          >
-            <LuUserRound className="w-[25px] h-[25px]" />
-          </li>
-          <li>
-            <NavLink
-              end
-              to="/main/settings"
-              className={({ isActive }) =>
-                `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
-                  isActive
-                    ? "bg-royal-azure text-white"
-                    : "hover:bg-royal-azure hover:text-white"
-                }`
-              }
-            >
-              <IoSettingsOutline className="w-[25px] h-[25px]" />
-            </NavLink>
-          </li>
-          <li
-            onClick={logOutFunction}
-            className="mt-auto text-xl flex items-center gap-2 p-3 rounded-md transition-colors bg-royal-azure
-            text-white cursor-pointer"
-          >
-            <LuLogOut className="w-[25px] h-[25px]" />
-          </li>
-        </ul>
+              <FaArrowLeftLong />
+            </button>
+          ) : (
+            ""
+          )}
+          {/* Logo */}
+          <NavLink end to="/main/" className="space-y-2 text-center">
+            <div className="flex items-center justify-center gap-3">
+              <img
+                src="/assets/favicon.png"
+                alt="Favicon"
+                className="w-[54px] h-[54px]"
+              />
+              <h1 className="font-bold font-montserrat text-[30px] text-charcoal-stone">
+                Z Coins
+              </h1>
+            </div>
+          </NavLink>
+
+          <hr className="my-3 border border-silver-fog" />
+
+          <div className="px-3 flex flex-col flex-1">
+            <ul className="space-y-3 flex flex-col flex-1">
+              <li>
+                <NavLink
+                  end
+                  to="/main/"
+                  className={({ isActive }) =>
+                    `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
+                      isActive
+                        ? "bg-royal-azure text-white"
+                        : "hover:bg-royal-azure hover:text-white"
+                    }`
+                  }
+                >
+                  <AiOutlineHome className="w-[25px] h-[25px]" /> Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  end
+                  to="/main/portfolio"
+                  className={({ isActive }) =>
+                    `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
+                      isActive
+                        ? "bg-royal-azure text-white"
+                        : "hover:bg-royal-azure hover:text-white"
+                    }`
+                  }
+                >
+                  <VscPieChart className="w-[25px] h-[25px]" /> Portfolio
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  end
+                  to="/main/market"
+                  className={({ isActive }) =>
+                    `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
+                      isActive
+                        ? "bg-royal-azure text-white"
+                        : "hover:bg-royal-azure hover:text-white"
+                    }`
+                  }
+                >
+                  <AiOutlineLineChart className="w-[25px] h-[25px]" /> Market
+                </NavLink>
+              </li>
+              <li
+                onClick={() => setProfilePopUp(true)}
+                className="text-xl flex items-center gap-2 p-3 cursor-pointer hover:bg-royal-azure hover:text-white rounded-md transition-colors"
+              >
+                <LuUserRound className="w-[25px] h-[25px]" /> Profile
+              </li>
+              <li>
+                <NavLink
+                  end
+                  to="/main/settings"
+                  className={({ isActive }) =>
+                    `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
+                      isActive
+                        ? "bg-royal-azure text-white"
+                        : "hover:bg-royal-azure hover:text-white"
+                    }`
+                  }
+                >
+                  <IoSettingsOutline className="w-[25px] h-[25px]" /> Settings
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  end
+                  to="/main/coins-history"
+                  className={({ isActive }) =>
+                    `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
+                      isActive
+                        ? "bg-royal-azure text-white"
+                        : "hover:bg-royal-azure hover:text-white"
+                    }`
+                  }
+                >
+                  <MdHistory className="w-[25px] h-[25px]" /> History
+                </NavLink>
+              </li>
+              <li
+                onClick={logOutFunction}
+                className="mt-auto text-xl flex items-center gap-2 p-3 rounded-md transition-colors bg-royal-azure text-white cursor-pointer"
+              >
+                <LuLogOut className="w-[25px] h-[25px]" /> Log Out
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
+
       {/* Profile PopUp */}
       <div
         onClick={() => setProfilePopUp(false)}
