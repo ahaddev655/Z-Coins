@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Bounce, toast, ToastContainer } from "react-toastify";
+import { Line } from "react-chartjs-2";
 
 function MainCoinPage() {
   const { coinId } = useParams();
@@ -179,16 +180,19 @@ function MainCoinPage() {
 
       {/* Coin Info */}
       <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
-          <img
-            src={coinData.image.small}
-            alt={coinData.name}
-            className="w-10 h-10"
-          />
-          <h1 className="text-2xl font-semibold sm:block hidden">
-            {coinData.name} ({coinData.symbol.toUpperCase()})
-          </h1>
-        </div>
+        {coinData && (
+          <div className="flex items-center gap-4">
+            <img
+              src={coinData.image.small}
+              alt={coinData.name}
+              className="w-10 h-10"
+            />
+            <h1 className="text-2xl font-semibold sm:block hidden">
+              {coinData.name} ({coinData.symbol.toUpperCase()})
+            </h1>
+          </div>
+        )}
+
         <div className="flex gap-3">
           <button
             onClick={() => setPopupType("buy")}
@@ -207,10 +211,14 @@ function MainCoinPage() {
 
       {/* Responsive Chart */}
       <div className="bg-white p-4 rounded-lg shadow-md h-[400px]">
-        <Line
-          data={chartData}
-          options={{ responsive: true, maintainAspectRatio: false }}
-        />
+        {chartData ? (
+          <Line
+            data={chartData}
+            options={{ responsive: true, maintainAspectRatio: false }}
+          />
+        ) : (
+          <p className="text-center">Loading chart...</p>
+        )}
       </div>
 
       {/* Buy/Sell PopUp */}
