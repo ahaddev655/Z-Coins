@@ -35,7 +35,6 @@ function ChangePasswordComponent() {
         },
       )
       .then((res) => {
-        console.log(res.data);
         toast.success(res?.data?.message);
       })
       .catch((err) => {

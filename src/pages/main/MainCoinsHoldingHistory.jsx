@@ -7,7 +7,6 @@ function MainCoinsHoldingHistory() {
     const fetchData = () => {
       const data = JSON.parse(localStorage.getItem("PNL")) || [];
       setHoldingData(data);
-      console.log(data);
     };
 
     fetchData();

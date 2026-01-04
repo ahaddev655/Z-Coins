@@ -98,7 +98,6 @@ function EditProfileComponent() {
       )
       .then((res) => {
         setUserData(res.data.user);
-        console.log(userData);
         toast.success(res?.data?.message || "Profile updated");
         setEditProfile(false);
       })
