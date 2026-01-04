@@ -15,6 +15,10 @@ function MainCoinsHoldingHistory() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!localStorage.getItem("sessionToken")) navigate("/");
+  }, [navigate]);
   return (
     <div className="page">
       {/* Heading */}

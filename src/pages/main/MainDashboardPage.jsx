@@ -47,10 +47,7 @@ function MainDashboardPage() {
   }, []);
 
   useEffect(() => {
-    const userToken = localStorage.getItem("sessionToken");
-    if (!userToken) {
-      navigate("/");
-    }
+    if (!localStorage.getItem("sessionToken")) navigate("/");
   }, [navigate]);
 
   return (

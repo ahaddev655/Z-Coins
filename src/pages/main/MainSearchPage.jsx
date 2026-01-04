@@ -34,10 +34,7 @@ function MainSearchPage() {
   const [searchQuery, setSearchQuery] = useState(null);
 
   useEffect(() => {
-    const userToken = localStorage.getItem("sessionToken");
-    if (!userToken) {
-      navigate("/");
-    }
+    if (!localStorage.getItem("sessionToken")) navigate("/");
   }, [navigate]);
 
   // Filter coins based on search query

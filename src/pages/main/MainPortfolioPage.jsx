@@ -8,10 +8,7 @@ function MainPortfolioPage() {
   const holdingValue = Number(localStorage.getItem("holdingValue") || 0);
 
   useEffect(() => {
-    const userToken = localStorage.getItem("sessionToken");
-    if (!userToken) {
-      navigate("/");
-    }
+    if (!localStorage.getItem("sessionToken")) navigate("/");
   }, [navigate]);
 
   return (

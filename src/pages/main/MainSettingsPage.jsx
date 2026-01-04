@@ -13,10 +13,7 @@ function MainSettingsPage() {
 
   /* ================= AUTH GUARD ================= */
   useEffect(() => {
-    const token = localStorage.getItem("sessionToken");
-    if (!token) {
-      navigate("/");
-    }
+    if (!localStorage.getItem("sessionToken")) navigate("/");
   }, [navigate]);
 
   return (
