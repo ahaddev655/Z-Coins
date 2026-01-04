@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function MainDashboardPage() {
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ function MainDashboardPage() {
       })
       .then((res) => {
         const formattedCoins = res.data.map((coin) => ({
+          id: coin.id,
           name: coin.name,
           shortForm: coin.symbol.toUpperCase(),
           img: coin.image,
@@ -73,60 +74,60 @@ function MainDashboardPage() {
         <div className="mt-4 space-y-3">
           {coins.map((c, i) => (
             <div
-              onClick={() => {
-                setSelectedCoin(c);
-                setPopUpToggle(true);
-              }}
               key={i}
-              className="cursor-pointer shadow-[0px_2px_4px_#00000013] hover:shadow-lg transition-shadow bg-white rounded-lg p-4 flex items-center justify-between flex-wrap"
+              className="cursor-pointer shadow-[0px_2px_4px_#00000013] hover:shadow-lg transition-shadow bg-white rounded-lg p-4"
             >
-              <div className="flex items-center gap-3 flex-wrap">
-                <img
-                  src={c.img}
-                  alt="coin"
-                  className="w-10 h-10 rounded-full"
-                />
-                <div className="space-y-[3px]">
-                  <h1 className="font-medium">{c.name}</h1>
-                  <p className="text-slate-mist font-medium sm:text-base text-sm">
-                    {c.shortForm}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center gap-6 flex-wrap">
-                  <div className="sm:block hidden">
-                    {c.pnl > 0 ? (
-                      <img
-                        src="/assets/gain vector.svg"
-                        alt="gain"
-                        className="sm:w-16 sm:h-16"
-                      />
-                    ) : (
-                      <img
-                        src="/assets/loss vector.svg"
-                        alt="loss"
-                        className="sm:w-16 sm:h-16"
-                      />
-                    )}
+              <Link to={`/coin-details/${c.id}`}>
+                <div className="flex items-center justify-between flex-wrap">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <img
+                      src={c.img}
+                      alt="coin"
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div className="space-y-[3px]">
+                      <h1 className="font-medium">{c.name}</h1>
+                      <p className="text-slate-mist font-medium sm:text-base text-sm">
+                        {c.shortForm}
+                      </p>
+                    </div>
                   </div>
+                  <div>
+                    <div className="flex items-center gap-6 flex-wrap">
+                      <div className="sm:block hidden">
+                        {c.pnl > 0 ? (
+                          <img
+                            src="/assets/gain vector.svg"
+                            alt="gain"
+                            className="sm:w-16 sm:h-16"
+                          />
+                        ) : (
+                          <img
+                            src="/assets/loss vector.svg"
+                            alt="loss"
+                            className="sm:w-16 sm:h-16"
+                          />
+                        )}
+                      </div>
 
-                  <div className="space-y-[5px]">
-                    <h1 className="sm:text-2xl text-lg font-medium">
-                      ${c.amount.toFixed(2)}
-                    </h1>
-                    {c.pnl > 0 ? (
-                      <p className="text-end text-emerald-leaf font-medium sm:text-lg text-sm">
-                        +{c.pnl.toFixed(2)}%
-                      </p>
-                    ) : (
-                      <p className="text-end text-crimson-fire font-medium sm:text-lg text-sm">
-                        {c.pnl.toFixed(2)}%
-                      </p>
-                    )}
+                      <div className="space-y-[5px]">
+                        <h1 className="sm:text-2xl text-lg font-medium">
+                          ${c.amount.toFixed(2)}
+                        </h1>
+                        {c.pnl > 0 ? (
+                          <p className="text-end text-emerald-leaf font-medium sm:text-lg text-sm">
+                            +{c.pnl.toFixed(2)}%
+                          </p>
+                        ) : (
+                          <p className="text-end text-crimson-fire font-medium sm:text-lg text-sm">
+                            {c.pnl.toFixed(2)}%
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>

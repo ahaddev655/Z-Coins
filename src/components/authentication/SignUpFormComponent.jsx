@@ -17,7 +17,6 @@ function SignUpFormComponent() {
     email: "",
     password: "",
     userImage: null, // File object
-    mobileNumber: "",
   });
 
   const navigate = useNavigate();
@@ -44,28 +43,13 @@ function SignUpFormComponent() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (
-      !formData.fullName ||
-      !formData.email ||
-      !formData.password ||
-      !formData.mobileNumber
-    ) {
+    if (!formData.fullName || !formData.email || !formData.password) {
       toast.error("All fields are required...");
       return;
     }
 
     if (!formData.email.includes("@")) {
       toast.error("Email is invalid");
-      return;
-    }
-
-    if (/[a-zA-Z]/.test(formData.mobileNumber)) {
-      toast.error("Phone Number cannot contain alphabets");
-      return;
-    }
-
-    if (formData.mobileNumber.length !== 11) {
-      toast.error("Please remove zero or check the number again...");
       return;
     }
 
@@ -83,10 +67,14 @@ function SignUpFormComponent() {
     newUserData.append("fullName", formData.fullName);
     newUserData.append("email", formData.email);
     newUserData.append("password", formData.password);
+
     if (formData.userImage) {
       newUserData.append("userImage", formData.userImage);
     }
-    newUserData.append("mobileNumber", formData.mobileNumber);
+
+    if (formData.userImageUrl) {
+      newUserData.append("userImageUrl", formData.userImageUrl);
+    }
 
     axios
       .post("https://z-coins-backend.vercel.app/api/auth/register", newUserData)
@@ -95,12 +83,12 @@ function SignUpFormComponent() {
         localStorage.setItem("sessionToken", res.data.token);
         localStorage.setItem("userId", res.data.id);
         localStorage.setItem("userRole", res.data.role);
+        localStorage.setItem("holdingValue", 10000);
         setFormData({
           fullName: "",
           email: "",
           password: "",
           userImage: null,
-          mobileNumber: "",
         });
         setConfirmPassword("");
         setProfilePreview("");
@@ -109,12 +97,15 @@ function SignUpFormComponent() {
         }, 3500);
       })
       .catch((err) => {
-        console.error("Error in Sign-Up API: ", err);
-        toast.error(
+        console.error("Error in Sign-Up API:", err);
+
+        const message =
           err?.response?.data?.error ||
-            err?.response?.data?.message ||
-            "Something went wrong",
-        );
+          err?.response?.data?.message ||
+          err?.message ||
+          "Something went wrong";
+
+        toast.error(message);
       });
   };
 
@@ -123,20 +114,21 @@ function SignUpFormComponent() {
     onSuccess: (tokenResponse) => {
       axios
         .get(
-          `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenResponse.access_token}`,
+          `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenResponse.access_token}`
         )
         .then((googleRes) => {
           return fetchGoogleImageAsFile(googleRes.data.picture).then(
             (googleFile) => {
-              setFormData({
-                fullName: googleRes.data.name,
-                email: googleRes.data.email,
+              setFormData((prev) => ({
+                ...prev,
+                fullName: googleRes.data.name || "",
+                email: googleRes.data.email || "",
                 userImage: googleFile,
-              });
+              }));
 
               setProfilePreview(URL.createObjectURL(googleFile));
               toast.info("Please fill the other details...");
-            },
+            }
           );
         })
         .catch((err) => {
@@ -253,21 +245,6 @@ function SignUpFormComponent() {
             className="w-6 h-6 text-royal-azure hover:text-indigo-wave cursor-pointer absolute top-[35px] right-2"
           />
         )}
-      </div>
-      {/* mobileNumber */}
-      <div className="flex gap-.5 flex-col">
-        <label htmlFor="mobileNumber" className="text-charcoal-stone">
-          Mobile Number
-        </label>
-        <input
-          value={formData.mobileNumber}
-          type="tel"
-          placeholder="Enter your mobile number"
-          name="mobileNumber"
-          id="mobileNumber"
-          className="py-2 px-2 shadow-sm focus:scale-101 transition-all border-2 border-royal-azure text-charcoal-stone rounded-md focus:ring-2 focus:ring-royal-azure"
-          onChange={handleInputChange}
-        />
       </div>
       {/* Google login button */}
       <button

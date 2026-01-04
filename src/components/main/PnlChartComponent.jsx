@@ -20,7 +20,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 const PnlChartComponent = () => {
@@ -48,7 +48,7 @@ const PnlChartComponent = () => {
             0,
             pnlValues[pnlValues.length - 1] >= 0
               ? "rgba(33,191,115,0.3)"
-              : "rgba(217,4,41,0.3)"
+              : "rgba(217,4,41,0.3)",
           );
           gradient.addColorStop(1, "rgba(255,255,255,0)");
           return gradient;
@@ -86,7 +86,7 @@ const PnlChartComponent = () => {
   };
 
   return (
-    <div className="bg-white p-5 rounded-xl shadow-md col-span-2">
+    <div className="bg-white p-5 rounded-xl shadow-md">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-gray-800">Weekly PnL</h2>
         <span

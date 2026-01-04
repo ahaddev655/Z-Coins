@@ -9,7 +9,6 @@ function EditProfileComponent() {
   const [userData, setUserData] = useState({
     fullName: "",
     email: "",
-    mobileNumber: "",
     userImage: "",
   });
 
@@ -18,7 +17,6 @@ function EditProfileComponent() {
   const [editFormData, setEditFormData] = useState({
     fullName: "",
     email: "",
-    mobileNumber: "",
     userImage: "",
   });
 
@@ -45,7 +43,6 @@ function EditProfileComponent() {
       setEditFormData({
         fullName: userData.fullName,
         email: userData.email,
-        mobileNumber: userData.mobileNumber,
         userImage: userData.userImage,
       });
     }
@@ -72,9 +69,9 @@ function EditProfileComponent() {
   const handleSaveProfile = (e) => {
     e.preventDefault();
 
-    const { fullName, email, mobileNumber, imageFile } = editFormData;
+    const { fullName, email, imageFile } = editFormData;
 
-    if (!fullName || !email || !mobileNumber) {
+    if (!fullName || !email) {
       return toast.error("All fields are required");
     }
 
@@ -82,15 +79,10 @@ function EditProfileComponent() {
       return toast.error("Invalid email address");
     }
 
-    if (!/^[0-9]{11}$/.test(mobileNumber)) {
-      return toast.error("Mobile number must be 11 digits");
-    }
-
     // Prepare FormData
     const formData = new FormData();
     formData.append("fullName", fullName);
     formData.append("email", email);
-    formData.append("mobileNumber", mobileNumber);
 
     if (imageFile) {
       formData.append("userImage", imageFile);
@@ -156,15 +148,15 @@ function EditProfileComponent() {
             </div>
             <div className="flex justify-between">
               <h4 className="font-medium">Full Name</h4>
-              <span className="text-royal-azure font-medium">{userData.fullName}</span>
+              <span className="text-royal-azure font-medium">
+                {userData.fullName}
+              </span>
             </div>
             <div className="flex justify-between">
               <h4 className="font-medium">Email</h4>
-              <span className="text-royal-azure font-medium">{userData.email}</span>
-            </div>
-            <div className="flex justify-between">
-              <h4 className="font-medium">Mobile Number</h4>
-              <span className="text-royal-azure font-medium">{userData.mobileNumber}</span>
+              <span className="text-royal-azure font-medium">
+                {userData.email}
+              </span>
             </div>
           </>
         ) : (
@@ -226,15 +218,6 @@ function EditProfileComponent() {
               value={editFormData.email}
               onChange={handleInputChange}
               placeholder="Email"
-              className="w-full py-2 px-3 border rounded-md"
-            />
-
-            <input
-              type="tel"
-              name="mobileNumber"
-              value={editFormData.mobileNumber}
-              onChange={handleInputChange}
-              placeholder="Mobile Number"
               className="w-full py-2 px-3 border rounded-md"
             />
           </div>

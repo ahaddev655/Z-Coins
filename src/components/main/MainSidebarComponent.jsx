@@ -3,17 +3,18 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineHome, AiOutlineLineChart } from "react-icons/ai";
 import { IoSettingsOutline } from "react-icons/io5";
 import { LuLogOut, LuUserRound } from "react-icons/lu";
+import { MdHistory } from "react-icons/md";
 import { VscPieChart } from "react-icons/vsc";
 import { NavLink } from "react-router-dom";
 
 function MainSidebarComponent() {
   const [profilePopUp, setProfilePopUp] = useState(false);
+
   const [userProfile, setUserProfile] = useState({
     userImage: "",
     fullName: "",
     email: "",
-    mobileNumber: "",
-    pnl: "-13.0",
+    pnl: "",
   });
   const userId = localStorage.getItem("userId");
 
@@ -22,6 +23,14 @@ function MainSidebarComponent() {
       .get(`https://z-coins-backend.vercel.app/api/users/one-user/${userId}`)
       .then((res) => {
         setUserProfile(res.data.user);
+        const totalPnl = JSON.parse(localStorage.getItem("PNL")).reduce(
+          (sum, item) => sum + item.pnl,
+          0
+        );
+        setUserProfile((prevProfile) => ({
+          ...prevProfile,
+          pnl: totalPnl,
+        }));
       })
       .catch((err) => {
         console.error("User Details API Error One: ", err);
@@ -125,6 +134,21 @@ function MainSidebarComponent() {
                 }
               >
                 <IoSettingsOutline className="w-[25px] h-[25px]" /> Settings
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                end
+                to="/main/coins-history"
+                className={({ isActive }) =>
+                  `text-xl flex items-center gap-2 p-3 rounded-md transition-colors ${
+                    isActive
+                      ? "bg-royal-azure text-white"
+                      : "hover:bg-royal-azure hover:text-white"
+                  }`
+                }
+              >
+                <MdHistory className="w-[25px] h-[25px]" /> History
               </NavLink>
             </li>
             <li
@@ -261,12 +285,8 @@ function MainSidebarComponent() {
                 </div>
                 <div className="flex justify-between">
                   <h4 className="font-medium">Email</h4>
-                  <span className="text-royal-azure font-medium">{userProfile.email}</span>
-                </div>
-                <div className="flex justify-between">
-                  <h4 className="font-medium">Mobile Number</h4>
                   <span className="text-royal-azure font-medium">
-                    {userProfile.mobileNumber}
+                    {userProfile.email}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -278,9 +298,8 @@ function MainSidebarComponent() {
                         : "text-emerald-leaf"
                     }`}
                   >
-                    {userProfile.pnl < 0 ? "-" : "+"}
-                    {userProfile.pnl}
-                    130
+                    {userProfile.pnl > 0 ? "+" : ""}
+                    {Number(userProfile.pnl)?.toFixed(2) || "0.0"}
                   </span>
                 </div>
               </div>
