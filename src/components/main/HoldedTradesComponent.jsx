@@ -45,7 +45,7 @@ function HoldedTradesComponent() {
                 </div>
                 <div>
                   <h1 className="text-xl text-end font-medium text-royal-azure">
-                    ${coin.amount.toFixed(2)}
+                    ${Number(coin.amount.toFixed(2)).toLocaleString()}
                   </h1>
                   <h4 className="text-end font-medium text-sm text-slate-mist">
                     {coin.lots}

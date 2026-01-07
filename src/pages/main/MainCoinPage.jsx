@@ -34,7 +34,7 @@ function MainCoinPage() {
             {
               params: { vs_currency: "usd", days: 7 },
               signal: controller.signal,
-            }
+            },
           ),
         ]);
 
@@ -116,7 +116,7 @@ function MainCoinPage() {
       if (holdingValue < totalTrade) return toast.error("Not enough funds.");
 
       const existing = yourCoins.find(
-        (c) => c.shortForm === selectedCoin.shortForm
+        (c) => c.shortForm === selectedCoin.shortForm,
       );
 
       if (existing) {
@@ -132,7 +132,7 @@ function MainCoinPage() {
       holdingValue -= totalTrade;
     } else if (popupType === "sell") {
       const coin = yourCoins.find(
-        (c) => c.shortForm === selectedCoin.shortForm
+        (c) => c.shortForm === selectedCoin.shortForm,
       );
 
       if (!coin || coin.lots < nLots)
@@ -162,7 +162,7 @@ function MainCoinPage() {
     toast.success(
       `${popupType.toUpperCase()} ${nLots} ${
         selectedCoin.shortForm
-      } for $${totalTrade.toFixed(2)}`
+      } for $${totalTrade.toFixed(2)}`,
     );
 
     setPopupType("");

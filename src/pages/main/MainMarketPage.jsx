@@ -170,7 +170,7 @@ function MainMarketPage() {
 
                     <div className="space-y-[5px]">
                       <h1 className="sm:text-2xl text-lg font-medium">
-                        ${coin.amount.toFixed(2)}
+                        ${Number(coin.amount.toFixed(2)).toLocaleString()}
                       </h1>
                       {coin.pnl > 0 ? (
                         <p className="text-end text-emerald-leaf font-medium sm:text-lg text-sm">
