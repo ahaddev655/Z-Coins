@@ -1,23 +1,5 @@
 import React from "react";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Tooltip,
-  Filler,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Tooltip,
-  Filler,
-);
+import Chart from "react-apexcharts";
 
 const PnlChartComponent = () => {
   const rawPnl = JSON.parse(localStorage.getItem("PNL")) || [];
@@ -27,9 +9,7 @@ const PnlChartComponent = () => {
 
   rawPnl.forEach((item) => {
     if (!item?.date) return;
-
-    const date = item.date; // use directly
-    dailyPnl[date] = (dailyPnl[date] || 0) + Number(item.pnl || 0);
+    dailyPnl[item.date] = (dailyPnl[item.date] || 0) + Number(item.pnl || 0);
   });
 
   const labels = Object.keys(dailyPnl);
@@ -38,39 +18,53 @@ const PnlChartComponent = () => {
   const netPnl = values.reduce((a, b) => a + b, 0);
   const isProfit = netPnl >= 0;
 
-  const data = {
-    labels,
-    datasets: [
-      {
-        data: values,
-        borderColor: isProfit ? "#21bf73" : "#d90429",
-        backgroundColor: (ctx) => {
-          const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 300);
-          gradient.addColorStop(
-            0,
-            isProfit ? "rgba(33,191,115,0.3)" : "rgba(217,4,41,0.3)",
-          );
-          gradient.addColorStop(1, "rgba(255,255,255,0)");
-          return gradient;
-        },
-        fill: true,
-        tension: 0.35,
-        pointRadius: 4,
+  const chartOptions = {
+    chart: {
+      type: "area",
+      toolbar: { show: false },
+      zoom: { enabled: false },
+    },
+    stroke: {
+      curve: "smooth",
+      width: 3,
+    },
+    colors: [isProfit ? "#21bf73" : "#d90429"],
+    fill: {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.35,
+        opacityTo: 0,
+        stops: [0, 100],
       },
-    ],
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    xaxis: {
+      categories: labels,
+      labels: { show: true },
+    },
+    yaxis: {
+      labels: { show: true },
+    },
+    grid: {
+      show: false,
+    },
+    tooltip: {
+      theme: "light",
+      y: {
+        formatter: (val) => val.toFixed(2),
+      },
+    },
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
+  const chartSeries = [
+    {
+      name: "PnL",
+      data: values,
     },
-    scales: {
-      x: { grid: { display: false } },
-      y: { grid: { display: false } },
-    },
-  };
+  ];
 
   return (
     <div className="bg-white p-5 rounded-xl shadow-md">
@@ -87,7 +81,12 @@ const PnlChartComponent = () => {
       </div>
 
       <div className="h-72">
-        <Line data={data} options={options} />
+        <Chart
+          options={chartOptions}
+          series={chartSeries}
+          type="area"
+          height="100%"
+        />
       </div>
     </div>
   );

@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import Chart from "react-apexcharts";
 import { Bounce, toast, ToastContainer } from "react-toastify";
-import { Line } from "react-chartjs-2";
 
 function MainCoinPage() {
   const { coinId } = useParams();
   const [coinData, setCoinData] = useState(null);
-  const [chartData, setChartData] = useState(null);
+  const [chartSeries, setChartSeries] = useState([]);
   const [popupType, setPopupType] = useState("");
   const [lots, setLots] = useState(1);
   const [totalCost, setTotalCost] = useState(0);
@@ -15,54 +15,38 @@ function MainCoinPage() {
   const navigate = useNavigate();
 
   // -----------------------------
-  // Fetch coin & chart data safely
+  // Fetch coin & OHLC chart data
   // -----------------------------
   useEffect(() => {
     if (!coinId) return;
 
     const controller = new AbortController();
-    let isMounted = true; // flag to prevent state update after unmount
+    let isMounted = true;
 
     const fetchDataSafe = async () => {
       try {
-        const [coinRes, chartRes] = await Promise.all([
+        const [coinRes, ohlcRes] = await Promise.all([
           axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`, {
             signal: controller.signal,
           }),
-          axios.get(
-            `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`,
-            {
-              params: { vs_currency: "usd", days: 7 },
-              signal: controller.signal,
-            },
-          ),
+          axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}/ohlc`, {
+            params: { vs_currency: "usd", days: 7 },
+            signal: controller.signal,
+          }),
         ]);
 
-        if (!isMounted) return; // do not update state if unmounted
+        if (!isMounted) return;
 
         setCoinData(coinRes.data);
 
-        const labels = chartRes.data.prices.map((p) => {
-          const date = new Date(p[0]);
-          return `${date.getMonth() + 1}/${date.getDate()}`;
-        });
+        const candleData = ohlcRes.data.map((c) => ({
+          x: new Date(c[0]),
+          y: [c[1], c[2], c[3], c[4]], // open, high, low, close
+        }));
 
-        const prices = chartRes.data.prices.map((p) => p[1]);
-
-        setChartData({
-          labels,
-          datasets: [
-            {
-              label: `${coinId.toUpperCase()} Price`,
-              data: prices,
-              borderColor: "#0063f5",
-              backgroundColor: "rgba(0, 99, 245, 0.2)",
-              tension: 0.3,
-            },
-          ],
-        });
-      } catch (error) {
-        if (!axios.isCancel(error)) console.error("Fetch error:", error);
+        setChartSeries([{ data: candleData }]);
+      } catch (err) {
+        if (!axios.isCancel(err)) console.error(err);
       }
     };
 
@@ -77,24 +61,23 @@ function MainCoinPage() {
   }, [coinId]);
 
   // -----------------------------
-  // Update total cost when lots or price changes
+  // Update total cost
   // -----------------------------
   useEffect(() => {
-    if (coinData) {
-      const price = coinData?.market_data?.current_price?.usd || 0;
-      setTotalCost(lots * price);
-    }
+    if (!coinData) return;
+    const price = coinData.market_data.current_price.usd;
+    setTotalCost(lots * price);
   }, [lots, coinData]);
 
   // -----------------------------
-  // Redirect if not logged in
+  // Auth check
   // -----------------------------
   useEffect(() => {
     if (!localStorage.getItem("sessionToken")) navigate("/");
   }, [navigate]);
 
   // -----------------------------
-  // Buy/Sell confirmation logic
+  // Buy / Sell logic
   // -----------------------------
   const handleConfirm = () => {
     const nLots = Number(lots);
@@ -116,29 +99,28 @@ function MainCoinPage() {
       if (holdingValue < totalTrade) return toast.error("Not enough funds.");
 
       const existing = yourCoins.find(
-        (c) => c.shortForm === selectedCoin.shortForm,
+        (c) => c.shortForm === selectedCoin.shortForm
       );
 
-      if (existing) {
-        existing.lots += nLots;
-      } else {
+      if (existing) existing.lots += nLots;
+      else
         yourCoins.push({
           ...selectedCoin,
           lots: nLots,
           buyPrice: selectedCoin.amount,
         });
-      }
 
       holdingValue -= totalTrade;
-    } else if (popupType === "sell") {
+    } else {
       const coin = yourCoins.find(
-        (c) => c.shortForm === selectedCoin.shortForm,
+        (c) => c.shortForm === selectedCoin.shortForm
       );
 
       if (!coin || coin.lots < nLots)
         return toast.error("Not enough coins to sell.");
 
       coin.lots -= nLots;
+
       PNL.push({
         name: coin.name,
         shortForm: coin.shortForm,
@@ -149,45 +131,62 @@ function MainCoinPage() {
       });
 
       holdingValue += totalTrade;
-
-      // Remove coins with 0 lots
-      const filteredCoins = yourCoins.filter((c) => c.lots > 0);
-      localStorage.setItem("yourCoins", JSON.stringify(filteredCoins));
     }
 
+    localStorage.setItem(
+      "yourCoins",
+      JSON.stringify(yourCoins.filter((c) => c.lots > 0))
+    );
     localStorage.setItem("PNL", JSON.stringify(PNL));
-    localStorage.setItem("yourCoins", JSON.stringify(yourCoins));
     localStorage.setItem("holdingValue", holdingValue.toFixed(2));
 
     toast.success(
-      `${popupType.toUpperCase()} ${nLots} ${
-        selectedCoin.shortForm
-      } for $${totalTrade.toFixed(2)}`,
+      `${popupType.toUpperCase()} ${nLots} ${selectedCoin.shortForm}`
     );
 
     setPopupType("");
     setLots(1);
   };
 
+  // -----------------------------
+  // Apex Candle Options
+  // -----------------------------
+  const chartOptions = {
+    chart: {
+      type: "candlestick",
+      toolbar: { show: false },
+      zoom: { enabled: false },
+    },
+    plotOptions: {
+      candlestick: {
+        colors: {
+          upward: "#21bf73",
+          downward: "#d90429",
+        },
+        wick: {
+          useFillColor: true,
+        },
+      },
+    },
+    xaxis: {
+      type: "datetime",
+    },
+    yaxis: {
+      tooltip: { enabled: true },
+    },
+    grid: { show: false },
+  };
+
   return (
     <div className="min-h-screen bg-cloud-white p-6">
-      <ToastContainer
-        position="top-right"
-        autoClose={2500}
-        theme="light"
-        transition={Bounce}
-      />
+      <ToastContainer autoClose={2500} transition={Bounce} />
 
-      {/* Coin Info */}
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         {coinData && (
           <div className="flex items-center gap-4">
-            <img
-              src={coinData.image.small}
-              alt={coinData.name}
-              className="w-10 h-10"
-            />
-            <h1 className="text-2xl font-semibold sm:block hidden">
+            <img src={coinData.image.small} alt="" className="w-10 h-10" />
+            <h1 className="text-2xl font-semibold hidden sm:block">
               {coinData.name} ({coinData.symbol.toUpperCase()})
             </h1>
           </div>
@@ -196,60 +195,62 @@ function MainCoinPage() {
         <div className="flex gap-3">
           <button
             onClick={() => setPopupType("buy")}
-            className="px-4 py-2 rounded-md bg-emerald-leaf text-white font-semibold hover:bg-green-600"
+            className="px-4 py-2 bg-emerald-leaf text-white rounded-md"
           >
             Buy
           </button>
           <button
             onClick={() => setPopupType("sell")}
-            className="px-4 py-2 rounded-md bg-crimson-fire text-white font-semibold hover:bg-red-600"
+            className="px-4 py-2 bg-crimson-fire text-white rounded-md"
           >
             Sell
           </button>
         </div>
       </div>
 
-      {/* Responsive Chart */}
-      <div className="bg-white p-4 rounded-lg shadow-md h-[400px]">
-        {chartData ? (
-          <Line
-            data={chartData}
-            options={{ responsive: true, maintainAspectRatio: false }}
+      {/* Candlestick Chart */}
+      <div className="bg-white p-4 rounded-lg shadow-md h-[420px]">
+        {chartSeries.length ? (
+          <Chart
+            options={chartOptions}
+            series={chartSeries}
+            type="candlestick"
+            height="100%"
           />
         ) : (
           <p className="text-center">Loading chart...</p>
         )}
       </div>
 
-      {/* Buy/Sell PopUp */}
+      {/* Buy/Sell Popup */}
       {popupType && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center z-50"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center"
           onClick={() => setPopupType("")}
         >
           <div
-            className="bg-cloud-white p-6 rounded-lg w-[360px] shadow-lg"
+            className="bg-white p-6 rounded-lg w-[360px]"
             onClick={(e) => e.stopPropagation()}
           >
-            <h1 className="text-center text-xl font-semibold mb-4">
+            <h1 className="text-xl font-semibold text-center mb-4">
               {popupType.toUpperCase()} {coinData.symbol.toUpperCase()}
             </h1>
+
             <input
               type="number"
               value={lots}
               onChange={(e) => setLots(Number(e.target.value))}
-              className="w-full border p-2 rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oceanic-blue"
-              step={0.1}
+              className="w-full border p-2 rounded mb-3"
             />
-            <p className="text-center font-medium mb-4">
+
+            <p className="text-center mb-4 font-medium">
               Total: ${totalCost.toFixed(2)}
             </p>
+
             <button
               onClick={handleConfirm}
-              className={`w-full py-3 rounded-md text-white font-semibold ${
-                popupType === "buy"
-                  ? "bg-emerald-leaf hover:bg-green-600"
-                  : "bg-crimson-fire hover:bg-red-600"
+              className={`w-full py-3 text-white rounded-md ${
+                popupType === "buy" ? "bg-emerald-leaf" : "bg-crimson-fire"
               }`}
             >
               Confirm
