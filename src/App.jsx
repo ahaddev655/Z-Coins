@@ -8,6 +8,8 @@ import PortfolioPage from "./pages/user/PortfolioPage";
 import MarketPage from "./pages/user/MarketPage";
 import SettingsPage from "./pages/user/SettingsPage";
 import HistoryPage from "./pages/user/HistoryPage";
+import ProfilePage from "./pages/user/ProfilePage";
+import CoinPage from "./pages/user/CoinPage";
 
 function App() {
   const routes = createBrowserRouter([
@@ -43,8 +45,16 @@ function App() {
           path: "history",
           element: <HistoryPage />,
         },
+        {
+          path: "profile",
+          element: <ProfilePage />,
+        },
       ],
     },
+    {
+      path: "/coin/:coin-name",
+      element: <CoinPage />
+    }
   ]);
   return <RouterProvider router={routes} />;
 }

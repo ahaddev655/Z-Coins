@@ -1,5 +1,5 @@
-import React from "react";
-import { Menu, User, Bell } from "lucide-react";
+import { Menu, Bell } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function UserHeader({ setOffCanvasToggle }) {
   return (
@@ -41,22 +41,26 @@ function UserHeader({ setOffCanvasToggle }) {
         </button>
 
         {/* Profile Section */}
-        <div className="flex items-center gap-3 pl-3 cursor-pointer sm:border-l sm:border-slate-100">
-          <div className="hidden flex-col items-end sm:flex">
-            <span className="text-sm font-bold text-blue-950">Alex Rivera</span>
-            <span className="text-[12px] w-19 truncate font-medium text-slate-400">
-              alex.rivera@example.com
-            </span>
-          </div>
+        <Link to={"/u/profile"}>
+          <div className="flex items-center gap-3 pl-3 sm:border-l sm:border-slate-100">
+            <div className="hidden flex-col items-end sm:flex">
+              <span className="text-sm font-bold text-blue-950">
+                Alex Rivera
+              </span>
+              <span className="text-[12px] w-19 truncate font-medium text-slate-400">
+                alex.rivera@example.com
+              </span>
+            </div>
 
-          {/* Avatar Icon */}
-          <div
-            className="h-10 w-10 font-bold rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 hover:bg-blue-100
+            {/* Avatar Icon */}
+            <div
+              className="h-10 w-10 font-bold rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 hover:bg-blue-100
             transition-colors border border-blue-100/50 shadow-sm"
-          >
-            AR
+            >
+              AR
+            </div>
           </div>
-        </div>
+        </Link>
       </div>
     </header>
   );
