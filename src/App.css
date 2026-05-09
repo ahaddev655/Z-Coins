@@ -1,0 +1,34 @@
+body {
+  background: #ebebeb;
+}
+
+button {
+  cursor: pointer;
+}
+
+button,
+input,
+textarea {
+  outline: none;
+}
+/* --- Optimized Z-Coins Scrollbar --- */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e3a8a;
+  border-radius: 10px;
+  border: 1px solid #f8fafc;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #172554;
+}
