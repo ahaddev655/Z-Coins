@@ -3,10 +3,10 @@ import "./App.css";
 import SplashScreen from "./pages/SplashScreen";
 import AuthenticationPage from "./pages/AuthenticationPage";
 import UserLayout from "./layouts/UserLayout";
-import OverviewPage from './pages/user/OverviewPage';
-import PortfolioPage from './pages/user/PortfolioPage';
-import MarketPage from './pages/user/MarketPage';
-import SettingsPage from './pages/user/SettingsPage';
+import OverviewPage from "./pages/user/OverviewPage";
+import PortfolioPage from "./pages/user/PortfolioPage";
+import MarketPage from "./pages/user/MarketPage";
+import SettingsPage from "./pages/user/SettingsPage";
 import HistoryPage from "./pages/user/HistoryPage";
 
 function App() {
@@ -41,7 +41,7 @@ function App() {
         },
         {
           path: "history",
-          element: <HistoryPage/>,
+          element: <HistoryPage />,
         },
       ],
     },

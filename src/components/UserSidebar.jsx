@@ -47,7 +47,10 @@ function UserSidebar({ linksArray, offCanvas, setOffCanvasToggle }) {
       {/* --- User Section --- */}
       <div className="p-6 mt-auto">
         <div className="flex items-center gap-3 p-3 mb-4 bg-slate-50 border border-slate-100 rounded-2xl">
-          <div className="h-10 w-10 rounded-xl bg-blue-900 flex items-center justify-center text-white shadow-md shrink-0 font-medium text-lg">
+          <div
+            className="h-10 w-10 rounded-xl bg-blue-900 flex items-center justify-center text-white shadow-md shrink-0 font-medium
+            text-lg"
+          >
             AR
           </div>
           <div className="flex flex-col min-w-0">
@@ -61,7 +64,8 @@ function UserSidebar({ linksArray, offCanvas, setOffCanvasToggle }) {
         </div>
 
         <button
-          className="group flex items-center justify-between w-full px-5 py-3 text-sm font-bold text-red-500 bg-red-50/30 hover:bg-red-50 border border-red-100/50 rounded-2xl transition-all active:scale-[0.98]"
+          className="group flex items-center justify-between w-full px-5 py-3 text-sm font-bold text-red-500 bg-red-50/30
+        hover:bg-red-50 border border-red-100/50 rounded-2xl transition-all active:scale-[0.98]"
           onClick={() => navigate("/auth")}
         >
           <div className="flex items-center gap-2">
@@ -108,7 +112,8 @@ function UserSidebar({ linksArray, offCanvas, setOffCanvasToggle }) {
               <div className="flex items-center justify-end p-6">
                 <button
                   onClick={() => setOffCanvasToggle(false)}
-                  className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-500 hover:bg-slate-100 transition-colors"
+                  className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-500 hover:bg-slate-100
+                  transition-colors"
                 >
                   <X size={20} />
                 </button>

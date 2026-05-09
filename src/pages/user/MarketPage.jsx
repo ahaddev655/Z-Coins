@@ -239,7 +239,8 @@ function MarketPage() {
           <input
             type="text"
             placeholder="Search coins (BTC, ETH...)"
-            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-900/10 transition-all font-medium text-sm text-blue-950"
+            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2
+            focus:ring-blue-900/10 transition-all font-medium text-sm text-blue-950"
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
@@ -291,7 +292,8 @@ function MarketPage() {
                       </td>
                       <td className="px-8 py-5">
                         <span
-                          className={`text-xs font-bold flex items-center gap-1 ${coin.change.startsWith("+") ? "text-emerald-500" : "text-red-500"}`}
+                          className={`text-xs font-bold flex items-center gap-1 
+                          ${coin.change.startsWith("+") ? "text-emerald-500" : "text-red-500"}`}
                         >
                           {coin.change.startsWith("+") ? (
                             <TrendingUp size={14} />
@@ -310,7 +312,8 @@ function MarketPage() {
                             setSelectedCoin(coin);
                             setIsTrading(false);
                           }}
-                          className="px-4 py-2 bg-blue-50 text-blue-900 rounded-lg text-xs font-bold hover:bg-blue-900 hover:text-white transition-all"
+                          className="px-4 py-2 bg-blue-50 text-blue-900 rounded-lg text-xs font-bold hover:bg-blue-900
+                          hover:text-white transition-all"
                         >
                           Analyze
                         </button>
@@ -399,7 +402,10 @@ function MarketPage() {
                   {/* Header Section */}
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 bg-blue-950 text-white rounded-2xl flex items-center justify-center text-xl font-black shadow-lg">
+                      <div
+                        className="h-14 w-14 bg-blue-950 text-white rounded-2xl flex items-center justify-center text-xl font-black
+                      shadow-lg"
+                      >
                         {selectedCoin.symbol}
                       </div>
                       <div>
@@ -407,7 +413,10 @@ function MarketPage() {
                           <h2 className="text-2xl font-black text-blue-950">
                             {selectedCoin.name}
                           </h2>
-                          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold uppercase tracking-tighter">
+                          <span
+                            className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold uppercase 
+                            tracking-tighter"
+                          >
                             Rank {selectedCoin.rank}
                           </span>
                         </div>
@@ -490,7 +499,10 @@ function MarketPage() {
                       <span className="text-[10px] font-bold text-blue-400 uppercase">
                         Market Sentiment
                       </span>
-                      <span className="px-2 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                      <span
+                        className="px-2 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-[10px] font-black uppercase
+                        tracking-widest"
+                      >
                         {selectedCoin.sentiment}
                       </span>
                     </div>
@@ -513,14 +525,16 @@ function MarketPage() {
                   <div className="flex flex-col gap-3">
                     <button
                       onClick={() => navigate(`/coin/${selectedCoin.id}`)}
-                      className="w-full flex items-center justify-center gap-2 py-4 bg-blue-950 text-white rounded-2xl font-bold hover:bg-blue-900 transition-all active:scale-95 shadow-lg shadow-blue-100"
+                      className="w-full flex items-center justify-center gap-2 py-4 bg-blue-950 text-white rounded-2xl font-bold
+                      hover:bg-blue-900 transition-all active:scale-95 shadow-lg shadow-blue-100"
                     >
                       <Eye size={18} />
                       Open Full Technical Chart
                     </button>
                     <button
                       onClick={() => setIsTrading(true)}
-                      className="w-full py-4 bg-emerald-50 text-emerald-600 rounded-2xl font-bold hover:bg-emerald-100 transition-all active:scale-95 border border-emerald-100"
+                      className="w-full py-4 bg-emerald-50 text-emerald-600 rounded-2xl font-bold hover:bg-emerald-100 transition-all
+                      active:scale-95 border border-emerald-100"
                     >
                       Buy {selectedCoin.name}
                     </button>
@@ -529,7 +543,10 @@ function MarketPage() {
               ) : (
                 <div>
                   <div className="flex items-center gap-4 mb-8">
-                    <div className="h-12 w-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-100">
+                    <div
+                      className="h-12 w-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg
+                    shadow-emerald-100"
+                    >
                       <Zap size={24} />
                     </div>
                     <div>
@@ -566,7 +583,8 @@ function MarketPage() {
                   <button
                     disabled={isProcessing || !usdInput}
                     onClick={executeTrade}
-                    className="w-full py-5 bg-emerald-500 text-white rounded-3xl font-black shadow-xl shadow-emerald-100 hover:bg-emerald-600 transition-all uppercase"
+                    className="w-full py-5 bg-emerald-500 text-white rounded-3xl font-black shadow-xl shadow-emerald-100
+                  hover:bg-emerald-600 transition-all uppercase"
                   >
                     {isProcessing ? "Connecting..." : "Confirm Trade"}
                   </button>

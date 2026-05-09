@@ -176,7 +176,8 @@ function AuthFormItem({ isLogin }) {
       <motion.button
         layout
         type="submit"
-        className="w-full bg-blue-900 text-white font-bold h-12 rounded-xl hover:bg-blue-800 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-blue-200"
+        className="w-full bg-blue-900 text-white font-bold h-12 rounded-xl hover:bg-blue-800 active:scale-[0.98] transition-all
+        duration-200 shadow-lg shadow-blue-200"
       >
         {isLogin
           ? loading

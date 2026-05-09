@@ -114,15 +114,23 @@ function SettingsPage() {
           </div>
 
           <div className="max-w-md relative">
-            <InputItem
-              id={"password"}
-              label={"Password"}
-              name={"password"}
-              onChange={handleFormDataChange}
+            <input
+              type="password"
+              name="password"
+              id="password"
               placeholder={" "}
-              type={"password"}
+              className="block w-full h-12 px-3 text-gray-900 bg-transparent border-2 border-gray-200 rounded-xl appearance-none
+              focus:outline-none focus:ring-0 focus:border-blue-900 peer transition-colors"
+              onChange={handleFormDataChange}
               value={formData.password}
             />
+            <label
+              htmlFor="password"
+              className="absolute text-gray-500 duration-300 transform translate-y-[-98%] top-1/2 z-10 origin-left left-3
+              peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-focus:top-0 peer-focus:scale-75 peer-focus:-translate-y-1/2 peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:scale-75 bg-white px-2 pointer-events-none"
+            >
+              Password
+            </label>
             <p className="mt-2 text-[10px] text-slate-400 font-medium italic">
               Leave blank if you don't wish to change your current password.
             </p>
@@ -148,7 +156,8 @@ function SettingsPage() {
           <button
             type="submit"
             disabled={isSaving}
-            className="flex items-center gap-2 px-10 py-4 bg-blue-950 text-white rounded-2xl font-black shadow-xl shadow-blue-100 hover:bg-blue-900 transition-all active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-2 px-10 py-4 bg-blue-950 text-white rounded-2xl font-black shadow-xl shadow-blue-100
+            hover:bg-blue-900 transition-all active:scale-95 disabled:opacity-50"
           >
             {isSaving ? (
               <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

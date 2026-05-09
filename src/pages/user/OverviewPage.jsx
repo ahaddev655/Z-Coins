@@ -90,7 +90,8 @@ function OverviewPage() {
         {stats.map((stat, i) => (
           <div
             key={i}
-            className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 transition-transform hover:scale-[1.02]"
+            className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 transition-transform
+            hover:scale-[1.02]"
           >
             <div
               className={`h-12 w-12 ${stat.bg} ${stat.color} rounded-xl flex items-center justify-center`}
@@ -134,13 +135,19 @@ function OverviewPage() {
           <h3 className="text-lg font-bold text-blue-950 mb-4">Quick Trade</h3>
           <div className="mb-8">
             <Link to={"/u/market"}>
-              <button className="w-full flex items-center justify-center gap-2 p-4 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-emerald-100">
+              <button
+                className="w-full flex items-center justify-center gap-2 p-4 bg-emerald-500 text-white rounded-xl font-bold
+              hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-emerald-100"
+              >
                 <ArrowDownLeft size={18} />
                 <span>Buy Assets</span>
               </button>
             </Link>
             <Link to={"/u/market"}>
-              <button className="w-full flex items-center justify-center mt-3 gap-2 p-4 bg-blue-950 text-white rounded-xl font-bold hover:bg-blue-900 transition-all active:scale-95 shadow-lg shadow-blue-100">
+              <button
+                className="w-full flex items-center justify-center mt-3 gap-2 p-4 bg-blue-950 text-white rounded-xl font-bold
+              hover:bg-blue-900 transition-all active:scale-95 shadow-lg shadow-blue-100"
+              >
                 <ArrowUpRight size={18} />
                 <span>Sell Assets</span>
               </button>
@@ -176,7 +183,10 @@ function OverviewPage() {
                 className="flex items-center justify-between group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center font-bold text-[10px] text-blue-900 group-hover:bg-blue-50 group-hover:border-blue-100 transition-colors">
+                  <div
+                    className="h-9 w-9 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center font-bold
+                  text-[10px] text-blue-900 group-hover:bg-blue-50 group-hover:border-blue-100 transition-colors"
+                  >
                     {asset.symbol}
                   </div>
                   <div>

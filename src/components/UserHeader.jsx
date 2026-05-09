@@ -3,13 +3,17 @@ import { Menu, User, Bell } from "lucide-react";
 
 function UserHeader({ setOffCanvasToggle }) {
   return (
-    <header className="sticky top-0 z-40 flex h-20 w-full items-center justify-between border-b border-slate-100 bg-white/80 px-4 backdrop-blur-md sm:px-8">
+    <header
+      className="sticky top-0 z-40 flex h-20 w-full items-center justify-between border-b border-slate-100 bg-white/80 px-4
+      backdrop-blur-md sm:px-8"
+    >
       {/* --- Left Side: Hamburger & Heading --- */}
       <div className="flex items-center gap-4">
         {/* Hamburger Menu (Visible only on mobile/tablet) */}
         <button
           onClick={() => setOffCanvasToggle(true)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 transition-all hover:bg-slate-100 lg:hidden active:scale-95"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 transition-all hover:bg-slate-100
+          lg:hidden active:scale-95"
         >
           <Menu size={22} />
         </button>
@@ -28,7 +32,10 @@ function UserHeader({ setOffCanvasToggle }) {
       {/* --- Right Side: Notifications & Profile --- */}
       <div className="flex items-center gap-3 sm:gap-6">
         {/* Notification Icon (Common in Trading Apps) */}
-        <button className="relative hidden h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-50 hover:text-blue-900 transition-colors sm:flex">
+        <button
+          className="relative hidden h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-50
+        hover:text-blue-900 transition-colors sm:flex"
+        >
           <Bell size={20} />
           <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
         </button>
@@ -43,8 +50,11 @@ function UserHeader({ setOffCanvasToggle }) {
           </div>
 
           {/* Avatar Icon */}
-          <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 hover:bg-blue-100 transition-colors border border-blue-100/50 shadow-sm">
-            <User size={20} strokeWidth={2.5} />
+          <div
+            className="h-10 w-10 font-bold rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 hover:bg-blue-100
+            transition-colors border border-blue-100/50 shadow-sm"
+          >
+            AR
           </div>
         </div>
       </div>

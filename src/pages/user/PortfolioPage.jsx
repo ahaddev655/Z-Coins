@@ -182,7 +182,10 @@ function PortfolioPage() {
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 bg-blue-50 rounded-xl flex items-center justify-center font-black text-xs text-blue-900 group-hover:bg-white transition-colors">
+                        <div
+                          className="h-10 w-10 bg-blue-50 rounded-xl flex items-center justify-center font-black text-xs
+                        text-blue-900 group-hover:bg-white transition-colors"
+                        >
                           {coin.symbol}
                         </div>
                         <div>
@@ -243,7 +246,10 @@ function PortfolioPage() {
                 <X size={20} />
               </button>
               <div className="flex items-center gap-5 mb-10">
-                <div className="h-16 w-16 bg-blue-950 rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-xl shadow-blue-100">
+                <div
+                  className="h-16 w-16 bg-blue-950 rounded-2xl flex items-center justify-center text-white text-xl font-black
+                shadow-xl shadow-blue-100"
+                >
                   {selectedCoin.symbol}
                 </div>
                 <div>
@@ -292,7 +298,10 @@ function PortfolioPage() {
                   </p>
                 </div>
               </div>
-              <button className="w-full flex items-center justify-center gap-3 py-5 bg-red-500 text-white rounded-3xl font-black hover:bg-red-600 transition-all shadow-xl shadow-red-100 active:scale-[0.98]">
+              <button
+                className="w-full flex items-center justify-center gap-3 py-5 bg-red-500 text-white rounded-3xl font-black
+              hover:bg-red-600 transition-all shadow-xl shadow-red-100 active:scale-[0.98]"
+              >
                 <ArrowUpRight size={22} strokeWidth={3} />
                 <span>LIQUIDATE ASSETS (SELL)</span>
               </button>

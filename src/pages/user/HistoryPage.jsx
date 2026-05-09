@@ -64,18 +64,6 @@ function HistoryPage() {
       time: "11:30",
       status: "completed",
     },
-    {
-      id: "TXN-55210",
-      type: "buy",
-      coin: "Cardano",
-      symbol: "ADA",
-      amount: "500",
-      priceAtTime: "$0.45",
-      totalValue: "$225.00",
-      date: "May 01, 2026",
-      time: "10:05",
-      status: "failed",
-    },
   ];
 
   const filteredTransactions = transactions.filter(
@@ -85,7 +73,7 @@ function HistoryPage() {
   );
 
   return (
-    <div className="p-6 space-y-6 min-h-screen bg-slate-50">
+    <div className="space-y-6">
       {/* --- Header Section --- */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <div>
@@ -98,7 +86,10 @@ function HistoryPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">
+          <button
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold
+          text-slate-600 hover:bg-slate-50 transition-all"
+          >
             <Download size={16} /> Export CSV
           </button>
         </div>
@@ -114,12 +105,16 @@ function HistoryPage() {
           <input
             type="text"
             placeholder="Search transactions..."
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-blue-900/10 transition-all text-sm font-medium"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-blue-900/10 transition-all
+            text-sm font-medium"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex gap-2 w-full md:w-auto">
-          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-slate-50 text-slate-600 rounded-2xl text-sm font-bold border border-slate-100">
+          <button
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-slate-50 text-slate-600 rounded-2xl
+            text-sm font-bold border border-slate-100"
+          >
             <Filter size={16} /> Filters
           </button>
         </div>
