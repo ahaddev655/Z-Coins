@@ -3,6 +3,11 @@ import "./App.css";
 import SplashScreen from "./pages/SplashScreen";
 import AuthenticationPage from "./pages/AuthenticationPage";
 import UserLayout from "./layouts/UserLayout";
+import OverviewPage from './pages/user/OverviewPage';
+import PortfolioPage from './pages/user/PortfolioPage';
+import MarketPage from './pages/user/MarketPage';
+import SettingsPage from './pages/user/SettingsPage';
+import HistoryPage from "./pages/user/HistoryPage";
 
 function App() {
   const routes = createBrowserRouter([
@@ -20,23 +25,23 @@ function App() {
       children: [
         {
           index: true,
-          element: "OverView",
+          element: <OverviewPage />,
         },
         {
           path: "portfolio",
-          element: "Portfolio",
+          element: <PortfolioPage />,
         },
         {
           path: "market",
-          element: "Market",
+          element: <MarketPage />,
         },
         {
           path: "settings",
-          element: "Settings",
+          element: <SettingsPage />,
         },
         {
           path: "history",
-          element: "History",
+          element: <HistoryPage/>,
         },
       ],
     },
