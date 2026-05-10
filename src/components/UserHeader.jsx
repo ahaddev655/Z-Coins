@@ -7,9 +7,8 @@ function UserHeader({ setOffCanvasToggle }) {
       className="sticky top-0 z-40 flex h-20 w-full items-center justify-between border-b border-slate-100 bg-white/80 px-4
       backdrop-blur-md sm:px-8"
     >
-      {/* --- Left Side: Hamburger & Heading --- */}
+      {/* --- Heading --- */}
       <div className="flex items-center gap-4">
-        {/* Hamburger Menu (Visible only on mobile/tablet) */}
         <button
           onClick={() => setOffCanvasToggle(true)}
           className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 transition-all hover:bg-slate-100
@@ -29,12 +28,11 @@ function UserHeader({ setOffCanvasToggle }) {
         </div>
       </div>
 
-      {/* --- Right Side: Notifications & Profile --- */}
+      {/* --- Notifications & Profile --- */}
       <div className="flex items-center gap-3 sm:gap-6">
-        {/* Notification Icon (Common in Trading Apps) */}
         <button
-          className="relative hidden h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-50
-        hover:text-blue-900 transition-colors sm:flex"
+          className="relative h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-50
+        hover:text-blue-900 transition-colors flex"
         >
           <Bell size={20} />
           <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>

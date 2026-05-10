@@ -29,6 +29,7 @@ function AuthFormItem({ isLogin }) {
     setLoading(true);
     if (isLogin) {
       // --- Signup Validations ---
+
       if (
         !formData.fname ||
         !formData.lname ||
@@ -50,7 +51,9 @@ function AuthFormItem({ isLogin }) {
         setLoading(false);
         return;
       }
+
       // --- Signup Positive Response ---
+
       setTimeout(() => {
         toast.success("Signup successful");
         setFormData({
@@ -64,6 +67,7 @@ function AuthFormItem({ isLogin }) {
       setTimeout(() => {}, 3000);
       console.log("Signup successful: ", formData);
     }
+
     // --- Login Validations ---
     else {
       if (!formData.email || !formData.password) {
@@ -76,7 +80,9 @@ function AuthFormItem({ isLogin }) {
         setLoading(false);
         return;
       }
+
       // --- Login Positive Response ---
+
       setTimeout(() => {
         toast.success("Login successful");
         setFormData({

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ArrowUpRight,
   ArrowDownLeft,
@@ -9,12 +9,10 @@ import {
   Clock,
   CircleDot,
 } from "lucide-react";
-import { motion } from "framer-motion";
 
 function HistoryPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Comprehensive Transaction Mock Data
   const transactions = [
     {
       id: "TXN-90210",

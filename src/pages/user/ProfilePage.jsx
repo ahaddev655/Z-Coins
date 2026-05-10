@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 
 function ProfilePage() {
-  // Mock User Data restricted to your requirements
   const user = {
     firstName: "Alex",
     lastName: "Rivera",
@@ -24,7 +23,6 @@ function ProfilePage() {
 
   const handleCopyUID = () => {
     navigator.clipboard.writeText(user.uid);
-    // Simple feedback logic
   };
 
   return (

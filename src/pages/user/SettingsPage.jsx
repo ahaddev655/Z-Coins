@@ -1,9 +1,6 @@
-import React, { useState } from "react";
-import { User, Lock, Phone, Mail, Save, ShieldCheck } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { User, Lock, Save, ShieldCheck } from "lucide-react";
 import InputItem from "../../components/InputItem";
-
-// import InputItem from './components/InputItem';
 
 function SettingsPage() {
   const [formData, setFormData] = useState({
@@ -27,7 +24,6 @@ function SettingsPage() {
   const handleSave = (e) => {
     e.preventDefault();
     setIsSaving(true);
-    // Simulate real-life API update delay
     setTimeout(() => {
       setIsSaving(false);
       alert("Account information updated!");

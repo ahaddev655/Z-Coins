@@ -49,11 +49,9 @@ function OverviewPage() {
       colors: ["#1e3a8a"],
     };
 
-    // Initialize Chart
     const chart = new ApexCharts(chartRef.current, options);
     chart.render();
 
-    // Cleanup on unmount
     return () => {
       chart.destroy();
     };

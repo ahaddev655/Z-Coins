@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   TrendingUp,
   X,
@@ -16,8 +16,7 @@ function CoinPage() {
   const [tradeType, setTradeType] = useState(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
-  
-  // Extract the CoinGecko ID from URL (e.g., /coin/bitcoin -> bitcoin)
+
   const pathParts = location.pathname.split("/");
   const coinGeckoId = pathParts[2] || "bitcoin";
 
@@ -32,7 +31,7 @@ function CoinPage() {
     rawPrice: 0,
   });
 
-  // --- 1. Fetch Metadata from CoinGecko ---
+  // --- Fetch Metadata from CoinGecko ---
   useEffect(() => {
     const fetchMetadata = () => {
       axios
@@ -41,7 +40,7 @@ function CoinPage() {
           setCoin((prev) => ({
             ...prev,
             name: res.data.name,
-            symbol: res.data.symbol.toUpperCase(), // Logic: Extract and Uppercase
+            symbol: res.data.symbol.toUpperCase(),
           }));
         })
         .catch((err) => console.error("CoinGecko Metadata Error:", err));
@@ -49,15 +48,16 @@ function CoinPage() {
     fetchMetadata();
   }, [coinGeckoId]);
 
-  // --- 2. Fetch Live Price from Binance ---
+  // --- Fetch Live Price from Binance ---
   useEffect(() => {
-    // Only run if we have the symbol from CoinGecko
     if (!coin.symbol) return;
 
     const fetchBinanceData = () => {
       const binanceSymbol = `${coin.symbol}USDT`;
       axios
-        .get(`https://api.binance.com/api/v3/ticker/24hr?symbol=${binanceSymbol}`)
+        .get(
+          `https://api.binance.com/api/v3/ticker/24hr?symbol=${binanceSymbol}`,
+        )
         .then((res) => {
           const data = res.data;
           const rawPrice = parseFloat(data.lastPrice);
@@ -89,7 +89,7 @@ function CoinPage() {
     fetchBinanceData();
     const interval = setInterval(fetchBinanceData, 5000);
     return () => clearInterval(interval);
-  }, [coin.symbol]); // Triggers when symbol is ready
+  }, [coin.symbol]);
 
   const tradingViewUrl = `https://s.tradingview.com/widgetembed/?hideideas=1&theme=Light&symbol=BINANCE:${coin.symbol}USDT`;
 
@@ -115,7 +115,9 @@ function CoinPage() {
             <h1 className="text-2xl font-black text-blue-950 tracking-tight">
               {coin.name || "Loading..."}
             </h1>
-            <p className={`${parseFloat(coin.change) >= 0 ? "text-emerald-500" : "text-red-500"} text-xs font-bold flex items-center gap-1`}>
+            <p
+              className={`${parseFloat(coin.change) >= 0 ? "text-emerald-500" : "text-red-500"} text-xs font-bold flex items-center gap-1`}
+            >
               <TrendingUp size={14} /> {coin.change}
               <span className="text-slate-300 font-medium ml-1">
                 {loading ? "Syncing..." : "Binance Live"}
@@ -154,7 +156,8 @@ function CoinPage() {
               <Info size={16} className="text-blue-900" /> Asset Overview
             </h3>
             <p className="text-slate-500 text-sm leading-relaxed font-medium">
-              Metadata provided by <strong>CoinGecko</strong>. Pricing and market stats streamed directly from <strong>Binance</strong>.
+              Metadata provided by <strong>CoinGecko</strong>. Pricing and
+              market stats streamed directly from <strong>Binance</strong>.
             </p>
           </div>
         </div>
@@ -162,26 +165,44 @@ function CoinPage() {
         <div className="space-y-6">
           <div className="bg-white rounded-4xl p-6 border border-slate-100 shadow-sm space-y-5">
             <div className="flex justify-between items-center">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Market Metrics</h3>
-              {loading && <RefreshCcw size={12} className="animate-spin text-slate-300" />}
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                Market Metrics
+              </h3>
+              {loading && (
+                <RefreshCcw size={12} className="animate-spin text-slate-300" />
+              )}
             </div>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-slate-400 italic">24h High</span>
-                <span className="text-sm font-black text-blue-950">{coin.high24h}</span>
+                <span className="text-xs font-bold text-slate-400 italic">
+                  24h High
+                </span>
+                <span className="text-sm font-black text-blue-950">
+                  {coin.high24h}
+                </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-slate-400 italic">24h Low</span>
-                <span className="text-sm font-black text-blue-950">{coin.low24h}</span>
+                <span className="text-xs font-bold text-slate-400 italic">
+                  24h Low
+                </span>
+                <span className="text-sm font-black text-blue-950">
+                  {coin.low24h}
+                </span>
               </div>
             </div>
           </div>
-          
+
           <div className="flex flex-col gap-3">
-            <button onClick={() => setTradeType("buy")} className="w-full py-5 bg-emerald-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-600 transition-all active:scale-95 flex items-center justify-center gap-2">
+            <button
+              onClick={() => setTradeType("buy")}
+              className="w-full py-5 bg-emerald-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-600 transition-all active:scale-95 flex items-center justify-center gap-2"
+            >
               Buy {coin.symbol} <ExternalLink size={14} />
             </button>
-            <button onClick={() => setTradeType("sell")} className="w-full py-5 bg-white text-red-500 border-2 border-red-50 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-50 transition-all active:scale-95">
+            <button
+              onClick={() => setTradeType("sell")}
+              className="w-full py-5 bg-white text-red-500 border-2 border-red-50 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-50 transition-all active:scale-95"
+            >
               Sell {coin.symbol}
             </button>
           </div>
@@ -203,17 +224,28 @@ function CoinPage() {
               animate={{ scale: 1, y: 0 }}
               className="relative w-full max-w-sm bg-white rounded-[40px] p-10 shadow-2xl"
             >
-              <button onClick={() => setTradeType(null)} className="absolute top-6 right-6 text-slate-300">
+              <button
+                onClick={() => setTradeType(null)}
+                className="absolute top-6 right-6 text-slate-300"
+              >
                 <X size={24} />
               </button>
               <h2 className="text-2xl font-black text-blue-950 uppercase text-center mb-6">
                 {tradeType} {coin.symbol}
               </h2>
               <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 mb-6">
-                <label className="text-[10px] font-black text-slate-400 uppercase block mb-1">USD Investment</label>
-                <input type="number" placeholder="0.00" className="w-full bg-transparent text-xl font-black text-blue-950 outline-none" />
+                <label className="text-[10px] font-black text-slate-400 uppercase block mb-1">
+                  USD Investment
+                </label>
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  className="w-full bg-transparent text-xl font-black text-blue-950 outline-none"
+                />
               </div>
-              <button className={`w-full py-4 rounded-2xl font-black text-white uppercase ${tradeType === "buy" ? "bg-emerald-500" : "bg-red-500"}`}>
+              <button
+                className={`w-full py-4 rounded-2xl font-black text-white uppercase ${tradeType === "buy" ? "bg-emerald-500" : "bg-red-500"}`}
+              >
                 Confirm Order
               </button>
             </motion.div>

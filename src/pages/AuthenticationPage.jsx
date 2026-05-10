@@ -23,7 +23,6 @@ function AuthenticationPage() {
         className="max-w-md w-full bg-white shadow-2xl rounded-2xl border border-gray-100 py-10 px-8 max-h-150 overflow-y-auto"
       >
         {/* --- Heading --- */}
-
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold tracking-tight text-blue-900">
             Z-Coins
@@ -34,11 +33,9 @@ function AuthenticationPage() {
         </div>
 
         {/* --- Form --- */}
-
         <AuthFormItem isLogin={isLogin} setIsLogin={setIsLogin} />
 
         {/* --- Divider --- */}
-
         <motion.div layout className="relative flex items-center py-6">
           <div className="grow border-t border-gray-200"></div>
           <span className="shrink mx-4 text-gray-400 text-xs uppercase tracking-widest">
@@ -48,7 +45,6 @@ function AuthenticationPage() {
         </motion.div>
 
         {/* --- Social Login --- */}
-
         <motion.button
           layout
           className="w-full flex items-center justify-center gap-3 h-12 border-2 border-gray-100 rounded-xl hover:bg-gray-50
@@ -59,7 +55,6 @@ function AuthenticationPage() {
         </motion.button>
 
         {/* --- Footer --- */}
-
         <motion.p layout className="mt-8 text-center text-sm text-gray-600">
           {isLogin ? "Already have an account?" : "Don't have an account?"}{" "}
           <button

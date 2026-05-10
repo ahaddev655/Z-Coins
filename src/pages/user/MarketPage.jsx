@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -6,33 +6,28 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
-  TrendingUp,
-  TrendingDown,
   Activity,
   BarChart3,
   SearchX,
   X,
   Zap,
   CheckCircle2,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import StateCardItem from "../../components/StateCardItem";
 
 function MarketPage() {
   const navigate = useNavigate();
-
-  // --- UI State ---
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [isTrading, setIsTrading] = useState(false);
-
-  // --- API Data State ---
   const [coins, setCoins] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // --- Trade Logic State ---
+  const [baseCoinData, setBaseCoinData] = useState([]);
   const [usdInput, setUsdInput] = useState("");
-  const [cryptoOutput, setCryptoOutput] = useState("0");
   const [isProcessing, setIsProcessing] = useState(false);
   const [tradeSuccess, setTradeSuccess] = useState(false);
 
@@ -41,69 +36,40 @@ function MarketPage() {
   useEffect(() => {
     axios
       .get("https://api.coingecko.com/api/v3/coins/markets", {
-        params: {
-          vs_currency: "usd",
-          per_page: 50,
-          page: 1,
-        },
+        params: { vs_currency: "usd", per_page: 50, page: 1 },
       })
-      .then((geckoRes) => {
-        const coinData = geckoRes.data;
-
-        const requests = coinData.map((coin) => {
-          const binanceSymbol = `${coin.symbol.toUpperCase()}USDT`;
-
-          return axios
-            .get(
-              `https://api.binance.com/api/v3/ticker/24hr?symbol=${binanceSymbol}`,
-            )
-            .then((binanceRes) => ({
-              // ✅ ONLY using name & symbol from CoinGecko
-              id: coin.id,
-              name: coin.name,
-              symbol: coin.symbol.toUpperCase(),
-
-              // ✅ Everything else from Binance (UI unchanged)
-              price: `$${parseFloat(binanceRes.data.lastPrice).toLocaleString()}`,
-              change: `${parseFloat(binanceRes.data.priceChangePercent).toFixed(
-                2,
-              )}%`,
-              vol: `$${Math.round(binanceRes.data.quoteVolume).toLocaleString()}`,
-
-              low24h: `$${parseFloat(binanceRes.data.lowPrice).toLocaleString()}`,
-              high24h: `$${parseFloat(
-                binanceRes.data.highPrice,
-              ).toLocaleString()}`,
-
-              // ✅ Removed CoinGecko-derived market data
-              ath: "N/A",
-              athDate: "N/A",
-              rank: "N/A",
-
-              sentiment:
-                parseFloat(binanceRes.data.priceChangePercent) > 0
-                  ? "Bullish"
-                  : "Bearish",
-            }))
-            .catch(() => null);
-        });
-
-        return Promise.all(requests);
-      })
-      .then((results) => {
-        setCoins(results.filter((c) => c !== null));
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error syncing market data:", err);
-        setLoading(false);
-      });
+      .then((res) => setBaseCoinData(res.data))
+      .catch(() => setLoading(false));
   }, []);
 
-  const handleUsdChange = (val) => {
-    setUsdInput(val);
-    setCryptoOutput("0.00"); // Calculation disabled as price data was removed
-  };
+  useEffect(() => {
+    if (!baseCoinData.length) return;
+    const updatePrices = () => {
+      const requests = baseCoinData.map((c) =>
+        axios
+          .get(
+            `https://api.binance.com/api/v3/ticker/24hr?symbol=${c.symbol.toUpperCase()}USDT`,
+          )
+          .then(({ data }) => ({
+            ...c,
+            symbol: c.symbol.toUpperCase(),
+            price: `$${parseFloat(data.lastPrice).toLocaleString()}`,
+            change: `${parseFloat(data.priceChangePercent).toFixed(2)}%`,
+            vol: `$${Math.round(data.quoteVolume).toLocaleString()}`,
+            sentiment:
+              parseFloat(data.priceChangePercent) > 0 ? "Bullish" : "Bearish",
+          }))
+          .catch(() => null),
+      );
+      Promise.all(requests).then((res) => {
+        setCoins(res.filter(Boolean));
+        setLoading(false);
+      });
+    };
+    updatePrices();
+    const interval = setInterval(updatePrices, 10000);
+    return () => clearInterval(interval);
+  }, [baseCoinData]);
 
   const executeTrade = () => {
     setIsProcessing(true);
@@ -115,22 +81,19 @@ function MarketPage() {
         setSelectedCoin(null);
         setIsTrading(false);
         setUsdInput("");
-        setCryptoOutput("0");
       }, 2500);
     }, 2000);
   };
 
-  const filteredCoins = coins.filter(
-    (coin) =>
-      coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      coin.symbol.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filtered = coins.filter(
+    (c) =>
+      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.symbol.toLowerCase().includes(searchTerm.toLowerCase()),
   );
-
-  const totalPages = Math.ceil(filteredCoins.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = filteredCoins.slice(
-    startIndex,
-    startIndex + itemsPerPage,
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const currentItems = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
   );
 
   if (loading)
@@ -142,7 +105,6 @@ function MarketPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black text-blue-950 tracking-tight">
@@ -158,7 +120,7 @@ function MarketPage() {
           <input
             type="text"
             placeholder="Search coins..."
-            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-900/10 transition-all font-medium text-sm text-blue-950"
+            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-900/10 font-medium text-sm text-blue-950"
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
@@ -167,21 +129,27 @@ function MarketPage() {
         </div>
       </div>
 
-      {/* Table Section */}
       <div className="bg-white rounded-4xl border border-slate-100 shadow-sm overflow-hidden">
-        {filteredCoins.length > 0 ? (
+        {filtered.length ? (
           <>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
                   <tr className="bg-slate-50/50 text-[10px] uppercase tracking-[0.2em] text-slate-400 font-black">
-                    <th className="px-8 py-5">Coin</th>
-                    <th className="px-8 py-5">Price</th>
-                    <th className="px-8 py-5">24h Change</th>
-                    <th className="px-8 py-5 hidden md:table-cell">
-                      24h Volume
-                    </th>
-                    <th className="px-8 py-5 text-right">Action</th>
+                    {[
+                      "Coin",
+                      "Price",
+                      "24h Change",
+                      "24h Volume",
+                      "Action",
+                    ].map((h, i) => (
+                      <th
+                        key={h}
+                        className={`px-8 py-5 ${i === 3 ? "hidden md:table-cell" : ""} ${i === 4 ? "text-right" : ""}`}
+                      >
+                        {h}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
@@ -209,8 +177,15 @@ function MarketPage() {
                         {coin.price}
                       </td>
                       <td className="px-8 py-5">
-                        <span className="text-xs font-bold flex items-center gap-1 text-slate-400">
-                          <Activity size={14} /> {coin.change}
+                        <span
+                          className={`text-xs font-bold flex items-center gap-1 ${coin.change < "0" ? "text-red-600" : "text-emerald-600"}`}
+                        >
+                          {coin.change < "0" ? (
+                            <TrendingDown size={14} />
+                          ) : (
+                            <TrendingUp size={14} />
+                          )}{" "}
+                          {coin.change}
                         </span>
                       </td>
                       <td className="px-8 py-5 text-sm font-bold text-slate-500 hidden md:table-cell">
@@ -237,20 +212,20 @@ function MarketPage() {
                 Showing {currentItems.length} assets out of {coins.length}
               </p>
               <div className="flex gap-2">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((prev) => prev - 1)}
-                  className="p-2 rounded-xl border border-slate-100 disabled:opacity-30"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((prev) => prev + 1)}
-                  className="p-2 rounded-xl border border-slate-100 disabled:opacity-30"
-                >
-                  <ChevronRight size={20} />
-                </button>
+                {[ChevronLeft, ChevronRight].map((Icon, i) => (
+                  <button
+                    key={i}
+                    disabled={
+                      i === 0 ? currentPage === 1 : currentPage === totalPages
+                    }
+                    onClick={() =>
+                      setCurrentPage((p) => (i === 0 ? p - 1 : p + 1))
+                    }
+                    className="p-2 rounded-xl border border-slate-100 disabled:opacity-30"
+                  >
+                    <Icon size={20} />
+                  </button>
+                ))}
               </div>
             </div>
           </>
@@ -264,7 +239,6 @@ function MarketPage() {
         )}
       </div>
 
-      {/* Detail Popup */}
       <AnimatePresence>
         {selectedCoin && (
           <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
@@ -287,7 +261,6 @@ function MarketPage() {
               >
                 <X size={20} />
               </button>
-
               {tradeSuccess ? (
                 <div className="text-center py-10">
                   <CheckCircle2
@@ -306,7 +279,7 @@ function MarketPage() {
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
                       <div className="h-14 w-14 bg-blue-950 text-white rounded-2xl flex items-center justify-center text-xl font-black">
-                        {selectedCoin.symbol.substring(0, 1)}
+                        {selectedCoin.symbol[0]}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
@@ -322,59 +295,36 @@ function MarketPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-black text-blue-950">
-                        {selectedCoin.price}
-                      </p>
-                    </div>
+                    <p className="text-2xl font-black text-blue-950">
+                      {selectedCoin.price}
+                    </p>
                   </div>
-
                   <div className="grid grid-cols-2 gap-3 mb-6">
-                    {[
-                      {
-                        label: "24h Volume",
-                        val: selectedCoin.vol,
-                        icon: <BarChart3 size={14} />,
-                      },
-                      {
-                        label: "Sentiment",
-                        val: selectedCoin.sentiment,
-                        icon: <Activity size={14} />,
-                      },
-                    ].map((item, i) => (
-                      <div
-                        key={i}
-                        className="p-3 bg-slate-50 rounded-2xl border border-slate-100"
-                      >
-                        <div className="flex items-center gap-2 text-slate-400 mb-1">
-                          {item.icon}
-                          <span className="text-[10px] font-bold uppercase">
-                            {item.label}
-                          </span>
-                        </div>
-                        <p className="text-sm font-black text-blue-950">
-                          {item.val}
-                        </p>
-                      </div>
-                    ))}
+                    <StateCardItem
+                      label="24h Volume"
+                      val={selectedCoin.vol}
+                      icon={<BarChart3 size={14} />}
+                    />
+                    <StateCardItem
+                      label="Sentiment"
+                      val={selectedCoin.sentiment}
+                      icon={<Activity size={14} />}
+                    />
                   </div>
-
-                  <div className="flex flex-col gap-3">
-                    <button
-                      onClick={() =>
-                        navigate(`/coin/${selectedCoin.id?.toLowerCase()}`)
-                      }
-                      className="w-full flex items-center justify-center gap-2 py-4 bg-blue-950 text-white rounded-2xl font-bold"
-                    >
-                      <Eye size={18} /> View Asset
-                    </button>
-                    <button
-                      onClick={() => setIsTrading(true)}
-                      className="w-full py-4 bg-emerald-50 text-emerald-600 rounded-2xl font-bold"
-                    >
-                      Quick Trade
-                    </button>
-                  </div>
+                  <button
+                    onClick={() =>
+                      navigate(`/coin/${selectedCoin.id?.toLowerCase()}`)
+                    }
+                    className="w-full flex items-center justify-center gap-2 py-4 bg-blue-950 text-white rounded-2xl font-bold mb-3"
+                  >
+                    <Eye size={18} /> View Asset
+                  </button>
+                  <button
+                    onClick={() => setIsTrading(true)}
+                    className="w-full py-4 bg-emerald-50 text-emerald-600 rounded-2xl font-bold"
+                  >
+                    Quick Trade
+                  </button>
                 </div>
               ) : (
                 <div>
@@ -391,19 +341,17 @@ function MarketPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="space-y-4 mb-8">
-                    <div className="p-4 bg-slate-50 rounded-2xl">
-                      <label className="text-[10px] font-black text-slate-400 uppercase block mb-1">
-                        Amount (USD)
-                      </label>
-                      <input
-                        type="number"
-                        value={usdInput}
-                        onChange={(e) => handleUsdChange(e.target.value)}
-                        placeholder="0.00"
-                        className="w-full bg-transparent text-2xl font-black text-blue-950 outline-none"
-                      />
-                    </div>
+                  <div className="p-4 bg-slate-50 rounded-2xl mb-8">
+                    <label className="text-[10px] font-black text-slate-400 uppercase block mb-1">
+                      Amount (USD)
+                    </label>
+                    <input
+                      type="number"
+                      value={usdInput}
+                      onChange={(e) => setUsdInput(e.target.value)}
+                      placeholder="0.00"
+                      className="w-full bg-transparent text-2xl font-black text-blue-950 outline-none"
+                    />
                   </div>
                   <button
                     disabled={isProcessing || !usdInput}

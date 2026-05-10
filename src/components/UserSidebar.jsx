@@ -4,7 +4,7 @@ import { X, LogOut, ChevronRight } from "lucide-react";
 
 function UserSidebar({ linksArray, offCanvas, setOffCanvasToggle }) {
   const navigate = useNavigate();
-  // --- Enhanced Tailwind Classes ---
+
   const activeLink =
     "flex items-center gap-3 px-4 py-3 bg-blue-50/80 text-blue-900 border-r-4 border-blue-900 shadow-sm transition-all duration-200";
   const normalLink =

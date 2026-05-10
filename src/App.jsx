@@ -53,8 +53,8 @@ function App() {
     },
     {
       path: "/coin/:coin-name",
-      element: <CoinPage />
-    }
+      element: <CoinPage />,
+    },
   ]);
   return <RouterProvider router={routes} />;
 }

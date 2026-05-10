@@ -11,7 +11,7 @@ import {
 import UserHeader from "../components/UserHeader";
 
 function UserLayout() {
-  const [offCanvas, setOffCanvasToggle] = useState(true);
+  const [offCanvas, setOffCanvasToggle] = useState(false);
   const links = [
     {
       text: "Overview",
@@ -47,7 +47,7 @@ function UserLayout() {
         linksArray={links}
       />
       <div className="w-full">
-        <UserHeader />
+        <UserHeader setOffCanvasToggle={setOffCanvasToggle} />
         <div className="py-6 px-9">
           <Outlet />
         </div>

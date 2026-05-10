@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .container-v2 {
-  @apply max-w-7xl mx-auto xl:px-24 lg:px-12 px-6;
+  @apply px-6 mx-auto max-w-7xl xl:px-24 lg:px-12;
 }
 
 body {

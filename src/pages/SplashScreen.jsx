@@ -10,7 +10,6 @@ function SplashScreen() {
     const token = localStorage.getItem("token");
 
     const timer = setTimeout(() => {
-      // Logic fix: If auth exists, go to app (/u/), else go to login (/auth)
       if (id && token) {
         navigate("/u/");
       } else {

@@ -1,5 +1,3 @@
-import React from "react";
-
 function InputItem({ label, placeholder, value, onChange, name, id, type }) {
   return (
     <>
@@ -8,8 +6,7 @@ function InputItem({ label, placeholder, value, onChange, name, id, type }) {
         name={name}
         id={id}
         placeholder={placeholder}
-        className="block w-full h-12 px-3 text-gray-900 bg-transparent border-2 border-gray-200 rounded-xl appearance-none
-        focus:outline-none focus:ring-0 focus:border-blue-900 peer transition-colors"
+        className="block w-full h-12 px-3 text-gray-900 transition-colors bg-transparent border-2 border-gray-200 appearance-none rounded-xl focus:outline-none focus:ring-0 focus:border-blue-900 peer"
         onChange={onChange}
         value={value}
       />

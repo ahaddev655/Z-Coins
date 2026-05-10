@@ -221,7 +221,6 @@ function PortfolioPage() {
         </div>
       </div>
 
-      {/* Popup remains identical to the previous version but with marketcap data updated */}
       <AnimatePresence>
         {selectedCoin && (
           <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
@@ -238,7 +237,6 @@ function PortfolioPage() {
               exit={{ scale: 0.9, opacity: 0, y: 30 }}
               className="relative w-full max-w-xl bg-white rounded-[40px] shadow-2xl p-8 lg:p-10 overflow-hidden"
             >
-              {/* Content of the Modal from previous response */}
               <button
                 onClick={() => setSelectedCoin(null)}
                 className="absolute top-8 right-8 p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors"
