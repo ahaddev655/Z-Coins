@@ -1,10 +1,14 @@
 import { motion, AnimatePresence } from "framer-motion";
 import InputItem from "../components/InputItem";
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function AuthFormItem({ isLogin }) {
   // --- Variables ---
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // --- Form Data Variable ---
 
@@ -52,20 +56,37 @@ function AuthFormItem({ isLogin }) {
         return;
       }
 
-      // --- Signup Positive Response ---
+      // --- API Configuration ---
 
-      setTimeout(() => {
-        toast.success("Signup successful");
-        setFormData({
-          fname: "",
-          lname: "",
-          email: "",
-          password: "",
-          pNumber: "",
+      axios
+        .post("http://localhost:5000/api/auth/register", formData)
+        .then((response) => {
+          console.log(response?.data);
+          // --- Signup Positive Response ---
+          setTimeout(() => {
+            toast.success("Signup successful");
+            setFormData({
+              fname: "",
+              lname: "",
+              email: "",
+              password: "",
+              pNumber: "",
+            });
+            localStorage.setItem("uid", response?.data?.uid);
+            localStorage.setItem("id", response?.data?.id);
+          }, 1500);
+          setTimeout(() => {
+            // navigate("/u/");
+          }, 3000);
+        })
+        .catch((error) => {
+          toast.error(error?.response?.data?.error || "Internal Server Error");
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setLoading(false);
+          }, 1500);
         });
-      }, 1500);
-      setTimeout(() => {}, 3000);
-      console.log("Signup successful: ", formData);
     }
 
     // --- Login Validations ---
@@ -81,20 +102,38 @@ function AuthFormItem({ isLogin }) {
         return;
       }
 
-      // --- Login Positive Response ---
+      // --- API Configuration ---
 
-      setTimeout(() => {
-        toast.success("Login successful");
-        setFormData({
-          fname: "",
-          lname: "",
-          email: "",
-          password: "",
-          pNumber: "",
+      axios
+        .post("http://localhost:5000/api/auth/login", formData)
+        .then((response) => {
+          console.log(response?.data);
+          // --- Login Positive Response ---
+
+          setTimeout(() => {
+            toast.success("Login successful");
+            setFormData({
+              fname: "",
+              lname: "",
+              email: "",
+              password: "",
+              pNumber: "",
+            });
+            localStorage.setItem("uid", response?.data?.uid);
+            localStorage.setItem("id", response?.data?.id);
+          }, 1500);
+          setTimeout(() => {
+            navigate("/u/");
+          }, 3000);
+        })
+        .catch((error) => {
+          toast.error(error?.response?.data?.error || "Internal Server Error");
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setLoading(false);
+          }, 1500);
         });
-      }, 1500);
-      setTimeout(() => {}, 3000);
-      console.log("Login successful: ", formData);
     }
   };
   return (
