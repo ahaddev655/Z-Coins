@@ -52,7 +52,9 @@ function OverviewPage() {
   // --- Chart Logic ---
 
   const chartRef = useRef(null);
-  const balanceHistoryKey = userId ? `balanceHistory:${userId}` : "balanceHistory";
+  const balanceHistoryKey = userId
+    ? `balanceHistory:${userId}`
+    : "balanceHistory";
 
   useEffect(() => {
     if (!userId) return;
@@ -61,22 +63,23 @@ function OverviewPage() {
 
     try {
       const parsed = JSON.parse(savedHistory);
-      if (Array.isArray(parsed)) {
-        const normalized = parsed
-          .map((item) => {
-            if (typeof item === "number" || typeof item === "string") {
-              const value = Number(item);
-              if (!Number.isFinite(value)) return null;
-              return { day: "Older", value };
-            }
-            if (item && Number.isFinite(Number(item.value)) && item.day) {
-              return { day: item.day, value: Number(item.value) };
-            }
-            return null;
-          })
-          .filter(Boolean);
-        setBalanceHistory(normalized);
-      }
+      if (!Array.isArray(parsed)) return;
+
+      const normalized = parsed
+        .map((item) => {
+          if (typeof item === "number" || typeof item === "string") {
+            const value = Number(item);
+            return Number.isFinite(value) ? { day: "Older", value } : null;
+          }
+          const numValue = Number(item?.value);
+          if (item?.day && Number.isFinite(numValue)) {
+            return { day: item.day, value: numValue };
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+      setBalanceHistory(normalized);
     } catch (_) {}
   }, [userId, balanceHistoryKey]);
 
@@ -92,20 +95,16 @@ function OverviewPage() {
         return first;
       }
 
-      const lastEntry = prev[prev.length - 1];
+      const updated = [...prev];
+      const lastEntry = updated[updated.length - 1];
       if (lastEntry.day === today) {
         if (lastEntry.value === numericBalance) return prev;
-        const updatedSameDay = [...prev];
-        updatedSameDay[updatedSameDay.length - 1] = {
-          day: today,
-          value: numericBalance,
-        };
-        localStorage.setItem(balanceHistoryKey, JSON.stringify(updatedSameDay));
-        return updatedSameDay;
+        updated[updated.length - 1] = { day: today, value: numericBalance };
+      } else {
+        if (lastEntry.value === numericBalance) return prev;
+        updated.push({ day: today, value: numericBalance });
       }
 
-      if (lastEntry.value === numericBalance) return prev;
-      const updated = [...prev, { day: today, value: numericBalance }];
       localStorage.setItem(balanceHistoryKey, JSON.stringify(updated));
       return updated;
     });

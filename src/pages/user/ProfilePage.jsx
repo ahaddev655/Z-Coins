@@ -18,8 +18,8 @@ function ProfilePage() {
   const [isUserLoading, setIsUserLoading] = useState(true);
 
   const userName = (fname, lname) => {
-    const first = (fname || "").slice(0, 1);
-    const last = (lname || "").slice(0, 1);
+    const first = (fname || "")?.slice(0, 1);
+    const last = (lname || "")?.slice(0, 1);
     const uname = `${first}${last}`.toUpperCase();
     return uname;
   };
@@ -109,7 +109,7 @@ function ProfilePage() {
                   <>
                     {" "}
                     {userData.user_created_at
-                      .slice(0, 10)
+                      ?.slice(0, 10)
                       .replaceAll("-", " / ")}
                   </>
                 )}

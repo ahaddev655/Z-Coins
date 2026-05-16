@@ -17,15 +17,11 @@ function UserLayout() {
     const id = localStorage.getItem("id");
     const uid = localStorage.getItem("uid");
 
-    const timer = setTimeout(() => {
-      if (id && uid) {
-        return;
-      } else {
-        navigate("/auth");
-      }
-    }, 4000);
-
-    return () => clearTimeout(timer);
+    if (id && uid) {
+      return;
+    } else {
+      navigate("/auth");
+    }
   }, [navigate]);
 
   // --- Offcanvas Logic ---

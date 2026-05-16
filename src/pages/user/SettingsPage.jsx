@@ -1,18 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User, Lock, Save, ShieldCheck } from "lucide-react";
 import InputItem from "../../components/InputItem";
+import axios from "axios";
 
 function SettingsPage() {
+  // --- Array State Variables ---
   const [formData, setFormData] = useState({
-    firstName: "Alex",
-    lastName: "Rivera",
-    phone: "+1 (555) 000-0000",
-    email: "alex@zcoins.com",
-    password: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
   });
 
+  // --- Vairables ---
+  const userId = localStorage.getItem("id");
+  const [password, setPassword] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
+  // ---
   const handleFormDataChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -21,13 +26,37 @@ function SettingsPage() {
     }));
   };
 
+  const userDetails = () => {
+    axios
+      .get(`http://localhost:5000/api/user/details/${userId}`)
+      .then((response) => {
+        console.log(response?.data);
+
+        setFormData(response?.data?.user_details || {});
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    userDetails();
+  }, []);
+
   const handleSave = (e) => {
     e.preventDefault();
     setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      alert("Account information updated!");
-    }, 1200);
+
+    axios
+      .put(`http://localhost:5000/api/user/update/${userId}`, formData)
+      .then((response) => {
+        console.log(response?.data);
+        setTimeout(() => {
+          setIsSaving(false);
+          userDetails();
+        }, 2500);
+      })
+      .catch(() => {
+        console.log("ERROR");
+      });
   };
 
   return (
@@ -117,8 +146,8 @@ function SettingsPage() {
               placeholder={" "}
               className="block w-full h-12 px-3 text-gray-900 bg-transparent border-2 border-gray-200 rounded-xl appearance-none
               focus:outline-none focus:ring-0 focus:border-blue-900 peer transition-colors"
-              onChange={handleFormDataChange}
-              value={formData.password}
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
             />
             <label
               htmlFor="password"

@@ -112,7 +112,11 @@ function UserSidebar({ linksArray, offCanvas, setOffCanvasToggle }) {
         <button
           className="group flex items-center justify-between w-full px-5 py-3 text-sm font-bold text-red-500 bg-red-50/30
         hover:bg-red-50 border border-red-100/50 rounded-2xl transition-all active:scale-[0.98]"
-          onClick={() => navigate("/auth")}
+          onClick={() => {
+            localStorage.removeItem("id");
+            localStorage.removeItem("uid");
+            navigate("/auth");
+          }}
         >
           <div className="flex items-center gap-2">
             <LogOut size={18} strokeWidth={2.5} />
