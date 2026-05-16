@@ -5,18 +5,26 @@ import { motion, AnimatePresence } from "framer-motion";
 function PortfolioPage() {
   const [selectedCoin, setSelectedCoin] = useState(null);
 
+  const parsePrice = (value) => Number(String(value).replace(/,/g, ""));
+  const profitCoin = (buyingPrice, currentPrice) => {
+    return parsePrice(currentPrice) - parsePrice(buyingPrice);
+  };
+  const formatPnL = (value) => {
+    const sign = value >= 0 ? "+" : "-";
+    return `${sign}$${Math.abs(value).toLocaleString()}`;
+  };
+
   const holdings = [
     {
       name: "Bitcoin",
       symbol: "BTC",
       balance: 0.452,
       value: 29018.4,
-      avgPrice: "$52,100",
-      profit: "+12.4%",
-      buyingPrice: "$47,800",
-      currentPrice: "$64,200",
-      investedAmount: "$21,605.60",
-      volume24h: "$35.2B",
+      avgPrice: "52,100",
+      buyingPrice: "47,800",
+      currentPrice: "64,200",
+      investedAmount: "21,605.60",
+      volume24h: "35.2B",
       description: "Bitcoin is the first decentralized digital currency.",
     },
     {
@@ -24,12 +32,11 @@ function PortfolioPage() {
       symbol: "ETH",
       balance: 4.12,
       value: 14214.0,
-      avgPrice: "$3,100",
-      profit: "+11.2%",
-      buyingPrice: "$2,750",
-      currentPrice: "$3,450",
-      investedAmount: "$11,330.00",
-      volume24h: "$12.8B",
+      avgPrice: "3,100",
+      buyingPrice: "2,750",
+      currentPrice: "3,450",
+      investedAmount: "11,330.00",
+      volume24h: "12.8B",
       description: "Ethereum is a smart contract platform.",
     },
     {
@@ -37,12 +44,11 @@ function PortfolioPage() {
       symbol: "SOL",
       balance: 124.5,
       value: 18052.5,
-      avgPrice: "$165",
-      profit: "-12.1%",
-      buyingPrice: "$178",
-      currentPrice: "$145",
-      investedAmount: "$22,161.00",
-      volume24h: "$4.1B",
+      avgPrice: "165",
+      buyingPrice: "178",
+      currentPrice: "145",
+      investedAmount: "22,161.00",
+      volume24h: "4.1B",
       description: "Solana is a high-performance blockchain.",
     },
   ];
@@ -112,16 +118,14 @@ function PortfolioPage() {
                     <td className="px-6 py-4 text-sm font-bold text-slate-600">
                       ${coin.value.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 text-right font-bold text-sm">
-                      <span
-                        className={
-                          coin.profit.startsWith("+")
-                            ? "text-emerald-500"
-                            : "text-red-500"
-                        }
-                      >
-                        {coin.profit}
-                      </span>
+                    <td
+                      className={`px-6 py-4 text-sm font-bold text-end ${
+                        profitCoin(coin.buyingPrice, coin.currentPrice) >= 0
+                          ? "text-emerald-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {formatPnL(profitCoin(coin.buyingPrice, coin.currentPrice))}
                     </td>
                   </tr>
                 ))}
@@ -165,9 +169,22 @@ function PortfolioPage() {
                     {selectedCoin.name}
                   </h2>
                   <p
-                    className={`text-sm font-bold mt-1 ${selectedCoin.profit.startsWith("+") ? "text-emerald-500" : "text-red-500"}`}
+                    className={`text-sm font-bold mt-1 ${
+                      profitCoin(
+                        selectedCoin.buyingPrice,
+                        selectedCoin.currentPrice
+                      ) >= 0
+                        ? "text-emerald-500"
+                        : "text-red-500"
+                    }`}
                   >
-                    {selectedCoin.profit} Today
+                    {formatPnL(
+                      profitCoin(
+                        selectedCoin.buyingPrice,
+                        selectedCoin.currentPrice
+                      )
+                    )}{" "}
+                    Today
                   </p>
                 </div>
               </div>

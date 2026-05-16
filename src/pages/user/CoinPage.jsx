@@ -10,10 +10,12 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
 function CoinPage() {
   const navigate = useNavigate();
   const [tradeType, setTradeType] = useState(null);
+  const [lots, setLots] = useState("");
   const [loading, setLoading] = useState(true);
   const location = useLocation();
 
@@ -30,6 +32,10 @@ function CoinPage() {
     low24h: "$0",
     rawPrice: 0,
   });
+
+  const tradingViewUrl = `https://s.tradingview.com/widgetembed/?hideideas=1&theme=Light&symbol=BINANCE:${coin.symbol}USDT`;
+  const numericLots = parseFloat(lots) || 0;
+  const totalAmount = numericLots * coin.rawPrice;
 
   // --- Fetch Metadata from CoinGecko ---
   useEffect(() => {
@@ -91,7 +97,17 @@ function CoinPage() {
     return () => clearInterval(interval);
   }, [coin.symbol]);
 
-  const tradingViewUrl = `https://s.tradingview.com/widgetembed/?hideideas=1&theme=Light&symbol=BINANCE:${coin.symbol}USDT`;
+  // --- Lots Submit ---
+  const handleLotsSubmit = (e) => {
+    e.preventDefault();
+
+    if (!lots || !lots.length === "") {
+      toast.error("Lots are required");
+      return;
+    }
+    toast.success("Lots Bought successfully");
+    setTradeType(null);
+  };
 
   return (
     <div className="p-6 space-y-6 min-h-screen bg-slate-50 font-sans">
@@ -189,6 +205,14 @@ function CoinPage() {
                   {coin.low24h}
                 </span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-slate-400 italic">
+                  Lots Bought
+                </span>
+                <span className="text-sm font-black text-blue-950">
+                  {Number(lots).toLocaleString()}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -235,16 +259,36 @@ function CoinPage() {
               </h2>
               <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 mb-6">
                 <label className="text-[10px] font-black text-slate-400 uppercase block mb-1">
-                  USD Investment
+                  Lots
                 </label>
                 <input
                   type="number"
-                  placeholder="0.00"
+                  step="0.1"
+                  min="0"
+                  placeholder="0.0"
+                  value={lots}
+                  onChange={(e) => setLots(e.target.value)}
                   className="w-full bg-transparent text-xl font-black text-blue-950 outline-none"
                 />
               </div>
+              {tradeType !== "buy" ? (
+                ""
+              ) : (
+                <>
+                  <p className="text-right text-sm font-bold text-slate-500 mb-4">
+                    Total:{" "}
+                    <span className="text-blue-950 font-black">
+                      {totalAmount.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
+                    </span>
+                  </p>
+                </>
+              )}
               <button
                 className={`w-full py-4 rounded-2xl font-black text-white uppercase ${tradeType === "buy" ? "bg-emerald-500" : "bg-red-500"}`}
+                onClick={handleLotsSubmit}
               >
                 Confirm Order
               </button>

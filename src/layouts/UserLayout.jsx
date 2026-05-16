@@ -48,11 +48,6 @@ function UserLayout() {
       path: "/u/settings",
       icon: Settings,
     },
-    {
-      text: "Transaction History",
-      path: "/u/history",
-      icon: Clock,
-    },
   ];
   return (
     <div className="flex">

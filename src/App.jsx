@@ -7,7 +7,6 @@ import OverviewPage from "./pages/user/OverviewPage";
 import PortfolioPage from "./pages/user/PortfolioPage";
 import MarketPage from "./pages/user/MarketPage";
 import SettingsPage from "./pages/user/SettingsPage";
-import HistoryPage from "./pages/user/HistoryPage";
 import ProfilePage from "./pages/user/ProfilePage";
 import CoinPage from "./pages/user/CoinPage";
 
@@ -40,10 +39,6 @@ function App() {
         {
           path: "settings",
           element: <SettingsPage />,
-        },
-        {
-          path: "history",
-          element: <HistoryPage />,
         },
         {
           path: "profile",

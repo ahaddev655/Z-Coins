@@ -19,7 +19,7 @@ function UserSidebar({ linksArray, offCanvas, setOffCanvasToggle }) {
   const userDetails = () => {
     setIsUserLoading(true);
     axios
-      .get(`http://localhost:5000/api/user/details/${userId}`)
+      .get(`http://z-coins-backend.vercel.app/api/user/details/${userId}`)
       .then((response) => {
         console.log(response?.data);
 
