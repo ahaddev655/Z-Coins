@@ -1,8 +1,42 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, LogOut, ChevronRight } from "lucide-react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 function UserSidebar({ linksArray, offCanvas, setOffCanvasToggle }) {
+  // --- API Configuration ---
+  const [userData, setUserData] = useState({});
+  const [isUserLoading, setIsUserLoading] = useState(true);
+
+  const userName = (fname, lname) => {
+    const first = (fname || "").slice(0, 1);
+    const last = (lname || "").slice(0, 1);
+    const uname = `${first}${last}`.toUpperCase();
+    return uname;
+  };
+  const userId = localStorage.getItem("id");
+  const userDetails = () => {
+    setIsUserLoading(true);
+    axios
+      .get(`http://localhost:5000/api/user/details/${userId}`)
+      .then((response) => {
+        console.log(response?.data);
+
+        setUserData(response?.data?.user_details || {});
+      })
+      .catch(() => {})
+      .finally(() => {
+        setTimeout(() => {
+          setIsUserLoading(false);
+        }, 2000);
+      });
+  };
+
+  useEffect(() => {
+    if (userId) userDetails();
+    else setIsUserLoading(false);
+  }, [userId]);
   const navigate = useNavigate();
 
   const activeLink =
@@ -49,17 +83,29 @@ function UserSidebar({ linksArray, offCanvas, setOffCanvasToggle }) {
         <div className="flex items-center gap-3 p-3 mb-4 bg-slate-50 border border-slate-100 rounded-2xl">
           <div
             className="h-10 w-10 rounded-xl bg-blue-900 flex items-center justify-center text-white shadow-md shrink-0 font-medium
-            text-lg"
+            "
           >
-            AR
+            {isUserLoading
+              ? ""
+              : userName(userData.firstName, userData.lastName)}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-bold text-blue-950 truncate">
-              Alex Rivera
-            </span>
-            <span className="text-[11px] text-slate-400 font-medium truncate">
-              alex.rivera@example.com
-            </span>
+            {isUserLoading ? (
+              <>
+                <span className="h-4 w-28 rounded bg-slate-200 animate-pulse" />
+                <span className="h-3 w-40 rounded bg-slate-200 animate-pulse mt-2" />
+              </>
+            ) : (
+              <>
+                <span className="text-sm font-bold text-blue-950 truncate">
+                  {`${userData?.firstName || ""} ${userData?.lastName || ""}`.trim() ||
+                    "User"}
+                </span>
+                <span className="text-[11px] text-slate-400 font-medium truncate">
+                  {userData?.email}
+                </span>
+              </>
+            )}
           </div>
         </div>
 

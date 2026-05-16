@@ -1,20 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import ApexCharts from "apexcharts";
-import {
-  TrendingUp,
-  PieChart as PieIcon,
-  X,
-  ArrowUpRight,
-  Activity,
-  BarChart3,
-  Coins,
-} from "lucide-react";
+import React, { useState } from "react";
+import { X, ArrowUpRight, BarChart3, CircleDollarSign } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 function PortfolioPage() {
   const [selectedCoin, setSelectedCoin] = useState(null);
-  const pnlChartRef = useRef(null);
-  const pieChartRef = useRef(null);
 
   const holdings = [
     {
@@ -24,10 +13,10 @@ function PortfolioPage() {
       value: 29018.4,
       avgPrice: "$52,100",
       profit: "+12.4%",
-      isPositive: true,
-      marketCap: "$1.28T",
+      buyingPrice: "$47,800",
+      currentPrice: "$64,200",
+      investedAmount: "$21,605.60",
       volume24h: "$35.2B",
-      totalSupply: "19.7M BTC",
       description: "Bitcoin is the first decentralized digital currency.",
     },
     {
@@ -37,10 +26,10 @@ function PortfolioPage() {
       value: 14214.0,
       avgPrice: "$3,100",
       profit: "+11.2%",
-      isPositive: true,
-      marketCap: "$380.5B",
+      buyingPrice: "$2,750",
+      currentPrice: "$3,450",
+      investedAmount: "$11,330.00",
       volume24h: "$12.8B",
-      totalSupply: "120.2M ETH",
       description: "Ethereum is a smart contract platform.",
     },
     {
@@ -50,73 +39,13 @@ function PortfolioPage() {
       value: 18052.5,
       avgPrice: "$165",
       profit: "-12.1%",
-      isPositive: false,
-      marketCap: "$64.2B",
+      buyingPrice: "$178",
+      currentPrice: "$145",
+      investedAmount: "$22,161.00",
       volume24h: "$4.1B",
-      totalSupply: "448.3M SOL",
       description: "Solana is a high-performance blockchain.",
     },
   ];
-
-  const totalPortfolioValue = holdings.reduce(
-    (acc, coin) => acc + coin.value,
-    0,
-  );
-
-  useEffect(() => {
-    // --- 1. Daily PNL Area Chart ---
-    const pnlOptions = {
-      chart: {
-        type: "area",
-        height: 200,
-        toolbar: { show: false },
-        sparkline: { enabled: true },
-      },
-      stroke: { curve: "smooth", width: 2 },
-      fill: { type: "gradient", gradient: { opacityFrom: 0.4, opacityTo: 0 } },
-      series: [
-        { name: "Daily PNL", data: [400, -200, 800, 500, -100, 1200, 900] },
-      ],
-      colors: ["#10b981"],
-      tooltip: { theme: "light" },
-    };
-
-    // --- 2. Real-time Allocation Pie Chart ---
-    const pieOptions = {
-      chart: { type: "donut", height: 280 },
-      labels: holdings.map((c) => c.name),
-      series: holdings.map((c) => c.value),
-      colors: ["#1e3a8a", "#10b981", "#f59e0b"],
-      legend: { position: "bottom", fontWeight: 600 },
-      dataLabels: { enabled: false },
-      plotOptions: {
-        pie: {
-          donut: {
-            size: "75%",
-            labels: {
-              show: true,
-              total: {
-                show: true,
-                label: "Total Value",
-                formatter: () => `$${(totalPortfolioValue / 1000).toFixed(1)}k`,
-              },
-            },
-          },
-        },
-      },
-    };
-
-    const pnlChart = new ApexCharts(pnlChartRef.current, pnlOptions);
-    const pieChart = new ApexCharts(pieChartRef.current, pieOptions);
-
-    pnlChart.render();
-    pieChart.render();
-
-    return () => {
-      pnlChart.destroy();
-      pieChart.destroy();
-    };
-  }, []);
 
   return (
     <div className="space-y-6 relative">
@@ -130,31 +59,6 @@ function PortfolioPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* --- Allocation Card (Now Dynamic) --- */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-blue-950">Asset Allocation</h3>
-            <PieIcon size={20} className="text-slate-400" />
-          </div>
-          <div ref={pieChartRef}></div>
-        </div>
-
-        {/* --- Daily PNL Chart --- */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-bold text-blue-950">Daily PNL Performance</h3>
-              <p className="text-xs text-emerald-500 font-bold">
-                + $1,200.45 today
-              </p>
-            </div>
-            <div className="h-10 w-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-              <TrendingUp size={20} />
-            </div>
-          </div>
-          <div ref={pnlChartRef} className="mt-auto"></div>
-        </div>
-
         {/* --- Holdings Table --- */}
         <div className="lg:col-span-3 bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-slate-50 flex items-center justify-between">
@@ -169,6 +73,7 @@ function PortfolioPage() {
                 <tr className="bg-slate-50/50 text-[10px] uppercase tracking-[0.15em] text-slate-400 font-black">
                   <th className="px-6 py-4">Asset</th>
                   <th className="px-6 py-4">Balance</th>
+                  <th className="px-6 py-4">Buying Price</th>
                   <th className="px-6 py-4">Current Value</th>
                   <th className="px-6 py-4 text-right">Profit/Loss</th>
                 </tr>
@@ -202,12 +107,17 @@ function PortfolioPage() {
                       {coin.balance} {coin.symbol}
                     </td>
                     <td className="px-6 py-4 text-sm font-bold text-slate-600">
+                      {coin.buyingPrice}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-600">
                       ${coin.value.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-right font-bold text-sm">
                       <span
                         className={
-                          coin.isPositive ? "text-emerald-500" : "text-red-500"
+                          coin.profit.startsWith("+")
+                            ? "text-emerald-500"
+                            : "text-red-500"
                         }
                       >
                         {coin.profit}
@@ -255,7 +165,7 @@ function PortfolioPage() {
                     {selectedCoin.name}
                   </h2>
                   <p
-                    className={`text-sm font-bold mt-1 ${selectedCoin.isPositive ? "text-emerald-500" : "text-red-500"}`}
+                    className={`text-sm font-bold mt-1 ${selectedCoin.profit.startsWith("+") ? "text-emerald-500" : "text-red-500"}`}
                   >
                     {selectedCoin.profit} Today
                   </p>
@@ -264,13 +174,13 @@ function PortfolioPage() {
               <div className="grid grid-cols-3 gap-3 mb-8">
                 <div className="p-4 bg-slate-50 rounded-3xl border border-slate-100">
                   <div className="flex items-center gap-2 text-slate-400 mb-2">
-                    <Activity size={14} />
+                    <CircleDollarSign size={14} />
                     <span className="text-[10px] font-bold uppercase tracking-wider">
-                      Market Cap
+                      Buying Price
                     </span>
                   </div>
                   <p className="text-sm font-black text-blue-950">
-                    {selectedCoin.marketCap}
+                    {selectedCoin.buyingPrice}
                   </p>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-3xl border border-slate-100">
@@ -281,18 +191,18 @@ function PortfolioPage() {
                     </span>
                   </div>
                   <p className="text-sm font-black text-blue-950">
-                    {selectedCoin.volume24h}
+                    {selectedCoin.currentPrice}
                   </p>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-3xl border border-slate-100">
                   <div className="flex items-center gap-2 text-slate-400 mb-2">
-                    <Coins size={14} />
+                    <CircleDollarSign size={14} />
                     <span className="text-[10px] font-bold uppercase tracking-wider">
-                      Supply
+                      Invested
                     </span>
                   </div>
                   <p className="text-sm font-black text-blue-950">
-                    {selectedCoin.totalSupply}
+                    {selectedCoin.investedAmount}
                   </p>
                 </div>
               </div>

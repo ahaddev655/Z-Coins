@@ -7,10 +7,10 @@ function SplashScreen() {
 
   useEffect(() => {
     const id = localStorage.getItem("id");
-    const token = localStorage.getItem("token");
+    const uid = localStorage.getItem("uid");
 
     const timer = setTimeout(() => {
-      if (id && token) {
+      if (id && uid) {
         navigate("/u/");
       } else {
         navigate("/auth");

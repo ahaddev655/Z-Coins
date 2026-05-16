@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ApexCharts from "apexcharts";
 import {
   ArrowUpRight,
@@ -6,15 +6,114 @@ import {
   Wallet,
   TrendingUp,
   CircleDollarSign,
+  TrendingDown,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 function OverviewPage() {
+  // --- UserData ---
+  const [totalBalance, setTotalBalance] = useState("");
+  const [totalPnl, setTotalPnl] = useState("");
+  const [totalCoins, setTotalCoins] = useState("");
+  const [isUserLoading, setIsUserLoading] = useState(true);
+  const [balanceHistory, setBalanceHistory] = useState([]);
+
+  const userName = (fname, lname) => {
+    const first = (fname || "").slice(0, 1);
+    const last = (lname || "").slice(0, 1);
+    const uname = `${first}${last}`.toUpperCase();
+    return uname;
+  };
+  const userId = localStorage.getItem("id");
+  const userDetails = () => {
+    setIsUserLoading(true);
+    axios
+      .get(`http://localhost:5000/api/user/details/${userId}`)
+      .then((response) => {
+        console.log(response?.data);
+
+        setTotalBalance(response?.data.user_details.userBalance || "");
+        setTotalCoins(response?.data.user_details.tradedCoins || "");
+        setTotalPnl(response?.data.user_details.pnl || "");
+      })
+      .catch(() => {})
+      .finally(() => {
+        setTimeout(() => {
+          setIsUserLoading(false);
+        }, 2000);
+      });
+  };
+  useEffect(() => {
+    if (userId) userDetails();
+    else setIsUserLoading(false);
+  }, [userId]);
+
+  // --- Chart Logic ---
+
   const chartRef = useRef(null);
+  const balanceHistoryKey = userId ? `balanceHistory:${userId}` : "balanceHistory";
 
   useEffect(() => {
-    // Chart Options
-    const options = {
+    if (!userId) return;
+    const savedHistory = localStorage.getItem(balanceHistoryKey);
+    if (!savedHistory) return;
+
+    try {
+      const parsed = JSON.parse(savedHistory);
+      if (Array.isArray(parsed)) {
+        const normalized = parsed
+          .map((item) => {
+            if (typeof item === "number" || typeof item === "string") {
+              const value = Number(item);
+              if (!Number.isFinite(value)) return null;
+              return { day: "Older", value };
+            }
+            if (item && Number.isFinite(Number(item.value)) && item.day) {
+              return { day: item.day, value: Number(item.value) };
+            }
+            return null;
+          })
+          .filter(Boolean);
+        setBalanceHistory(normalized);
+      }
+    } catch (_) {}
+  }, [userId, balanceHistoryKey]);
+
+  useEffect(() => {
+    const numericBalance = Number(totalBalance);
+    if (!Number.isFinite(numericBalance)) return;
+    const today = new Date().toLocaleDateString("en-US", { weekday: "short" });
+
+    setBalanceHistory((prev) => {
+      if (!prev.length) {
+        const first = [{ day: today, value: numericBalance }];
+        localStorage.setItem(balanceHistoryKey, JSON.stringify(first));
+        return first;
+      }
+
+      const lastEntry = prev[prev.length - 1];
+      if (lastEntry.day === today) {
+        if (lastEntry.value === numericBalance) return prev;
+        const updatedSameDay = [...prev];
+        updatedSameDay[updatedSameDay.length - 1] = {
+          day: today,
+          value: numericBalance,
+        };
+        localStorage.setItem(balanceHistoryKey, JSON.stringify(updatedSameDay));
+        return updatedSameDay;
+      }
+
+      if (lastEntry.value === numericBalance) return prev;
+      const updated = [...prev, { day: today, value: numericBalance }];
+      localStorage.setItem(balanceHistoryKey, JSON.stringify(updated));
+      return updated;
+    });
+  }, [totalBalance, balanceHistoryKey]);
+
+  useEffect(() => {
+    if (!chartRef.current) return;
+    const chart = new ApexCharts(chartRef.current, {
       chart: {
         type: "area",
         height: "100%",
@@ -25,7 +124,7 @@ function OverviewPage() {
       series: [
         {
           name: "Portfolio Value",
-          data: [31000, 40000, 28000, 51000, 42000, 109000, 100000],
+          data: balanceHistory.map((item) => item.value),
         },
       ],
       dataLabels: { enabled: false },
@@ -40,41 +139,41 @@ function OverviewPage() {
         },
       },
       xaxis: {
-        categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        categories: balanceHistory.map((item) => item.day),
         axisBorder: { show: false },
         axisTicks: { show: false },
       },
       yaxis: { show: false },
       grid: { borderColor: "#f1f5f9", strokeDashArray: 4 },
       colors: ["#1e3a8a"],
-    };
-
-    const chart = new ApexCharts(chartRef.current, options);
+    });
     chart.render();
 
     return () => {
       chart.destroy();
     };
-  }, []);
+  }, [balanceHistory]);
 
   const stats = [
     {
       label: "Total Balance",
-      value: "$128,430.00",
+      value: `$${Number(totalBalance).toLocaleString()}`,
       icon: Wallet,
       color: "text-blue-600",
       bg: "bg-blue-50",
     },
     {
-      label: "24h Profit",
-      value: "+$12,302.00",
-      icon: TrendingUp,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50",
+      label: "PNL",
+      value: `${totalPnl > 0 ? "+" : totalPnl < 0 ? "-" : ""}${Number(
+        totalPnl,
+      ).toLocaleString()}`,
+      icon: totalPnl > 0 ? TrendingUp : TrendingDown,
+      color: totalPnl > 0 ? "text-emerald-600" : "text-red-600",
+      bg: totalPnl > 0 ? "bg-emerald-50" : "bg-red-50",
     },
     {
       label: "Total Assets",
-      value: "14 Coins",
+      value: `${Number(totalCoins).toLocaleString()} Coins`,
       icon: CircleDollarSign,
       color: "text-amber-600",
       bg: "bg-amber-50",
@@ -129,7 +228,7 @@ function OverviewPage() {
         </div>
 
         {/* --- Quick Trade / Assets --- */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col">
+        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-fit">
           <h3 className="text-lg font-bold text-blue-950 mb-4">Quick Trade</h3>
           <div className="mb-8">
             <Link to={"/u/market"}>
@@ -150,64 +249,6 @@ function OverviewPage() {
                 <span>Sell Assets</span>
               </button>
             </Link>
-          </div>
-
-          <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
-            Market Watch
-          </h3>
-          <div className="space-y-4">
-            {[
-              {
-                name: "Bitcoin",
-                symbol: "BTC",
-                price: "$64,200",
-                change: "+2.4%",
-              },
-              {
-                name: "Ethereum",
-                symbol: "ETH",
-                price: "$3,450",
-                change: "-0.8%",
-              },
-              {
-                name: "Solana",
-                symbol: "SOL",
-                price: "$145",
-                change: "+12.1%",
-              },
-            ].map((asset, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between group cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="h-9 w-9 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center font-bold
-                  text-[10px] text-blue-900 group-hover:bg-blue-50 group-hover:border-blue-100 transition-colors"
-                  >
-                    {asset.symbol}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-blue-950">
-                      {asset.name}
-                    </p>
-                    <p className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">
-                      {asset.symbol} / USDT
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-blue-950">
-                    {asset.price}
-                  </p>
-                  <p
-                    className={`text-[10px] font-black ${asset.change.startsWith("+") ? "text-emerald-500" : "text-red-500"}`}
-                  >
-                    {asset.change}
-                  </p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>

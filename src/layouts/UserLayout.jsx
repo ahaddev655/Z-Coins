@@ -1,5 +1,5 @@
-import { Outlet } from "react-router-dom";
-import { useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import UserSidebar from "../components/UserSidebar";
 import {
   BookUser,
@@ -11,6 +11,25 @@ import {
 import UserHeader from "../components/UserHeader";
 
 function UserLayout() {
+  // --- Auth Check ---
+  const navigate = useNavigate();
+  useEffect(() => {
+    const id = localStorage.getItem("id");
+    const uid = localStorage.getItem("uid");
+
+    const timer = setTimeout(() => {
+      if (id && uid) {
+        return;
+      } else {
+        navigate("/auth");
+      }
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
+  // --- Offcanvas Logic ---
+
   const [offCanvas, setOffCanvasToggle] = useState(false);
   const links = [
     {

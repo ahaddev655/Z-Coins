@@ -1,7 +1,39 @@
+import axios from "axios";
 import { Menu, Bell } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function UserHeader({ setOffCanvasToggle }) {
+  const [userData, setUserData] = useState({});
+  const [isUserLoading, setIsUserLoading] = useState(true);
+
+  const userName = (fname, lname) => {
+    const first = (fname || "").slice(0, 1);
+    const last = (lname || "").slice(0, 1);
+    const uname = `${first}${last}`.toUpperCase();
+    return uname;
+  };
+  const userId = localStorage.getItem("id");
+  const userDetails = () => {
+    setIsUserLoading(true);
+    axios
+      .get(`http://localhost:5000/api/user/details/${userId}`)
+      .then((response) => {
+        console.log(response?.data);
+
+        setUserData(response?.data?.user_details || {});
+      })
+      .catch(() => {})
+      .finally(() => {
+        setTimeout(() => {
+          setIsUserLoading(false);
+        }, 2000);
+      });
+  };
+  useEffect(() => {
+    if (userId) userDetails();
+    else setIsUserLoading(false);
+  }, [userId]);
   return (
     <header
       className="sticky top-0 z-40 flex h-20 w-full items-center justify-between border-b border-slate-100 bg-white/80 px-4
@@ -23,7 +55,7 @@ function UserHeader({ setOffCanvasToggle }) {
             Portfolio Overview
           </h1>
           <p className="hidden text-[11px] font-medium uppercase tracking-widest text-slate-400 sm:block">
-            Welcome back, Alex
+            Welcome back, {userData.firstName}
           </p>
         </div>
       </div>
@@ -43,10 +75,10 @@ function UserHeader({ setOffCanvasToggle }) {
           <div className="flex items-center gap-3 pl-3 sm:border-l sm:border-slate-100">
             <div className="hidden flex-col items-end sm:flex">
               <span className="text-sm font-bold text-blue-950">
-                Alex Rivera
+                {userData.firstName} {userData.lastName}
               </span>
-              <span className="text-[12px] w-19 truncate font-medium text-slate-400">
-                alex.rivera@example.com
+              <span className="text-[12px] w-24 truncate font-medium text-slate-400">
+                {userData.email}
               </span>
             </div>
 

@@ -8,22 +8,47 @@ import {
   Copy,
   Clock,
 } from "lucide-react";
+import { useEffect } from "react";
+import { useState } from "react";
+import axios from "axios";
 
 function ProfilePage() {
-  const user = {
-    firstName: "Alex",
-    lastName: "Rivera",
-    email: "alex.rivera@zcoins.io",
-    pNumber: "+1 (555) 892-0443",
-    memberSince: "October 2023",
-    uid: "ZCN-8823-9910",
-    totalBalance: "$124,500.00",
-    PNL: "+$14,230.50 (12.5%)",
+  // --- API Configuration ---
+  const [userData, setUserData] = useState({});
+  const [isUserLoading, setIsUserLoading] = useState(true);
+
+  const userName = (fname, lname) => {
+    const first = (fname || "").slice(0, 1);
+    const last = (lname || "").slice(0, 1);
+    const uname = `${first}${last}`.toUpperCase();
+    return uname;
+  };
+  const userId = localStorage.getItem("id");
+  const userDetails = () => {
+    setIsUserLoading(true);
+    axios
+      .get(`http://localhost:5000/api/user/details/${userId}`)
+      .then((response) => {
+        console.log(response?.data);
+
+        setUserData(response?.data?.user_details || {});
+      })
+      .catch(() => {})
+      .finally(() => {
+        setTimeout(() => {
+          setIsUserLoading(false);
+        }, 2000);
+      });
   };
 
   const handleCopyUID = () => {
-    navigator.clipboard.writeText(user.uid);
+    navigator.clipboard.writeText(userData.uid);
   };
+
+  useEffect(() => {
+    if (userId) userDetails();
+    else setIsUserLoading(false);
+  }, [userId]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 py-6">
@@ -35,18 +60,31 @@ function ProfilePage() {
         <div className="relative flex flex-col md:flex-row items-center gap-10">
           {/* Large Avatar Circle */}
           <div className="h-32 w-32 bg-linear-to-br from-blue-400 to-blue-600 rounded-[35%] flex items-center justify-center text-4xl font-black shadow-2xl border-4 border-white/10">
-            {user.firstName[0]}
-            {user.lastName[0]}
+            {isUserLoading
+              ? ""
+              : userName(userData?.firstName, userData?.lastName)}
           </div>
 
           <div className="flex-1 text-center md:text-left space-y-4">
             <div>
-              <h1 className="text-4xl font-black tracking-tight mb-1">
-                {user.firstName} {user.lastName}
-              </h1>
-              <div className="flex items-center justify-center md:justify-start gap-2 text-blue-300 font-bold text-sm">
-                <Mail size={14} /> {user.email}
-              </div>
+              {isUserLoading ? (
+                <>
+                  <div className="flex gap-3">
+                    <span className="h-4 w-28 rounded bg-slate-200/30 inline-block" />
+                    <span className="h-4 w-40 rounded bg-slate-200/30 inline-block" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h1 className="text-4xl font-black tracking-tight mb-1">
+                    {userData?.firstName || ""} {userData?.lastName || ""}
+                  </h1>
+                  <div className="flex items-center justify-center md:justify-start gap-2 text-blue-300 font-bold text-sm">
+                    <Mail size={14} />
+                    {userData?.email || "No email"}
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex flex-wrap justify-center md:justify-start gap-3">
@@ -54,12 +92,27 @@ function ProfilePage() {
                 onClick={handleCopyUID}
                 className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-2xl text-xs font-bold transition-all border border-white/5"
               >
-                <Hash size={14} className="text-blue-400" /> UID: {user.uid}{" "}
-                <Copy size={12} />
+                <Hash size={14} className="text-blue-400" /> UID:{" "}
+                {isUserLoading ? (
+                  <span className="h-4 w-40 rounded bg-slate-200/30 inline-block" />
+                ) : (
+                  <>
+                    {userData.uid} <Copy size={12} />
+                  </>
+                )}
               </button>
               <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-2xl text-xs font-bold border border-white/5">
-                <Clock size={14} className="text-blue-400" /> Member since{" "}
-                {user.memberSince}
+                <Clock size={14} className="text-blue-400" /> Member since
+                {isUserLoading ? (
+                  <span className="h-4 w-40 rounded bg-slate-200/30 inline-block" />
+                ) : (
+                  <>
+                    {" "}
+                    {userData.user_created_at
+                      .slice(0, 10)
+                      .replaceAll("-", " / ")}
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -83,7 +136,11 @@ function ProfilePage() {
                 Total Balance
               </p>
               <h3 className="text-3xl font-black text-blue-950">
-                {user.totalBalance}
+                {isUserLoading ? (
+                  <span className="h-4 w-40 rounded bg-slate-300 animate-pulse inline-block" />
+                ) : (
+                  <>${Number(userData?.userBalance || 0).toLocaleString()}</>
+                )}
               </h3>
             </div>
 
@@ -93,7 +150,11 @@ function ProfilePage() {
               </p>
               <div className="flex items-center gap-2 text-xl font-black text-emerald-700">
                 <TrendingUp size={20} />
-                {user.PNL}
+                {isUserLoading ? (
+                  <span className="h-4 w-40 rounded bg-green-200 animate-pulse inline-block" />
+                ) : (
+                  <>{userData.pnl || 0}</>
+                )}
               </div>
             </div>
           </div>
@@ -118,7 +179,13 @@ function ProfilePage() {
                   Full Name
                 </p>
                 <p className="text-blue-950 font-bold">
-                  {user.firstName} {user.lastName}
+                  {isUserLoading ? (
+                    <span className="h-4 w-40 rounded bg-slate-300 animate-pulse inline-block" />
+                  ) : (
+                    <>
+                      {userData.firstName} {userData.lastName}
+                    </>
+                  )}
                 </p>
               </div>
             </div>
@@ -131,7 +198,13 @@ function ProfilePage() {
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
                   Phone Number
                 </p>
-                <p className="text-blue-950 font-bold">{user.pNumber}</p>
+                <p className="text-blue-950 font-bold">
+                  {isUserLoading ? (
+                    <span className="h-4 w-40 rounded bg-slate-300 animate-pulse inline-block" />
+                  ) : (
+                    <>{userData.phone}</>
+                  )}
+                </p>
               </div>
             </div>
 
@@ -143,7 +216,13 @@ function ProfilePage() {
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
                   Primary Email
                 </p>
-                <p className="text-blue-950 font-bold">{user.email}</p>
+                <p className="text-blue-950 font-bold">
+                  {isUserLoading ? (
+                    <span className="h-4 w-40 rounded bg-slate-300 animate-pulse inline-block" />
+                  ) : (
+                    <>{userData.email}</>
+                  )}
+                </p>
               </div>
             </div>
           </div>

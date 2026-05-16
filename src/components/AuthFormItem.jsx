@@ -76,7 +76,7 @@ function AuthFormItem({ isLogin }) {
             localStorage.setItem("id", response?.data?.id);
           }, 1500);
           setTimeout(() => {
-            // navigate("/u/");
+            navigate("/u/");
           }, 3000);
         })
         .catch((error) => {
