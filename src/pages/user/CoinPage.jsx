@@ -98,15 +98,31 @@ function CoinPage() {
   }, [coin.symbol]);
 
   // --- Lots Submit ---
-  const handleLotsSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!lots || !lots.length === "") {
+    if (!lots || String(lots).trim() === "") {
       toast.error("Lots are required");
       return;
     }
+
+    const newLot = {
+      coinName: coin.name,
+      symbol: coin.symbol,
+      buyingPrice: coin.rawPrice,
+      lots: numericLots,
+    };
+
+    // const existingLots = JSON.parse(
+    //   localStorage.getItem("holdingLots") || "[]",
+    // );
+    // const updatedLots = [...existingLots, newLot];
+    const payload = { lots: JSON.stringify(newLot) };
+    console.log("API payload:", payload);
+
     toast.success("Lots Bought successfully");
     setTradeType(null);
+    setLots("");
   };
 
   return (
@@ -205,14 +221,6 @@ function CoinPage() {
                   {coin.low24h}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-slate-400 italic">
-                  Lots Bought
-                </span>
-                <span className="text-sm font-black text-blue-950">
-                  {Number(lots).toLocaleString()}
-                </span>
-              </div>
             </div>
           </div>
 
@@ -288,7 +296,7 @@ function CoinPage() {
               )}
               <button
                 className={`w-full py-4 rounded-2xl font-black text-white uppercase ${tradeType === "buy" ? "bg-emerald-500" : "bg-red-500"}`}
-                onClick={handleLotsSubmit}
+                onClick={handleSubmit}
               >
                 Confirm Order
               </button>

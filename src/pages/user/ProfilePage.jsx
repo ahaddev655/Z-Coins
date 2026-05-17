@@ -27,7 +27,7 @@ function ProfilePage() {
   const userDetails = () => {
     setIsUserLoading(true);
     axios
-      .get(`http://z-coins-backend.vercel.app/api/user/details/${userId}`)
+      .get(`https://z-coins-backend.vercel.app/api/user/details/${userId}`)
       .then((response) => {
         console.log(response?.data);
 
@@ -108,9 +108,16 @@ function ProfilePage() {
                 ) : (
                   <>
                     {" "}
-                    {userData.user_created_at
-                      ?.slice(0, 10)
-                      .replaceAll("-", " / ")}
+                    {userData?.user_created_at
+                      ? new Date(userData.user_created_at).toLocaleDateString(
+                          "en-GB",
+                          {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          },
+                        )
+                      : "N/A"}
                   </>
                 )}
               </div>

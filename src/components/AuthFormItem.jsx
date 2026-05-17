@@ -59,7 +59,7 @@ function AuthFormItem({ isLogin }) {
       // --- API Configuration ---
 
       axios
-        .post("http://z-coins-backend.vercel.app/api/auth/register", formData)
+        .post("https://z-coins-backend.vercel.app/api/auth/register", formData)
         .then((response) => {
           console.log(response?.data);
           // --- Signup Positive Response ---
@@ -105,7 +105,7 @@ function AuthFormItem({ isLogin }) {
       // --- API Configuration ---
 
       axios
-        .post("http://z-coins-backend.vercel.app/api/auth/login", formData)
+        .post("https://z-coins-backend.vercel.app/api/auth/login", formData)
         .then((response) => {
           console.log(response?.data);
           // --- Login Positive Response ---

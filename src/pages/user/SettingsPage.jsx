@@ -29,7 +29,7 @@ function SettingsPage() {
 
   const userDetails = () => {
     axios
-      .get(`http://z-coins-backend.vercel.app/api/user/details/${userId}`)
+      .get(`https://z-coins-backend.vercel.app/api/user/details/${userId}`)
       .then((response) => {
         console.log(response?.data);
 
@@ -47,7 +47,7 @@ function SettingsPage() {
     setIsSaving(true);
 
     axios
-      .put(`http://z-coins-backend.vercel.app/api/user/update/${userId}`, formData)
+      .put(`https://z-coins-backend.vercel.app/api/user/update/${userId}`, formData)
       .then((response) => {
         console.log(response?.data);
         setTimeout(() => {
@@ -70,7 +70,7 @@ function SettingsPage() {
 
     setIsSaving(true);
     axios
-      .put(`http://z-coins-backend.vercel.app/api/user/update-password/${userId}`, {
+      .put(`https://z-coins-backend.vercel.app/api/user/update-password/${userId}`, {
         password,
       })
       .then((response) => {

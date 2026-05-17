@@ -4,7 +4,6 @@ import UserSidebar from "../components/UserSidebar";
 import {
   BookUser,
   ChartCandlestick,
-  Clock,
   LayoutDashboard,
   Settings,
 } from "lucide-react";

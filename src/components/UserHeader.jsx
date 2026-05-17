@@ -17,7 +17,7 @@ function UserHeader({ setOffCanvasToggle }) {
   const userDetails = () => {
     setIsUserLoading(true);
     axios
-      .get(`http://z-coins-backend.vercel.app/api/user/details/${userId}`)
+      .get(`https://z-coins-backend.vercel.app/api/user/details/${userId}`)
       .then((response) => {
         console.log(response?.data);
 
@@ -87,7 +87,7 @@ function UserHeader({ setOffCanvasToggle }) {
               className="h-10 w-10 font-bold rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 hover:bg-blue-100
             transition-colors border border-blue-100/50 shadow-sm"
             >
-              AR
+              {userName(userData.firstName, userData.lastName) || "U"}
             </div>
           </div>
         </Link>
