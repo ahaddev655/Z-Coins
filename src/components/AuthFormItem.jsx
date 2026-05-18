@@ -155,7 +155,7 @@ function AuthFormItem({ isLogin }) {
           if (isLogin) {
             axios
               .post(
-                "http://localhost:5000/api/auth/google-register",
+                "https://z-coins-backend.vercel.app/api/auth/google-register",
                 googleData,
               )
               .then((response) => {
@@ -172,7 +172,10 @@ function AuthFormItem({ isLogin }) {
             return;
           }
           axios
-            .post("http://localhost:5000/api/auth/google-login", googleData)
+            .post(
+              "https://z-coins-backend.vercel.app/api/auth/google-login",
+              googleData,
+            )
             .then((response) => {
               localStorage.setItem("uid", response?.data?.uid);
               localStorage.setItem("id", response?.data?.id);
