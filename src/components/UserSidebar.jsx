@@ -21,8 +21,6 @@ function UserSidebar({ linksArray, offCanvas, setOffCanvasToggle }) {
     axios
       .get(`https://z-coins-backend.vercel.app/api/user/details/${userId}`)
       .then((response) => {
-        console.log(response?.data);
-
         setUserData(response?.data?.user_details || {});
       })
       .catch(() => {})

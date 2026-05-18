@@ -13,6 +13,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 
 function CoinPage() {
+  // --- State Variables ---
   const navigate = useNavigate();
   const [tradeType, setTradeType] = useState(null);
   const [lots, setLots] = useState("");
@@ -21,7 +22,12 @@ function CoinPage() {
 
   const pathParts = location.pathname.split("/");
   const coinGeckoId = pathParts[2] || "bitcoin";
+  const numericLots = parseFloat(lots) || 0;
+  const [userBalance, setUserBalance] = useState(10000);
 
+  const userId = localStorage.getItem("id");
+
+  // --- State Arrays ---
   const [coin, setCoin] = useState({
     id: coinGeckoId,
     name: "",
@@ -32,10 +38,10 @@ function CoinPage() {
     low24h: "$0",
     rawPrice: 0,
   });
-
-  const tradingViewUrl = `https://s.tradingview.com/widgetembed/?hideideas=1&theme=Light&symbol=BINANCE:${coin.symbol}USDT`;
-  const numericLots = parseFloat(lots) || 0;
   const totalAmount = numericLots * coin.rawPrice;
+
+  // ---Base URLs ---
+  const tradingViewUrl = `https://s.tradingview.com/widgetembed/?hideideas=1&theme=Light&symbol=BINANCE:${coin.symbol}USDT`;
 
   // --- Fetch Metadata from CoinGecko ---
   useEffect(() => {
@@ -106,27 +112,61 @@ function CoinPage() {
       return;
     }
 
+    if (!userId) {
+      toast.error("User id is required");
+      return;
+    }
+
+    const userNewBalance = userBalance - totalAmount;
+
     const newLot = {
       coinName: coin.name,
       symbol: coin.symbol,
       buyingPrice: coin.rawPrice,
       lots: numericLots,
+      newBalance: Number(userNewBalance).toFixed(2),
     };
 
     // const existingLots = JSON.parse(
     //   localStorage.getItem("holdingLots") || "[]",
     // );
     // const updatedLots = [...existingLots, newLot];
-    const payload = { lots: JSON.stringify(newLot) };
-    console.log("API payload:", payload);
-
-    toast.success("Lots Bought successfully");
-    setTradeType(null);
-    setLots("");
+    const payload = { coin: JSON.stringify(newLot) };
+    // --- API Configuration ---
+    axios
+      .post(
+        `https://z-coins-backend.vercel.app/api/trade/insert-holdings/${userId}`,
+        payload,
+      )
+      .then((response) => {
+        console.log(response?.data?.message);
+        toast.success("Lots purchased");
+      })
+      .catch((error) => {
+        toast.error(error?.response?.data?.error || "Internal Server Error");
+      })
+      .finally(() => {
+        setTradeType(null);
+        setLots("");
+      });
   };
+
+  useEffect(() => {
+    axios
+      .get(`https://z-coins-backend.vercel.app/api/trade/holdings/${userId}`)
+      .then((response) => {
+        console.log(response?.data);
+      });
+  }, []);
 
   return (
     <div className="p-6 space-y-6 min-h-screen bg-slate-50 font-sans">
+      <ToastContainer
+        theme="colored"
+        autoClose={1000}
+        hideProgressBar
+        position="top-center"
+      />
       <button
         onClick={() => navigate("/u/")}
         className="flex items-center gap-2 text-slate-400 hover:text-blue-950 transition-colors font-bold text-sm group"

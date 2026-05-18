@@ -1,60 +1,136 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, ArrowUpRight, BarChart3, CircleDollarSign } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
 function PortfolioPage() {
+  // --- State Variables ---
   const [selectedCoin, setSelectedCoin] = useState(null);
+  const [holdings, setHoldings] = useState([]);
+  const userId = localStorage.getItem("id");
+  const [userBalance, setUserBalance] = useState(null);
+  // --- Helpers ---
+  const parsePrice = (value) => Number(value) || 0;
 
-  const parsePrice = (value) => Number(String(value).replace(/,/g, ""));
   const profitCoin = (buyingPrice, currentPrice) => {
     return parsePrice(currentPrice) - parsePrice(buyingPrice);
   };
+
   const formatPnL = (value) => {
     const sign = value >= 0 ? "+" : "-";
     return `${sign}$${Math.abs(value).toLocaleString()}`;
   };
 
-  const holdings = [
-    {
-      name: "Bitcoin",
-      symbol: "BTC",
-      balance: 0.452,
-      value: 29018.4,
-      avgPrice: "52,100",
-      buyingPrice: "47,800",
-      currentPrice: "64,200",
-      investedAmount: "21,605.60",
-      volume24h: "35.2B",
-      description: "Bitcoin is the first decentralized digital currency.",
-    },
-    {
-      name: "Ethereum",
-      symbol: "ETH",
-      balance: 4.12,
-      value: 14214.0,
-      avgPrice: "3,100",
-      buyingPrice: "2,750",
-      currentPrice: "3,450",
-      investedAmount: "11,330.00",
-      volume24h: "12.8B",
-      description: "Ethereum is a smart contract platform.",
-    },
-    {
-      name: "Solana",
-      symbol: "SOL",
-      balance: 124.5,
-      value: 18052.5,
-      avgPrice: "165",
-      buyingPrice: "178",
-      currentPrice: "145",
-      investedAmount: "22,161.00",
-      volume24h: "4.1B",
-      description: "Solana is a high-performance blockchain.",
-    },
-  ];
+  // --- Fetch Holdings ---
+  const fetchHoldings = async () => {
+    try {
+      const response = await axios.get(
+        `https://z-coins-backend.vercel.app/api/trade/holdings/${userId}`,
+      );
+
+      const rawHoldings = response?.data?.holdedCoins?.holdedCoins;
+
+      const symbol = rawHoldings[0]?.symbol || rawHoldings[0]?.coinName;
+
+      const binanceRes = await axios.get(
+        `https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}USDT`,
+      );
+
+      const askPrice = Number(binanceRes?.data?.askPrice);
+
+      if (isNaN(askPrice)) {
+        toast.error("Invalid market data");
+        return;
+      }
+
+      const formattedHoldings = rawHoldings.map((item) => ({
+        id: item.coinName,
+        symbol: item.symbol,
+        name: item.coinName,
+        buyingPrice: Number(item.buyingPrice) || 0,
+        currentPrice: askPrice,
+        volume24h: Number(binanceRes?.data?.quoteVolume)?.toFixed(2) || 0,
+        value: askPrice,
+        balance: Number(item.lots) || 0,
+      }));
+
+      setHoldings(formattedHoldings);
+    } catch (error) {}
+  };
+
+  // --- Delete Holding ---
+  const deleteHolding = (buyingPrice, currentPrice, coinSymbol) => {
+    const bp = parsePrice(buyingPrice);
+    const cp = parsePrice(currentPrice);
+
+    if (isNaN(bp) || isNaN(cp)) {
+      console.log("Invalid values:", { bp, cp });
+      toast.error("Invalid price values");
+      return;
+    }
+
+    const PNL = Math.round(Number(cp) - Number(bp));
+
+    const newBalance = Math.round(Number(userBalance) + PNL);
+
+    console.log("Sending:", { newBalance: newBalance, pnl: PNL });
+
+    axios
+      .delete(
+        `https://z-coins-backend.vercel.app/api/trade/delete-holding/${userId}/${coinSymbol}`,
+        { data: { newBalance } },
+      )
+      .then((response) => {
+        toast.success(response?.data?.message);
+        fetchHoldings();
+        setSelectedCoin(null);
+        // --- PNL Update API ---
+        axios
+          .put(`https://z-coins-backend.vercel.app/api/trade/update-pnl/${userId}`, {
+            PNL: PNL,
+          })
+          .then((response) => {
+            console.log(response?.data);
+          })
+          .catch(() => {});
+        // --- Traded Coins Updated API ---
+        axios
+          .put(`https://z-coins-backend.vercel.app/api/trade/update-assets/${userId}`)
+          .then((response) => {
+            console.log(response?.data);
+          })
+          .catch(() => {});
+      })
+      .catch(() => {});
+  };
+
+  // --- Auto Refresh ---
+  useEffect(() => {
+    fetchHoldings();
+    const interval = setInterval(fetchHoldings, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get(`https://z-coins-backend.vercel.app/api/user/details/${userId}`)
+      .then((response) => {
+        console.log(response?.data);
+
+        setUserBalance(response?.data.user_details.userBalance || "");
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="space-y-6 relative">
+      <ToastContainer
+        theme="colored"
+        autoClose={1000}
+        hideProgressBar
+        position="top-center"
+      />
       <div className="mb-8">
         <h1 className="text-3xl font-black text-blue-950 tracking-tight">
           Portfolio Analysis
@@ -97,35 +173,37 @@ function PortfolioPage() {
                           className="h-10 w-10 bg-blue-50 rounded-xl flex items-center justify-center font-black text-xs
                         text-blue-900 group-hover:bg-white transition-colors"
                         >
-                          {coin.symbol}
+                          {coin?.symbol}
                         </div>
                         <div>
                           <p className="text-sm font-bold text-blue-950">
-                            {coin.name}
+                            {coin?.name}
                           </p>
                           <p className="text-[10px] text-slate-400 font-medium">
-                            {coin.symbol}
+                            {coin?.symbol}
                           </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm font-bold text-blue-950">
-                      {coin.balance} {coin.symbol}
+                      {coin?.balance} {coin?.symbol}
                     </td>
                     <td className="px-6 py-4 text-sm font-bold text-slate-600">
-                      {coin.buyingPrice}
+                      ${coin?.buyingPrice.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-sm font-bold text-slate-600">
-                      ${coin.value.toLocaleString()}
+                      ${coin?.value.toLocaleString()}
                     </td>
                     <td
                       className={`px-6 py-4 text-sm font-bold text-end ${
-                        profitCoin(coin.buyingPrice, coin.currentPrice) >= 0
+                        profitCoin(coin?.buyingPrice, coin?.currentPrice) >= 0
                           ? "text-emerald-600"
                           : "text-red-600"
                       }`}
                     >
-                      {formatPnL(profitCoin(coin.buyingPrice, coin.currentPrice))}
+                      {formatPnL(
+                        profitCoin(coin?.buyingPrice, coin?.currentPrice),
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -172,7 +250,7 @@ function PortfolioPage() {
                     className={`text-sm font-bold mt-1 ${
                       profitCoin(
                         selectedCoin.buyingPrice,
-                        selectedCoin.currentPrice
+                        selectedCoin.currentPrice,
                       ) >= 0
                         ? "text-emerald-500"
                         : "text-red-500"
@@ -181,8 +259,8 @@ function PortfolioPage() {
                     {formatPnL(
                       profitCoin(
                         selectedCoin.buyingPrice,
-                        selectedCoin.currentPrice
-                      )
+                        selectedCoin.currentPrice,
+                      ),
                     )}{" "}
                     Today
                   </p>
@@ -197,7 +275,7 @@ function PortfolioPage() {
                     </span>
                   </div>
                   <p className="text-sm font-black text-blue-950">
-                    {selectedCoin.buyingPrice}
+                    ${selectedCoin.buyingPrice.toLocaleString()}
                   </p>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-3xl border border-slate-100">
@@ -208,22 +286,18 @@ function PortfolioPage() {
                     </span>
                   </div>
                   <p className="text-sm font-black text-blue-950">
-                    {selectedCoin.currentPrice}
-                  </p>
-                </div>
-                <div className="p-4 bg-slate-50 rounded-3xl border border-slate-100">
-                  <div className="flex items-center gap-2 text-slate-400 mb-2">
-                    <CircleDollarSign size={14} />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">
-                      Invested
-                    </span>
-                  </div>
-                  <p className="text-sm font-black text-blue-950">
-                    {selectedCoin.investedAmount}
+                    ${selectedCoin.currentPrice}
                   </p>
                 </div>
               </div>
               <button
+                onClick={() =>
+                  deleteHolding(
+                    selectedCoin?.buyingPrice,
+                    selectedCoin?.currentPrice,
+                    selectedCoin?.symbol,
+                  )
+                }
                 className="w-full flex items-center justify-center gap-3 py-5 bg-red-500 text-white rounded-3xl font-black
               hover:bg-red-600 transition-all shadow-xl shadow-red-100 active:scale-[0.98]"
               >

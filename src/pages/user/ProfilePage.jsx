@@ -7,6 +7,7 @@ import {
   TrendingUp,
   Copy,
   Clock,
+  TrendingDown,
 } from "lucide-react";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -151,14 +152,31 @@ function ProfilePage() {
               </h3>
             </div>
 
-            <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">
+            <div
+              className={`p-4 ${
+                userData.pnl > 0
+                  ? "bg-emerald-50 border-emerald-100"
+                  : "bg-red-50 border-red-100"
+              } rounded-2xl border`}
+            >
+              <p
+                className={`text-[10px] font-black ${userData.pnl > 0 ? "text-emerald-600" : "text-red-600"} uppercase tracking-widest mb-1`}
+              >
                 Total PNL (Profit/Loss)
               </p>
-              <div className="flex items-center gap-2 text-xl font-black text-emerald-700">
-                <TrendingUp size={20} />
+              <div
+                className={`flex items-center gap-2 text-xl font-black ${userData.pnl > 0 ? "text-emerald-700" : "text-red-700"}`}
+              >
+                {userData.pnl > 0 ? (
+                  <TrendingUp size={20} />
+                ) : (
+                  <TrendingDown size={20} />
+                )}
+
                 {isUserLoading ? (
-                  <span className="h-4 w-40 rounded bg-green-200 animate-pulse inline-block" />
+                  <span
+                    className={`h-4 w-40 rounded ${userData.pnl > 0 ? "bg-green-200" : "bg-red-200"} animate-pulse inline-block`}
+                  />
                 ) : (
                   <>{userData.pnl || 0}</>
                 )}

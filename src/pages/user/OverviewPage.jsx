@@ -163,7 +163,7 @@ function OverviewPage() {
     },
     {
       label: "PNL",
-      value: `${totalPnl > 0 ? "+" : totalPnl < 0 ? "-" : ""}${Number(
+      value: `${totalPnl > 0 ? "+" : totalPnl < 0 ? "" : ""}${Number(
         totalPnl,
       ).toLocaleString()}`,
       icon: totalPnl > 0 ? TrendingUp : TrendingDown,
@@ -198,7 +198,11 @@ function OverviewPage() {
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 {stat.label}
               </p>
-              <h3 className="text-xl font-black text-blue-950">{stat.value}</h3>
+              <h3
+                className={`text-xl font-black ${stat.label === "PNL" ? (totalPnl > 0 ? "text-emerald-600" : totalPnl < 0 ? "text-red-600" : "text-blue-950") : "text-blue-950"}`}
+              >
+                {stat.value}
+              </h3>
             </div>
           </div>
         ))}
