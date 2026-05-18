@@ -117,6 +117,11 @@ function CoinPage() {
       return;
     }
 
+    if (userBalance < totalAmount) {
+      toast.error("Not enough money");
+      return;
+    }
+
     const userNewBalance = userBalance - totalAmount;
 
     const newLot = {
@@ -126,11 +131,6 @@ function CoinPage() {
       lots: numericLots,
       newBalance: Number(userNewBalance).toFixed(2),
     };
-
-    // const existingLots = JSON.parse(
-    //   localStorage.getItem("holdingLots") || "[]",
-    // );
-    // const updatedLots = [...existingLots, newLot];
     const payload = { coin: JSON.stringify(newLot) };
     // --- API Configuration ---
     axios
@@ -141,21 +141,19 @@ function CoinPage() {
       .then((response) => {
         console.log(response?.data?.message);
         toast.success("Lots purchased");
+        setTradeType(null);
+        setLots("");
       })
       .catch((error) => {
         toast.error(error?.response?.data?.error || "Internal Server Error");
-      })
-      .finally(() => {
-        setTradeType(null);
-        setLots("");
       });
   };
 
   useEffect(() => {
     axios
-      .get(`https://z-coins-backend.vercel.app/api/trade/holdings/${userId}`)
+      .get(`https://z-coins-backend.vercel.app/api/user/details/${userId}`)
       .then((response) => {
-        console.log(response?.data);
+        setUserBalance(response?.data.user_details.userBalance);
       });
   }, []);
 
