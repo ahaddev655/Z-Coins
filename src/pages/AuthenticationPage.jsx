@@ -35,25 +35,6 @@ function AuthenticationPage() {
         {/* --- Form --- */}
         <AuthFormItem isLogin={isLogin} setIsLogin={setIsLogin} />
 
-        {/* --- Divider --- */}
-        <motion.div layout className="relative flex items-center py-6">
-          <div className="grow border-t border-gray-200"></div>
-          <span className="shrink mx-4 text-gray-400 text-xs uppercase tracking-widest">
-            Or
-          </span>
-          <div className="grow border-t border-gray-200"></div>
-        </motion.div>
-
-        {/* --- Social Login --- */}
-        <motion.button
-          layout
-          className="w-full flex items-center justify-center gap-3 h-12 border-2 border-gray-100 rounded-xl hover:bg-gray-50
-          transition-colors font-medium text-gray-700"
-        >
-          <FaGoogle className="text-red-500" />
-          <span>Continue With Google</span>
-        </motion.button>
-
         {/* --- Footer --- */}
         <motion.p layout className="mt-8 text-center text-sm text-gray-600">
           {isLogin ? "Already have an account?" : "Don't have an account?"}{" "}
